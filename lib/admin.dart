@@ -1,15 +1,16 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+
+List<Widget> forms = [];
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
+  static String routeName = "/admin";
   @override
   State<AdminPage> createState() => AdminPageState();
 }
 
 class AdminPageState extends State<AdminPage> {
-  List<Widget> forms = [];
   StreamController controller = StreamController<int>();
   @override
   Widget build(BuildContext context) {
@@ -84,16 +85,13 @@ class AdminPageState extends State<AdminPage> {
                                 ElevatedButton(
                                     onPressed: () {
                                       setState(() {
-                                        forms.add(customTextFormField(
-                                            controllerName.text,
-                                            controllerHintText.text,
-                                            isObscure,
-                                            (controllerType.text == "Email")
-                                                ? true
-                                                : false));
+                                        forms.add(CustomTextFormField(
+                                          name: controllerName.text,
+                                          hintText: controllerHintText.text,
+                                          isObscure: isObscure,
+                                        ));
                                         Navigator.pop(context);
                                         debugPrint(forms.length.toString());
-                                        //(context as Element).reassemble();
                                       });
                                     },
                                     child: const Text("Add Form")),
@@ -117,9 +115,22 @@ class AdminPageState extends State<AdminPage> {
       ),
     );
   }
+}
 
-  SizedBox customTextFormField(
-      String name, String? hintText, bool? isObscure, bool? isEmail) {
+// ignore: must_be_immutable
+class CustomTextFormField extends StatelessWidget {
+  late String name;
+  bool isObscure = false;
+  late String hintText;
+
+  CustomTextFormField(
+      {super.key,
+      required this.name,
+      required this.hintText,
+      required this.isObscure});
+  TextEditingController controller = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
     return SizedBox(
       child: Column(children: [
         Align(
@@ -127,8 +138,9 @@ class AdminPageState extends State<AdminPage> {
           child: Text(name),
         ),
         TextFormField(
+          controller: controller,
           textAlign: TextAlign.center,
-          obscureText: (isObscure == null) ? false : true,
+          obscureText: isObscure,
           decoration: InputDecoration(
             hintText: hintText,
           ),
@@ -136,4 +148,8 @@ class AdminPageState extends State<AdminPage> {
       ]),
     );
   }
+}
+
+List<Widget> getForms() {
+  return forms;
 }
