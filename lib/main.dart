@@ -3,8 +3,10 @@ import 'connection.dart';
 import 'dart:io';
 import 'admin.dart';
 import 'auth.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 void main() {
+  setPathUrlStrategy();
   HttpOverrides.global = DevHttpOverrides();
   runApp(MaterialApp(
     title: "UnifiAuth",
@@ -28,7 +30,7 @@ class Main extends StatelessWidget {
         body: Row(
       children: [
         ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, "/auth"),
+            onPressed: () => Navigator.pushNamed(context, "/guest/s/default"),
             child: const Text("Auth")),
         ElevatedButton(
             onPressed: () => Navigator.pushNamed(context, "/connection"),

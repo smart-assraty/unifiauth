@@ -4,7 +4,7 @@ import 'admin.dart';
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
 
-  static String routeName = "/auth";
+  static String routeName = "/guest/s/default";
 
   @override
   State<AuthPage> createState() => AuthPageState();
