@@ -9,21 +9,13 @@ import 'connection.dart';
 void main() {
   setPathUrlStrategy();
   HttpOverrides.global = DevHttpOverrides();
-  runApp(MaterialApp(
-    title: "UnifiAuth",
-    theme: ThemeData(
-      primarySwatch: Colors.blue,
-    ),
-    routes: {
-      Connection.routeName: (context) => const Connection(),
-      AuthPage.routeName: (context) => const AuthPage(),
-      AdminPage.routeName: (context) => const AdminPage(),
-    },
-    home: const Main(),
+  runApp(MaterialApp.router(
+    routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
+    routeInformationParser: const RoutemasterParser(),
   ));
 }
 
-final router = RouteMap(routes: {
+final routes = RouteMap(routes: {
   "/": (_) => const MaterialPage(child: Main()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
   "/admin": (_) => const MaterialPage(child: AdminPage()),
@@ -38,13 +30,13 @@ class Main extends StatelessWidget {
         body: Row(
       children: [
         ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, "/guest/s/default"),
+            onPressed: () => Routemaster.of(context).push("/guest/s/default"),
             child: const Text("Auth")),
         ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, "/connection"),
+            onPressed: () => Routemaster.of(context).push("/admin"),
             child: const Text("Connection")),
         ElevatedButton(
-            onPressed: () => Navigator.pushNamed(context, "/admin"),
+            onPressed: () => Routemaster.of(context).push("/connection"),
             child: const Text("Admin")),
       ],
     ));

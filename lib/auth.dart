@@ -5,8 +5,6 @@ import 'dart:io';
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
 
-  static String routeName = "/guest/s/default";
-
   @override
   State<AuthPage> createState() => AuthPageState();
 }
@@ -14,25 +12,13 @@ class AuthPage extends StatefulWidget {
 class AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
+    var query = Uri.base.queryParameters["id"];
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("TechoGym Guest"),
-        ),
-        body: FutureBuilder(
-          future: listen(),
-          builder: (context, AsyncSnapshot<Map<String, String>> snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
-              return ListView.builder(itemBuilder: (context, index) {
-                return Text(snapshot.data!.entries.elementAt(index).toString());
-              });
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        )
-
-        /*Column(
+      appBar: AppBar(
+        title: const Text("TechoGym Guest"),
+      ),
+      body: (query != null) ? Text(query) : const Text("Not Found"),
+      /*Column(
           children: [
             ListView(
               shrinkWrap: true,
@@ -43,13 +29,13 @@ class AuthPageState extends State<AuthPage> {
               width: double.maxFinite,
               child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, "/connection");
+                    RouteMaster.of(context).push("/connection");
                   },
                   child: const Text("Submit")),
             ),
           ],
         )*/
-        );
+    );
   }
 }
 
@@ -62,8 +48,8 @@ List<String> getFormArguments() {
 }
 
 Future<Map<String, String>> listen() async {
-  final server = await HttpServer.bind(InternetAddress.anyIPv4, 80);
-  Map<String, String> requestParameters = {};
+  final server = await HttpServer.bind(InternetAddress.anyIPv4, 43617);
+  Map<String, String> requestParameters = {"qwer": "ty"};
   await for (HttpRequest request in server) {
     requestParameters = request.uri.queryParameters;
   }

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:routemaster/routemaster.dart';
 
 List<Widget> forms = [];
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
-  static String routeName = "/admin";
+
   @override
   State<AdminPage> createState() => AdminPageState();
 }
@@ -97,7 +98,7 @@ class AdminPageState extends State<AdminPage> {
                                             hintText: controllerHintText.text,
                                             isObscure: isObscure,
                                           ));
-                                          Navigator.pop(context);
+                                          Routemaster.of(context).pop();
                                           debugPrint(forms.length.toString());
                                         });
                                       },

@@ -3,7 +3,7 @@ import 'auth.dart';
 
 class Connection extends StatelessWidget {
   const Connection({super.key});
-  static const routeName = "/connection";
+
   @override
   Widget build(BuildContext context) {
     final args = getFormArguments();
