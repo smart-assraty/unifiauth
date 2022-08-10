@@ -130,13 +130,14 @@ class CustomTextFormField extends StatelessWidget {
   late String name;
   bool isObscure = false;
   late String hintText;
+  TextEditingController controller = TextEditingController();
 
   CustomTextFormField(
       {super.key,
       required this.name,
       required this.hintText,
       required this.isObscure});
-  TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(

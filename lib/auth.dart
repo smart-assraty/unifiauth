@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'admin.dart';
+import 'dart:io';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
@@ -17,7 +18,21 @@ class AuthPageState extends State<AuthPage> {
         appBar: AppBar(
           title: const Text("TechoGym Guest"),
         ),
-        body: Column(
+        body: FutureBuilder(
+          future: listen(),
+          builder: (context, AsyncSnapshot<Map<String, String>> snapshot) {
+            if (snapshot.hasData &&
+                snapshot.connectionState == ConnectionState.done) {
+              return ListView.builder(itemBuilder: (context, index) {
+                return Text(snapshot.data!.entries.elementAt(index).toString());
+              });
+            } else {
+              return const CircularProgressIndicator();
+            }
+          },
+        )
+
+        /*Column(
           children: [
             ListView(
               shrinkWrap: true,
@@ -33,7 +48,8 @@ class AuthPageState extends State<AuthPage> {
                   child: const Text("Submit")),
             ),
           ],
-        ));
+        )*/
+        );
   }
 }
 
@@ -43,4 +59,13 @@ List<String> getFormArguments() {
     args.add((forms[i] as CustomTextFormField).controller.text);
   }
   return args;
+}
+
+Future<Map<String, String>> listen() async {
+  final server = await HttpServer.bind(InternetAddress.anyIPv4, 80);
+  Map<String, String> requestParameters = {};
+  await for (HttpRequest request in server) {
+    requestParameters = request.uri.queryParameters;
+  }
+  return requestParameters;
 }

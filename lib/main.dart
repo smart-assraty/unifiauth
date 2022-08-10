@@ -1,9 +1,10 @@
+import 'package:url_strategy/url_strategy.dart';
+import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
-import 'connection.dart';
 import 'dart:io';
 import 'admin.dart';
 import 'auth.dart';
-import 'package:url_strategy/url_strategy.dart';
+import 'connection.dart';
 
 void main() {
   setPathUrlStrategy();
@@ -21,6 +22,13 @@ void main() {
     home: const Main(),
   ));
 }
+
+final router = RouteMap(routes: {
+  "/": (_) => const MaterialPage(child: Main()),
+  "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
+  "/admin": (_) => const MaterialPage(child: AdminPage()),
+  "/connection": (_) => const MaterialPage(child: Connection()),
+});
 
 class Main extends StatelessWidget {
   const Main({Key? key}) : super(key: key);
