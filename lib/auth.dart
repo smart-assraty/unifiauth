@@ -13,7 +13,9 @@ class AuthPageState extends State<AuthPage> {
   Unifi unifi = Unifi();
   @override
   Widget build(BuildContext context) {
-    String? query = Uri.base.queryParameters["id"];
+    //For web zaebal
+    //String? query = Uri.base.queryParameters["id"];
+    String query = "dc:72:9b:4b:9e:72";
     return Scaffold(
         appBar: AppBar(
           title: const Text("TechoGym Guest"),
@@ -30,7 +32,16 @@ class AuthPageState extends State<AuthPage> {
               child: ElevatedButton(
                   onPressed: () async {
                     late String text;
-                    (query != null)
+                    text = await unifi.authorize(query);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Card(
+                            child: Text(text),
+                          );
+                        });
+                    //For web zaebal
+                    /*(query != null)
                         ? {
                             text = await unifi.authorize(query),
                             showDialog(
@@ -47,7 +58,7 @@ class AuthPageState extends State<AuthPage> {
                               return const Card(
                                 child: Text("No query data"),
                               );
-                            });
+                            });*/
                   },
                   child: const Text("Submit")),
             ),
