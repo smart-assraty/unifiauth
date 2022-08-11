@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'admin.dart';
-import 'dart:io';
+import 'unifi.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({Key? key}) : super(key: key);
@@ -10,15 +10,15 @@ class AuthPage extends StatefulWidget {
 }
 
 class AuthPageState extends State<AuthPage> {
+  Unifi unifi = Unifi();
   @override
   Widget build(BuildContext context) {
-    var query = Uri.base.queryParameters["id"];
+    String? query = Uri.base.queryParameters["id"];
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("TechoGym Guest"),
-      ),
-      body: (query != null) ? Text(query) : const Text("Not Found"),
-      /*Column(
+        appBar: AppBar(
+          title: const Text("TechoGym Guest"),
+        ),
+        body: Column(
           children: [
             ListView(
               shrinkWrap: true,
@@ -28,14 +28,31 @@ class AuthPageState extends State<AuthPage> {
               height: 50,
               width: double.maxFinite,
               child: ElevatedButton(
-                  onPressed: () {
-                    RouteMaster.of(context).push("/connection");
+                  onPressed: () async {
+                    late String text;
+                    (query != null)
+                        ? {
+                            text = await unifi.authorize(query),
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Card(
+                                    child: Text(text),
+                                  );
+                                })
+                          }
+                        : showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const Card(
+                                child: Text("No query data"),
+                              );
+                            });
                   },
                   child: const Text("Submit")),
             ),
           ],
-        )*/
-    );
+        ));
   }
 }
 
@@ -45,13 +62,4 @@ List<String> getFormArguments() {
     args.add((forms[i] as CustomTextFormField).controller.text);
   }
   return args;
-}
-
-Future<Map<String, String>> listen() async {
-  final server = await HttpServer.bind(InternetAddress.anyIPv4, 43617);
-  Map<String, String> requestParameters = {"qwer": "ty"};
-  await for (HttpRequest request in server) {
-    requestParameters = request.uri.queryParameters;
-  }
-  return requestParameters;
 }

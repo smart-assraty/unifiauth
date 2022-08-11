@@ -1,10 +1,9 @@
-import 'package:url_strategy/url_strategy.dart';
+import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'admin.dart';
 import 'auth.dart';
-import 'connection.dart';
 
 void main() {
   setPathUrlStrategy();
@@ -19,7 +18,6 @@ final routes = RouteMap(routes: {
   "/": (_) => const MaterialPage(child: Main()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
   "/admin": (_) => const MaterialPage(child: AdminPage()),
-  "/connection": (_) => const MaterialPage(child: Connection()),
 });
 
 class Main extends StatelessWidget {
@@ -34,9 +32,6 @@ class Main extends StatelessWidget {
             child: const Text("Auth")),
         ElevatedButton(
             onPressed: () => Routemaster.of(context).push("/admin"),
-            child: const Text("Connection")),
-        ElevatedButton(
-            onPressed: () => Routemaster.of(context).push("/connection"),
             child: const Text("Admin")),
       ],
     ));
