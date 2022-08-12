@@ -65003,7 +65003,7 @@ ue(){var s=0,r=A.a0(t.N),q,p,o,n,m
 var $async$ue=A.a1(function(a,b){if(a===1)return A.Y(b,r)
 while(true)switch(s){case 0:p=A.iJ("https://192.168.1.62:8443/api/login")
 o=t.N
-n=A.au(["Content-type","application/json","Charset","utf-8","set-cookie","SameSite=None"],o,o)
+n=A.au(["Content-type","application/json","Charset","utf-8"],o,o)
 s=3
 return A.a5(A.alZ(p,B.aU.zU(A.au(["username","dauletilyas","password","Queuerty15"],o,o),null),n),$async$ue)
 case 3:m=b

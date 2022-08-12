@@ -14,7 +14,6 @@ class Unifi {
       headers: {
         "Content-type": "application/json",
         "Charset": "utf-8",
-        "set-cookie": "SameSite=None",
       },
       body: jsonEncode(
         {"username": username, "password": password},
