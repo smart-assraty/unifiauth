@@ -18,6 +18,10 @@ final routes = RouteMap(routes: {
   "/": (_) => const MaterialPage(child: Main()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
   "/admin": (_) => const MaterialPage(child: AdminPage()),
+  "/logged": (_) => const MaterialPage(
+          child: Center(
+        child: Text("Logged"),
+      )),
 });
 
 class Main extends StatelessWidget {

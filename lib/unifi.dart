@@ -14,6 +14,7 @@ class Unifi {
       headers: {
         "Content-type": "application/json",
         "Charset": "utf-8",
+        "set-cookie": "SameSite=None",
       },
       body: jsonEncode(
         {"username": username, "password": password},
@@ -57,7 +58,7 @@ class Unifi {
       headers: {
         "Content-type": "application/json",
         "Charset": "utf-8",
-        "cookie": cookie,
+        "cookie": "$cookie; SameSite=None",
       },
       body: jsonEncode({
         "cmd": "authorize-guest",
