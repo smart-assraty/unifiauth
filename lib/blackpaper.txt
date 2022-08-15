@@ -1,0 +1,117 @@
+import 'package:sqflite/sqflite.dart';
+
+final database = openDatabase(
+  "./forms.db",
+  onCreate: (db, version) {
+    return db.execute(
+        "CREATE TABLE Forms (id INTEGER PRIMARY KEY, type TEXT, name TEXT))");
+  },
+  version: 1,
+);
+
+Future<void> addToDB(CustomTextFormField form) async {
+  final db = await database;
+  db.insert("forms", form.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace);
+}
+
+Future<void> deleteForm(int id) async {
+  final db = await database;
+  db.delete("forms", where: "id: ", whereArgs: [id]);
+}
+
+Future<List<CustomTextFormField>> getList() async {
+  final db = await database;
+  final List<Map<String, dynamic>> fields = await db.query("forms");
+
+  return List.generate(fields.length, (i) {
+    return CustomTextFormField(
+      id: int.parse(fields[i]["id"]),
+      type: fields[i]['type'],
+      name: fields[i]['name'],
+    );
+  });
+}
+
+
+
+Container(
+              decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 188, 219, 247)),
+              height: 530,
+              width: 550,
+              child: FutureBuilder(
+                future: getList(),
+                builder: (context,
+                    AsyncSnapshot<List<CustomTextFormField>> snapshot) {
+                  if (snapshot.hasData &&
+                      snapshot.connectionState == ConnectionState.done) {
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return snapshot.data!.elementAt(index);
+                      },
+                    );
+                  } else {
+                    return const CircularProgressIndicator();
+                  }
+                },
+              )),
+
+
+
+
+----------------------Auth----------------------
+FutureBuilder(
+        future: getList(),
+        builder: (context, AsyncSnapshot<List<CustomTextFormField>> snapshot) {
+          return Column(
+            children: [
+              ListView.builder(
+                shrinkWrap: true,
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  return snapshot.data!.elementAt(index);
+                },
+              ),
+              SizedBox(
+                height: 50,
+                width: double.maxFinite,
+                child: ElevatedButton(
+                    onPressed: () async {
+                      late String text;
+                      text = await unifi.authorize(query);
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return Card(
+                              child: Text(text),
+                            );
+                          });
+                      //For web zaebal
+                      /*(query != null)
+                        ? {
+                            text = await unifi.authorize(query),
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Card(
+                                    child: Text(text),
+                                  );
+                                })
+                          }
+                        : showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return const Card(
+                                child: Text("No query data"),
+                              );
+                            });*/
+                    },
+                    child: const Text("Submit")),
+              ),
+            ],
+          );
+        },
+      ),

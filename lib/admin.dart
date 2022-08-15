@@ -1,8 +1,6 @@
-import 'dart:async';
+//import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:routemaster/routemaster.dart';
-
-List<Widget> forms = [];
+//import 'package:routemaster/routemaster.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -12,39 +10,17 @@ class AdminPage extends StatefulWidget {
 }
 
 class AdminPageState extends State<AdminPage> {
-  StreamController controller = StreamController<int>();
+  TextEditingController controllerId = TextEditingController();
+  TextEditingController controllerType = TextEditingController();
+  TextEditingController controllerName = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    TextEditingController controllerType = TextEditingController();
-    TextEditingController controllerName = TextEditingController();
-    TextEditingController controllerHintText = TextEditingController();
-    Stream stream = controller.stream;
-    controller.add(forms.length);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Admin Panel"),
       ),
       body: Column(
         children: [
-          Container(
-            decoration:
-                const BoxDecoration(color: Color.fromARGB(255, 188, 219, 247)),
-            height: 530,
-            width: 550,
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                StreamBuilder(
-                    stream: stream,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<dynamic> snapshot) {
-                      return Column(
-                        children: forms,
-                      );
-                    }),
-              ],
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.only(top: 10),
             child: SizedBox(
@@ -64,9 +40,18 @@ class AdminPageState extends State<AdminPage> {
                                 children: [
                                   const Align(
                                     alignment: Alignment.centerLeft,
+                                    child: Text("Form ID"),
+                                  ),
+                                  TextField(
+                                    keyboardType: TextInputType.number,
+                                    controller: controllerId,
+                                  ),
+                                  const Align(
+                                    alignment: Alignment.centerLeft,
                                     child: Text("Form Type"),
                                   ),
                                   TextFormField(
+                                    keyboardType: TextInputType.emailAddress,
                                     controller: controllerType,
                                   ),
                                   const Align(
@@ -74,14 +59,8 @@ class AdminPageState extends State<AdminPage> {
                                     child: Text("Form Name"),
                                   ),
                                   TextFormField(
+                                    keyboardType: TextInputType.name,
                                     controller: controllerName,
-                                  ),
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Form HintText"),
-                                  ),
-                                  TextFormField(
-                                    controller: controllerHintText,
                                   ),
                                   Checkbox(
                                     value: isObscure,
@@ -90,19 +69,18 @@ class AdminPageState extends State<AdminPage> {
                                     }),
                                   ),
                                   const Spacer(),
-                                  ElevatedButton(
+                                  /*ElevatedButton(
                                       onPressed: () {
                                         setState(() {
-                                          forms.add(CustomTextFormField(
+                                          addToDB(CustomTextFormField(
+                                            id: int.parse(controllerId.text),
                                             name: controllerName.text,
-                                            hintText: controllerHintText.text,
-                                            isObscure: isObscure,
+                                            type: controllerType.text,
                                           ));
                                           Routemaster.of(context).pop();
-                                          debugPrint(forms.length.toString());
                                         });
                                       },
-                                      child: const Text("Add Form")),
+                                      child: const Text("Add Form")),*/
                                 ],
                               ),
                             );
@@ -110,12 +88,24 @@ class AdminPageState extends State<AdminPage> {
                     },
                     child: const Text("Add Form"),
                   ),
-                  ElevatedButton(
-                    onPressed: () => setState(() {
-                      forms.removeLast();
+                  /* ElevatedButton(
+                    onPressed: () => setState(() async {
+                      TextEditingController t = TextEditingController();
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return Card(
+                              child: TextFormField(
+                                keyboardType: TextInputType.number,
+                                controller: t,
+                              ),
+                            );
+                          });
+                      Routemaster.of(context).pop();
+                      deleteForm(int.parse(t.text));
                     }),
                     child: const Text("Remove Last"),
-                  )
+                  )*/
                 ],
               ),
             ),
@@ -128,16 +118,29 @@ class AdminPageState extends State<AdminPage> {
 
 // ignore: must_be_immutable
 class CustomTextFormField extends StatelessWidget {
+  late int id;
   late String name;
-  bool isObscure = false;
-  late String hintText;
+  late String type;
   TextEditingController controller = TextEditingController();
 
-  CustomTextFormField(
-      {super.key,
-      required this.name,
-      required this.hintText,
-      required this.isObscure});
+  CustomTextFormField({
+    super.key,
+    required this.id,
+    required this.name,
+    required this.type,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      "type": type,
+      "name": name,
+    };
+  }
+
+  String getString() {
+    return "id: $id, type: $type, name: $name\n";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,16 +153,9 @@ class CustomTextFormField extends StatelessWidget {
         TextFormField(
           controller: controller,
           textAlign: TextAlign.center,
-          obscureText: isObscure,
-          decoration: InputDecoration(
-            hintText: hintText,
-          ),
+          obscureText: (type == "password"),
         ),
       ]),
     );
   }
-}
-
-List<Widget> getForms() {
-  return forms;
 }
