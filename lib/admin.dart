@@ -1,6 +1,4 @@
-//import 'dart:async';
 import 'package:flutter/material.dart';
-//import 'package:routemaster/routemaster.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -9,106 +7,371 @@ class AdminPage extends StatefulWidget {
   State<AdminPage> createState() => AdminPageState();
 }
 
+List<CustomTextFormField> fields = [];
+
 class AdminPageState extends State<AdminPage> {
-  TextEditingController controllerId = TextEditingController();
-  TextEditingController controllerType = TextEditingController();
-  TextEditingController controllerName = TextEditingController();
+  int stage = 1;
+  List<DropdownMenuItem> languages = [];
+  TextEditingController zagolovok = TextEditingController();
+  TextEditingController podzagolovok = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text("Admin Panel"),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 10),
-            child: SizedBox(
-              height: 50,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () => {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            bool isObscure = false;
-                            return AlertDialog(
-                              content: Column(
-                                children: [
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Form ID"),
-                                  ),
-                                  TextField(
-                                    keyboardType: TextInputType.number,
-                                    controller: controllerId,
-                                  ),
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Form Type"),
-                                  ),
-                                  TextFormField(
-                                    keyboardType: TextInputType.emailAddress,
-                                    controller: controllerType,
-                                  ),
-                                  const Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text("Form Name"),
-                                  ),
-                                  TextFormField(
-                                    keyboardType: TextInputType.name,
-                                    controller: controllerName,
-                                  ),
-                                  Checkbox(
-                                    value: isObscure,
-                                    onChanged: (event) => setState(() {
-                                      isObscure = event!;
-                                    }),
-                                  ),
-                                  const Spacer(),
-                                  /*ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          addToDB(CustomTextFormField(
-                                            id: int.parse(controllerId.text),
-                                            name: controllerName.text,
-                                            type: controllerType.text,
-                                          ));
-                                          Routemaster.of(context).pop();
-                                        });
-                                      },
-                                      child: const Text("Add Form")),*/
-                                ],
-                              ),
-                            );
-                          }),
-                    },
-                    child: const Text("Add Form"),
-                  ),
-                  /* ElevatedButton(
-                    onPressed: () => setState(() async {
-                      TextEditingController t = TextEditingController();
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return Card(
-                              child: TextFormField(
-                                keyboardType: TextInputType.number,
-                                controller: t,
-                              ),
-                            );
-                          });
-                      Routemaster.of(context).pop();
-                      deleteForm(int.parse(t.text));
-                    }),
-                    child: const Text("Remove Last"),
-                  )*/
-                ],
+      body: Center(
+        child: getContent(),
+      ),
+    );
+  }
+
+  Widget getContent() {
+    if (stage == 1) {
+      return contentPageOne();
+    } else if (stage == 2) {
+      return contentPageTwo();
+    } else if (stage == 3) {
+      return contentPageThree();
+    } else {
+      return const Text("404");
+    }
+  }
+
+  Widget contentHeader() {
+    return Padding(
+        padding: const EdgeInsets.only(
+          bottom: 10,
+        ),
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Text("Настройка формы"),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(1000),
+                      color: Colors.white,
+                      border: Border.all(
+                          width: 2,
+                          color: (stage == 1) ? Colors.amber : Colors.grey),
+                    ),
+                    child: const Center(
+                      child: Text("1"),
+                    )),
+                Container(
+                    height: 30,
+                    width: 30,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: Colors.white,
+                      border: Border.all(
+                          width: 2,
+                          color: (stage == 2) ? Colors.amber : Colors.grey),
+                    ),
+                    child: const Center(
+                      child: Text("2"),
+                    )),
+                Container(
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: Colors.white,
+                    border: Border.all(
+                        width: 2,
+                        color: (stage == 3) ? Colors.amber : Colors.grey),
+                  ),
+                  child: const Center(
+                    child: Text("3"),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  bool name = false;
+  bool email = false;
+  bool num = false;
+  bool company = false;
+  TextEditingController sendTo = TextEditingController();
+  Widget contentPageThree() {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      height: 600,
+      child: Column(
+        children: [
+          contentHeader(),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Column(
+              children: [
+                const Text("Send form to"),
+                SizedBox(
+                  height: 40,
+                  child: TextFormField(
+                    controller: sendTo,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              const Text("Send these"),
+              Row(
+                children: [
+                  Checkbox(
+                      value: name,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          name = value!;
+                        });
+                      }),
+                  const Text("name"),
+                ],
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                      value: email,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          email = value!;
+                        });
+                      }),
+                  const Text("email"),
+                ],
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                      value: num,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          num = value!;
+                        });
+                      }),
+                  const Text("num"),
+                ],
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                      value: company,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          company = value!;
+                        });
+                      }),
+                  const Text("company"),
+                ],
+              ),
+            ],
+          ),
+          const Spacer(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: ElevatedButton(
+              onPressed: () => debugPrint("Ready"),
+              child: const Text("Ready"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget contentPageTwo() {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      child: ListView(
+        children: [
+          contentHeader(),
+          Column(
+            children: fields,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      fields.add(CustomTextFormField());
+                    });
+                    debugPrint(fields.length.toString());
+                  },
+                  child: const Text("Add new field")),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      fields.removeLast();
+                    });
+                    debugPrint(fields.length.toString());
+                  },
+                  child: const Text("Remove field")),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                  onPressed: () => setState(() {
+                        stage = 1;
+                      }),
+                  child: const Text("Back")),
+              ElevatedButton(
+                  onPressed: () => setState(() {
+                        stage = 3;
+                      }),
+                  child: const Text("Next")),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  TextEditingController zag = TextEditingController();
+  TextEditingController pod = TextEditingController();
+  Widget contentPageOne() {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      height: 600,
+      child: Column(
+        children: [
+          contentHeader(),
+          Column(
+            children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  children: [
+                    const Text("Языки"),
+                    DropdownButton(items: languages, onChanged: null),
+                    DropdownButton(items: languages, onChanged: null),
+                    DropdownButton(items: languages, onChanged: null),
+                    TextButton(
+                        onPressed: () => debugPrint("Languages"),
+                        child: const Text(
+                          "Добавить язык +",
+                          style: TextStyle(color: Colors.amber),
+                        ))
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 40,
+                      child: TextButton(
+                          onPressed: () => debugPrint("Rus"),
+                          child: const Text("rus")),
+                    ),
+                    const Text("/"),
+                    SizedBox(
+                      width: 40,
+                      child: TextButton(
+                          onPressed: () => debugPrint("Eng"),
+                          child: const Text("eng")),
+                    ),
+                    const Text("/"),
+                    SizedBox(
+                      width: 40,
+                      child: TextButton(
+                          onPressed: () => debugPrint("Kaz"),
+                          child: const Text("kaz")),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10, top: 10),
+                child: Column(
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Zagolovok"),
+                    ),
+                    SizedBox(
+                      height: 35,
+                      child: TextFormField(
+                        controller: zag,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 30, top: 10),
+                child: Column(
+                  children: [
+                    const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Podzagolovok"),
+                    ),
+                    SizedBox(
+                      height: 35,
+                      child: TextFormField(
+                        controller: pod,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                children: [
+                  Column(
+                    children: const [
+                      Text("Background Image"),
+                      Icon(
+                        Icons.abc,
+                        size: 80,
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: const [
+                      Text("Background Image"),
+                      Icon(Icons.abc, size: 80),
+                    ],
+                  ),
+                  const VerticalDivider(),
+                  Column(
+                    children: const [
+                      Text("Logo"),
+                      Icon(Icons.abc, size: 80),
+                    ],
+                  ),
+                ],
+              ),
+              Align(
+                  alignment: Alignment.bottomRight,
+                  child: ElevatedButton(
+                    onPressed: () => setState(() {
+                      stage = 2;
+                    }),
+                    child: const Text("Next"),
+                  )),
+            ],
           ),
         ],
       ),
@@ -118,43 +381,91 @@ class AdminPageState extends State<AdminPage> {
 
 // ignore: must_be_immutable
 class CustomTextFormField extends StatelessWidget {
-  late int id;
-  late String name;
+  List<DropdownMenuItem> fields = [];
   late String type;
-  TextEditingController controller = TextEditingController();
+  late String api;
+  late String name;
+  late String hint;
+  bool hasHint = false;
+  bool hasIcon = false;
+  TextEditingController controllerApi = TextEditingController();
+  TextEditingController controllerName = TextEditingController();
+  TextEditingController controllerHint = TextEditingController();
+  TextEditingController controllerIcon = TextEditingController();
 
   CustomTextFormField({
     super.key,
-    required this.id,
-    required this.name,
-    required this.type,
   });
 
   Map<String, dynamic> toMap() {
     return {
-      "id": id,
       "type": type,
       "name": name,
     };
   }
 
   String getString() {
-    return "id: $id, type: $type, name: $name\n";
+    return "type: $type, name: $name\n";
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      padding: const EdgeInsets.only(bottom: 10),
+      decoration: const BoxDecoration(color: Colors.grey),
       child: Column(children: [
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(name),
+        Row(
+          children: [
+            const Text("Type"),
+            DropdownButton(items: fields, onChanged: null),
+          ],
         ),
-        TextFormField(
-          controller: controller,
-          textAlign: TextAlign.center,
-          obscureText: (type == "password"),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Row(
+            children: [
+              const Text("Api name"),
+              SizedBox(
+                width: 250,
+                height: 40,
+                child: TextFormField(
+                  controller: controllerApi,
+                ),
+              ),
+            ],
+          ),
         ),
+        Column(
+          children: [
+            const Text("Zagolovok"),
+            SizedBox(
+              height: 30,
+              child: TextFormField(controller: controllerName),
+            ),
+          ],
+        ),
+        (hasHint)
+            ? Column(
+                children: [
+                  const Text("Podzagolovok"),
+                  TextFormField(controller: controllerHint),
+                ],
+              )
+            : const SizedBox(
+                height: 1.0,
+              ),
+        (hasIcon)
+            ? Row(
+                children: [
+                  const Icon(Icons.abc),
+                  TextFormField(
+                    controller: controllerIcon,
+                  ),
+                ],
+              )
+            : const SizedBox(
+                height: 1.0,
+              ),
       ]),
     );
   }
