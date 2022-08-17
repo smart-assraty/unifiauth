@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'custom_text_form_field.dart';
+import 'package:http/http.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -7,11 +9,17 @@ class AdminPage extends StatefulWidget {
   State<AdminPage> createState() => AdminPageState();
 }
 
-List<CustomTextFormField> fields = [];
-
 class AdminPageState extends State<AdminPage> {
   int stage = 1;
+  bool name = false;
+  bool email = false;
+  bool num = false;
+  bool company = false;
+  List<CustomTextFormField> fields = [];
   List<DropdownMenuItem> languages = [];
+  TextEditingController zag = TextEditingController();
+  TextEditingController pod = TextEditingController();
+  TextEditingController sendTo = TextEditingController();
   TextEditingController zagolovok = TextEditingController();
   TextEditingController podzagolovok = TextEditingController();
   @override
@@ -102,11 +110,6 @@ class AdminPageState extends State<AdminPage> {
         ));
   }
 
-  bool name = false;
-  bool email = false;
-  bool num = false;
-  bool company = false;
-  TextEditingController sendTo = TextEditingController();
   Widget contentPageThree() {
     return Container(
       padding: const EdgeInsets.only(top: 20),
@@ -246,8 +249,6 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
-  TextEditingController zag = TextEditingController();
-  TextEditingController pod = TextEditingController();
   Widget contentPageOne() {
     return Container(
       padding: const EdgeInsets.only(top: 20),
@@ -375,98 +376,6 @@ class AdminPageState extends State<AdminPage> {
           ),
         ],
       ),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class CustomTextFormField extends StatelessWidget {
-  List<DropdownMenuItem> fields = [];
-  late String type;
-  late String api;
-  late String name;
-  late String hint;
-  bool hasHint = false;
-  bool hasIcon = false;
-  TextEditingController controllerApi = TextEditingController();
-  TextEditingController controllerName = TextEditingController();
-  TextEditingController controllerHint = TextEditingController();
-  TextEditingController controllerIcon = TextEditingController();
-
-  CustomTextFormField({
-    super.key,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      "type": type,
-      "name": name,
-    };
-  }
-
-  String getString() {
-    return "type: $type, name: $name\n";
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.grey),
-      child: Column(children: [
-        Row(
-          children: [
-            const Text("Type"),
-            DropdownButton(items: fields, onChanged: null),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Api name"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: controllerApi,
-                ),
-              ),
-            ],
-          ),
-        ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            SizedBox(
-              height: 30,
-              child: TextFormField(controller: controllerName),
-            ),
-          ],
-        ),
-        (hasHint)
-            ? Column(
-                children: [
-                  const Text("Podzagolovok"),
-                  TextFormField(controller: controllerHint),
-                ],
-              )
-            : const SizedBox(
-                height: 1.0,
-              ),
-        (hasIcon)
-            ? Row(
-                children: [
-                  const Icon(Icons.abc),
-                  TextFormField(
-                    controller: controllerIcon,
-                  ),
-                ],
-              )
-            : const SizedBox(
-                height: 1.0,
-              ),
-      ]),
     );
   }
 }
