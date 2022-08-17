@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'custom_text_form_field.dart';
-import 'package:http/http.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -15,8 +14,12 @@ class AdminPageState extends State<AdminPage> {
   bool email = false;
   bool num = false;
   bool company = false;
-  List<CustomTextFormField> fields = [];
-  List<DropdownMenuItem> languages = [];
+  final List<CustomForm> fields = [];
+  List<DropdownMenuItem> languages = [
+    const DropdownMenuItem(value: "rus", child: Text("rus")),
+    const DropdownMenuItem(value: "eng", child: Text("eng")),
+    const DropdownMenuItem(value: "kaz", child: Text("kaz")),
+  ];
   TextEditingController zag = TextEditingController();
   TextEditingController pod = TextEditingController();
   TextEditingController sendTo = TextEditingController();
@@ -186,13 +189,21 @@ class AdminPageState extends State<AdminPage> {
             ],
           ),
           const Spacer(),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: () => debugPrint("Ready"),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            ElevatedButton(
+                onPressed: () => setState(() {
+                      stage = 2;
+                    }),
+                child: const Text("Back")),
+            ElevatedButton(
+              onPressed: () {
+                for (int i = 0; i < fields.length; i++) {
+                  fields.elementAt(i).commit();
+                }
+              },
               child: const Text("Ready"),
             ),
-          ),
+          ]),
         ],
       ),
     );
@@ -214,7 +225,7 @@ class AdminPageState extends State<AdminPage> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      fields.add(CustomTextFormField());
+                      fields.add(CustomForm.textField());
                     });
                     debugPrint(fields.length.toString());
                   },

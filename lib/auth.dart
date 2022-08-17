@@ -19,21 +19,34 @@ class AuthPageState extends State<AuthPage> {
       ),
       body: Column(
         children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text("Form Type"),
-          ),
-          TextFormField(
-            keyboardType: TextInputType.emailAddress,
-            controller: controllerType,
-          ),
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text("Form Name"),
-          ),
-          TextFormField(
-            keyboardType: TextInputType.name,
-            controller: controllerName,
+          FutureBuilder(
+            future: getLines(),
+            builder: (context, AsyncSnapshot<List<String>> snapshot) {
+              if (snapshot.hasData &&
+                  snapshot.connectionState == ConnectionState.done) {
+                return ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.length - 1,
+                    itemBuilder: (context, i) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
+                          children: [
+                            Text("element[$i]"),
+                            Column(
+                              children: twoStrings(
+                                  snapshot.data!.elementAt(i).split(",")),
+                            ),
+                          ],
+                        ),
+                      );
+                    });
+              } else {
+                return const Center(
+                  child: Text("Not loaded"),
+                );
+              }
+            },
           ),
           const Spacer(),
           ElevatedButton(
@@ -47,9 +60,27 @@ class AuthPageState extends State<AuthPage> {
               );
             },
             child: const Text("Submit"),
-          )
+          ),
         ],
       ),
     );
   }
+
+  List<Widget> twoStrings(List<String> list) {
+    List<Widget> widgets = [];
+    for (int i = 0; i < list.length - 1; i++) {
+      widgets.add(Container(
+        color: Colors.grey,
+        width: 50,
+        child: Text(list.elementAt(i)),
+      ));
+    }
+    return widgets;
+  }
+}
+
+Future<List<String>> getLines() async {
+  var response = await http
+      .get(Uri.parse("http://192.168.43.87/admin/admin.php/?cmd=find"));
+  return response.body.split(";");
 }

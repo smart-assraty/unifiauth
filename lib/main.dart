@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'admin.dart';
 import 'auth.dart';
+import 'custom_text_form_field.dart';
 
 void main() {
   setPathUrlStrategy();
@@ -17,7 +18,7 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => const MaterialPage(child: Main()),
+  "/": (_) => const MaterialPage(child: AdminPage()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
   "/admin": (_) => const MaterialPage(child: AdminPage()),
   "/logged": (_) => const MaterialPage(
@@ -31,23 +32,11 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
-        body: FutureBuilder(
-          future: getMap(),
-          builder: (context, AsyncSnapshot<String> snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
-              return Column(
-                children: [
-                  const Text("Main"),
-                  Text(snapshot.data!.toString()),
-                ],
-              );
-            } else {
-              return const CircularProgressIndicator();
-            }
-          },
-        ));
+      appBar: AppBar(),
+      body: Column(children: [
+        CustomForm(),
+      ]),
+    );
   }
 }
 
