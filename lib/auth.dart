@@ -53,7 +53,7 @@ class AuthPageState extends State<AuthPage> {
             onPressed: () async {
               await http.get(
                 Uri.parse(
-                    "http://192.168.1.60/connecting/connecting.php/?${Uri.base.query}"),
+                    "http://192.168.1.103/connecting/connecting.php/?${Uri.base.query}"),
                 headers: {
                   "Charset": "utf-8",
                 },

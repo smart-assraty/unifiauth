@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
 
+//int id = 1;
+String currentLang = "rus";
+List<DropdownMenuItem<String>> languages = [
+  const DropdownMenuItem(value: "rus", child: Text("rus")),
+  const DropdownMenuItem(value: "eng", child: Text("eng")),
+  const DropdownMenuItem(value: "kaz", child: Text("kaz")),
+];
+
 // ignore: must_be_immutable
 class CustomForm extends StatefulWidget {
-  CustomForm({super.key});
-  CustomForm.textField({Key? key}) : super(key: key) {
-    type = "textfield";
-    hasHint = true;
-  }
-  CustomForm.email({Key? key}) : super(key: key) {
-    type = "email";
-    name = "example@name.kz";
-  }
-  CustomForm.number({Key? key}) : super(key: key) {
-    type = "number";
-    name = "XXX XXX XX XX";
-  }
-  CustomForm.checkbox({Key? key}) : super(key: key) {
-    type = "checkbox";
-  }
-  CustomForm.brand({Key? key}) : super(key: key) {
-    type = "brand";
-    hasIcon = true;
+  CustomForm({super.key}) {
+    //number = id;
+    //id++;
   }
   final List<DropdownMenuItem<String>> fields = [
     const DropdownMenuItem(value: "textfield", child: Text("textfield")),
@@ -29,27 +21,29 @@ class CustomForm extends StatefulWidget {
     const DropdownMenuItem(value: "checkbox", child: Text("checkbox")),
     const DropdownMenuItem(value: "brand", child: Text("brand")),
   ];
+  //late int number;
   String? type;
   String? api;
-  String? name;
-  String? hint;
+  late Map<String, String> title;
+  late Map<String, String> description;
   String? icon;
-  bool hasHint = false;
+  bool hasDescription = false;
   bool hasIcon = false;
   TextEditingController controllerApi = TextEditingController();
   TextEditingController controllerName = TextEditingController();
   TextEditingController controllerHint = TextEditingController();
   TextEditingController controllerIcon = TextEditingController();
 
-  void commit() {
-    api = controllerApi.text;
-    name = controllerName.text;
-    if (hasHint) {
-      hint = controllerHint.text;
-    }
-    if (hasIcon) {
-      icon = controllerIcon.text;
-    }
+  Map<String, dynamic> commit() {
+    Map<String, dynamic> object = {
+      //"number": number,
+      "api": api,
+      "type": type,
+      "title": title,
+      "description": description,
+      "icon": icon,
+    };
+    return object;
   }
 
   @override
@@ -57,9 +51,9 @@ class CustomForm extends StatefulWidget {
 }
 
 class Form extends State<CustomForm> {
+  String hintText = "";
   @override
   Widget build(BuildContext context) {
-    debugPrint(widget.type);
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       decoration:
@@ -77,26 +71,26 @@ class Form extends State<CustomForm> {
                 onChanged: (value) => setState(() {
                       if (value == "textfield") {
                         widget.type = "textfield";
-                        widget.hasHint = true;
+                        widget.hasDescription = true;
                         widget.hasIcon = false;
                       } else if (value == "email") {
+                        hintText = "example@mail.com";
                         widget.type = "email";
-                        widget.hasHint = false;
+                        widget.hasDescription = false;
                         widget.hasIcon = false;
-                        widget.name = "example@name.kz";
                       } else if (value == "number") {
+                        hintText = "XXX XXX XX XX";
                         widget.type = "number";
-                        widget.name = "XXX XXX XX XX";
-                        widget.hasHint = false;
+                        widget.hasDescription = false;
                         widget.hasIcon = false;
                       } else if (value == "checkbox") {
                         widget.type = "checkbox";
-                        widget.hasHint = false;
+                        widget.hasDescription = false;
                         widget.hasIcon = false;
                       } else if (value == "brand") {
                         widget.type = "brand";
                         widget.hasIcon = true;
-                        widget.hasHint = false;
+                        widget.hasDescription = false;
                       }
                     })),
           ],
@@ -122,17 +116,27 @@ class Form extends State<CustomForm> {
             SizedBox(
               height: 30,
               child: TextFormField(
+                onEditingComplete: () {
+                  widget.title
+                      .addAll({currentLang: widget.controllerName.text});
+                },
                 controller: widget.controllerName,
-                decoration: InputDecoration(hintText: widget.name),
+                decoration: InputDecoration(hintText: hintText),
               ),
             ),
           ],
         ),
-        (widget.hasHint)
+        (widget.hasDescription)
             ? Column(
                 children: [
                   const Text("Podzagolovok"),
-                  TextFormField(controller: widget.controllerHint),
+                  TextFormField(
+                    controller: widget.controllerHint,
+                    onEditingComplete: () {
+                      widget.title
+                          .addAll({currentLang: widget.controllerName.text});
+                    },
+                  ),
                 ],
               )
             : const SizedBox(

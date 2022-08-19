@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'custom_text_form_field.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+String server = "http://185.125.88.30";
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -14,17 +18,14 @@ class AdminPageState extends State<AdminPage> {
   bool email = false;
   bool num = false;
   bool company = false;
-  final List<CustomForm> fields = [];
-  List<DropdownMenuItem> languages = [
-    const DropdownMenuItem(value: "rus", child: Text("rus")),
-    const DropdownMenuItem(value: "eng", child: Text("eng")),
-    const DropdownMenuItem(value: "kaz", child: Text("kaz")),
-  ];
+  List<String> languagelist = ["rus", "eng", "kaz"];
+  List<CustomForm> fields = [];
   TextEditingController zag = TextEditingController();
   TextEditingController pod = TextEditingController();
   TextEditingController sendTo = TextEditingController();
   TextEditingController zagolovok = TextEditingController();
   TextEditingController podzagolovok = TextEditingController();
+  Map<String, Map<String, dynamic>> post = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +47,7 @@ class AdminPageState extends State<AdminPage> {
     } else if (stage == 3) {
       return contentPageThree();
     } else {
-      return const Text("404");
+      return contentPageFour();
     }
   }
 
@@ -113,99 +114,121 @@ class AdminPageState extends State<AdminPage> {
         ));
   }
 
+  Widget contentPageFour() {
+    return Text(post.toString());
+  }
+
   Widget contentPageThree() {
-    return Container(
-      padding: const EdgeInsets.only(top: 20),
-      width: 350,
-      height: 600,
-      child: Column(
-        children: [
-          contentHeader(),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Column(
-              children: [
-                const Text("Send form to"),
-                SizedBox(
-                  height: 40,
-                  child: TextFormField(
-                    controller: sendTo,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Column(
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        Container(
+          padding: const EdgeInsets.only(top: 20),
+          width: 350,
+          height: 600,
+          child: Column(
             children: [
-              const Text("Send these"),
-              Row(
+              contentHeader(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Column(
+                  children: [
+                    const Text("Send form to"),
+                    SizedBox(
+                      height: 40,
+                      child: TextFormField(
+                        controller: sendTo,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
                 children: [
-                  Checkbox(
-                      value: name,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          name = value!;
-                        });
-                      }),
-                  const Text("name"),
+                  const Text("Send these"),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: name,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              name = value!;
+                            });
+                          }),
+                      const Text("name"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: email,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              email = value!;
+                            });
+                          }),
+                      const Text("email"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: num,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              num = value!;
+                            });
+                          }),
+                      const Text("num"),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: company,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              company = value!;
+                            });
+                          }),
+                      const Text("company"),
+                    ],
+                  ),
                 ],
               ),
-              Row(
-                children: [
-                  Checkbox(
-                      value: email,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          email = value!;
-                        });
-                      }),
-                  const Text("email"),
-                ],
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                      value: num,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          num = value!;
-                        });
-                      }),
-                  const Text("num"),
-                ],
-              ),
-              Row(
-                children: [
-                  Checkbox(
-                      value: company,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          company = value!;
-                        });
-                      }),
-                  const Text("company"),
-                ],
-              ),
+              const Spacer(),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                ElevatedButton(
+                    onPressed: () => setState(() {
+                          stage = 2;
+                        }),
+                    child: const Text("Back")),
+                ElevatedButton(
+                  onPressed: () {
+                    for (int i = 0; i < fields.length; i++) {
+                      Map<String, Map<String, dynamic>> map = {
+                        "object[$i]": fields.elementAt(i).commit()
+                      };
+                      post.addAll(map);
+                    }
+                    Map<String, int> map = {"langs_count": languagelist.length};
+                    post.addAll({"int": map});
+                    /*http.post(Uri.parse("$server:27017"),
+                        headers: {
+                          "Content-type": "application/json",
+                        },
+                        body: json.encode(post));*/
+                    setState(() {
+                      stage = 4;
+                    });
+                  },
+                  child: const Text("Ready"),
+                ),
+              ]),
             ],
           ),
-          const Spacer(),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            ElevatedButton(
-                onPressed: () => setState(() {
-                      stage = 2;
-                    }),
-                child: const Text("Back")),
-            ElevatedButton(
-              onPressed: () {
-                for (int i = 0; i < fields.length; i++) {
-                  fields.elementAt(i).commit();
-                }
-              },
-              child: const Text("Ready"),
-            ),
-          ]),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -214,6 +237,7 @@ class AdminPageState extends State<AdminPage> {
       padding: const EdgeInsets.only(top: 20),
       width: 350,
       child: ListView(
+        shrinkWrap: true,
         children: [
           contentHeader(),
           Column(
@@ -225,7 +249,7 @@ class AdminPageState extends State<AdminPage> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      fields.add(CustomForm.textField());
+                      fields.add(CustomForm());
                     });
                     debugPrint(fields.length.toString());
                   },
@@ -275,11 +299,19 @@ class AdminPageState extends State<AdminPage> {
                 child: Column(
                   children: [
                     const Text("Языки"),
-                    DropdownButton(items: languages, onChanged: null),
-                    DropdownButton(items: languages, onChanged: null),
-                    DropdownButton(items: languages, onChanged: null),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return DropdownButton<String>(
+                            items: languages,
+                            onChanged: (value) => setState(() {
+                                  languagelist[index] = value!;
+                                }));
+                      },
+                    ),
                     TextButton(
-                        onPressed: () => debugPrint("Languages"),
+                        onPressed: () => languagelist
+                            .add(languages[languagelist.length].value!),
                         child: const Text(
                           "Добавить язык +",
                           style: TextStyle(color: Colors.amber),
@@ -289,31 +321,16 @@ class AdminPageState extends State<AdminPage> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: 40,
-                      child: TextButton(
-                          onPressed: () => debugPrint("Rus"),
-                          child: const Text("rus")),
-                    ),
-                    const Text("/"),
-                    SizedBox(
-                      width: 40,
-                      child: TextButton(
-                          onPressed: () => debugPrint("Eng"),
-                          child: const Text("eng")),
-                    ),
-                    const Text("/"),
-                    SizedBox(
-                      width: 40,
-                      child: TextButton(
-                          onPressed: () => debugPrint("Kaz"),
-                          child: const Text("kaz")),
-                    ),
-                  ],
-                ),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.horizontal,
+                    itemBuilder: (context, index) {
+                      return TextButton(
+                          onPressed: () => setState(() {
+                                currentLang = languages.elementAt(index).value!;
+                              }),
+                          child: Text(languages.elementAt(index).value!));
+                    }),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 10, top: 10),
