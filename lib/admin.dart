@@ -4,6 +4,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 String server = "http://185.125.88.30";
+String currentLang = "rus";
+List<DropdownMenuItem<String>> languages = [
+  const DropdownMenuItem(value: "rus", child: Text("rus")),
+  const DropdownMenuItem(value: "eng", child: Text("eng")),
+  const DropdownMenuItem(value: "kaz", child: Text("kaz")),
+  const DropdownMenuItem(value: "ita", child: Text("ita")),
+  const DropdownMenuItem(value: "tur", child: Text("tur")),
+  const DropdownMenuItem(value: "uzb", child: Text("uzb")),
+];
+List<String> languagelist = ["rus", "eng", "kaz"];
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -14,18 +24,16 @@ class AdminPage extends StatefulWidget {
 
 class AdminPageState extends State<AdminPage> {
   int stage = 1;
-  bool name = false;
-  bool email = false;
-  bool num = false;
-  bool company = false;
-  List<String> languagelist = ["rus", "eng", "kaz"];
+  String title = "";
+  String description = "";
+  /*String background = "";
+  String icon = "";*/
+  var a = CustomForm.front();
   List<CustomForm> fields = [];
-  TextEditingController zag = TextEditingController();
-  TextEditingController pod = TextEditingController();
   TextEditingController sendTo = TextEditingController();
-  TextEditingController zagolovok = TextEditingController();
-  TextEditingController podzagolovok = TextEditingController();
-  Map<String, Map<String, dynamic>> post = {};
+  TextEditingController controllerTitle = TextEditingController();
+  TextEditingController controllerDescription = TextEditingController();
+  Map<String, dynamic> post = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -115,7 +123,18 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget contentPageFour() {
-    return Text(post.toString());
+    return Column(
+      children: [
+        const Text("Sent:"),
+        ListView.builder(
+            shrinkWrap: true,
+            itemCount: post.entries.length,
+            itemBuilder: (context, index) {
+              return Text(post.entries.elementAt(index).toString());
+            }),
+        Text(json.encode(post)),
+      ],
+    );
   }
 
   Widget contentPageThree() {
@@ -143,59 +162,6 @@ class AdminPageState extends State<AdminPage> {
                   ],
                 ),
               ),
-              Column(
-                children: [
-                  const Text("Send these"),
-                  Row(
-                    children: [
-                      Checkbox(
-                          value: name,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              name = value!;
-                            });
-                          }),
-                      const Text("name"),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                          value: email,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              email = value!;
-                            });
-                          }),
-                      const Text("email"),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                          value: num,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              num = value!;
-                            });
-                          }),
-                      const Text("num"),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Checkbox(
-                          value: company,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              company = value!;
-                            });
-                          }),
-                      const Text("company"),
-                    ],
-                  ),
-                ],
-              ),
               const Spacer(),
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 ElevatedButton(
@@ -205,14 +171,19 @@ class AdminPageState extends State<AdminPage> {
                     child: const Text("Back")),
                 ElevatedButton(
                   onPressed: () {
+                    fields.add(a);
                     for (int i = 0; i < fields.length; i++) {
                       Map<String, Map<String, dynamic>> map = {
                         "object[$i]": fields.elementAt(i).commit()
                       };
                       post.addAll(map);
                     }
-                    Map<String, int> map = {"langs_count": languagelist.length};
-                    post.addAll({"int": map});
+                    post.addAll({
+                      "langs": languagelist,
+                      "langs_count": languagelist.length,
+                      "fields_count": fields.length,
+                      "send_to": sendTo.text,
+                    });
                     /*http.post(Uri.parse("$server:27017"),
                         headers: {
                           "Content-type": "application/json",
@@ -251,7 +222,6 @@ class AdminPageState extends State<AdminPage> {
                     setState(() {
                       fields.add(CustomForm());
                     });
-                    debugPrint(fields.length.toString());
                   },
                   child: const Text("Add new field")),
               ElevatedButton(
@@ -259,7 +229,6 @@ class AdminPageState extends State<AdminPage> {
                     setState(() {
                       fields.removeLast();
                     });
-                    debugPrint(fields.length.toString());
                   },
                   child: const Text("Remove field")),
             ],
@@ -288,120 +257,82 @@ class AdminPageState extends State<AdminPage> {
     return Container(
       padding: const EdgeInsets.only(top: 20),
       width: 350,
-      height: 600,
-      child: Column(
+      height: 610,
+      child: ListView(
+        shrinkWrap: true,
         children: [
           contentHeader(),
-          Column(
-            children: [
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Column(
-                  children: [
-                    const Text("Языки"),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return DropdownButton<String>(
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 70,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text("Языки"),
+                  ListView.builder(
+                    itemCount: languagelist.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        height: 35,
+                        child: DropdownButton<String>(
+                            hint: Text(languages[index].value!),
                             items: languages,
                             onChanged: (value) => setState(() {
                                   languagelist[index] = value!;
-                                }));
-                      },
-                    ),
-                    TextButton(
-                        onPressed: () => languagelist
-                            .add(languages[languagelist.length].value!),
-                        child: const Text(
-                          "Добавить язык +",
-                          style: TextStyle(color: Colors.amber),
-                        ))
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 15),
-                child: ListView.builder(
-                    shrinkWrap: true,
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return TextButton(
-                          onPressed: () => setState(() {
-                                currentLang = languages.elementAt(index).value!;
-                              }),
-                          child: Text(languages.elementAt(index).value!));
-                    }),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10, top: 10),
-                child: Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Zagolovok"),
-                    ),
-                    SizedBox(
-                      height: 35,
-                      child: TextFormField(
-                        controller: zag,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 30, top: 10),
-                child: Column(
-                  children: [
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Podzagolovok"),
-                    ),
-                    SizedBox(
-                      height: 35,
-                      child: TextFormField(
-                        controller: pod,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  Column(
-                    children: const [
-                      Text("Background Image"),
-                      Icon(
-                        Icons.abc,
-                        size: 80,
-                      ),
-                    ],
+                                })),
+                      );
+                    },
                   ),
-                  Column(
-                    children: const [
-                      Text("Background Image"),
-                      Icon(Icons.abc, size: 80),
-                    ],
-                  ),
-                  const VerticalDivider(),
-                  Column(
-                    children: const [
-                      Text("Logo"),
-                      Icon(Icons.abc, size: 80),
-                    ],
+                  TextButton(
+                      onPressed: () => setState(() {
+                            languagelist
+                                .add(languages[languagelist.length].value!);
+                          }),
+                      child: const Text(
+                        "Добавить язык +",
+                        style: TextStyle(color: Colors.amber),
+                      ))
+                ],
+              ),
+            ),
+          ),
+          a,
+          Row(
+            children: [
+              Column(
+                children: const [
+                  Text("Background Image"),
+                  Icon(
+                    Icons.abc,
+                    size: 80,
                   ),
                 ],
               ),
-              Align(
-                  alignment: Alignment.bottomRight,
-                  child: ElevatedButton(
-                    onPressed: () => setState(() {
-                      stage = 2;
-                    }),
-                    child: const Text("Next"),
-                  )),
+              Column(
+                children: const [
+                  Text("Background Image"),
+                  Icon(Icons.abc, size: 80),
+                ],
+              ),
+              const VerticalDivider(),
+              Column(
+                children: const [
+                  Text("Logo"),
+                  Icon(Icons.abc, size: 80),
+                ],
+              ),
             ],
           ),
+          Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () => setState(() {
+                  stage = 2;
+                }),
+                child: const Text("Next"),
+              )),
         ],
       ),
     );

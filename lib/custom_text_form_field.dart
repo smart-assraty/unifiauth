@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-
-//int id = 1;
-String currentLang = "rus";
-List<DropdownMenuItem<String>> languages = [
-  const DropdownMenuItem(value: "rus", child: Text("rus")),
-  const DropdownMenuItem(value: "eng", child: Text("eng")),
-  const DropdownMenuItem(value: "kaz", child: Text("kaz")),
-];
+import 'admin.dart';
 
 // ignore: must_be_immutable
 class CustomForm extends StatefulWidget {
-  CustomForm({super.key}) {
-    //number = id;
-    //id++;
+  CustomForm({super.key});
+  CustomForm.front({super.key}) {
+    type = "front";
+    hasApi = false;
+    hasDescription = true;
+    hasIcon = false;
   }
   final List<DropdownMenuItem<String>> fields = [
     const DropdownMenuItem(value: "textfield", child: Text("textfield")),
@@ -21,28 +17,35 @@ class CustomForm extends StatefulWidget {
     const DropdownMenuItem(value: "checkbox", child: Text("checkbox")),
     const DropdownMenuItem(value: "brand", child: Text("brand")),
   ];
-  //late int number;
-  String? type;
+  String type = "textfield";
   String? api;
-  late Map<String, String> title;
-  late Map<String, String> description;
+  Map<String, String> title = {};
+  Map<String, String> description = {};
   String? icon;
+  bool hasApi = true;
   bool hasDescription = false;
   bool hasIcon = false;
+  TextEditingController controllerTitle = TextEditingController();
+  TextEditingController controllerDesciption = TextEditingController();
   TextEditingController controllerApi = TextEditingController();
-  TextEditingController controllerName = TextEditingController();
-  TextEditingController controllerHint = TextEditingController();
   TextEditingController controllerIcon = TextEditingController();
 
   Map<String, dynamic> commit() {
+    api = controllerApi.text;
     Map<String, dynamic> object = {
-      //"number": number,
-      "api": api,
       "type": type,
       "title": title,
-      "description": description,
-      "icon": icon,
     };
+    if (hasApi) {
+      object.addAll({"api_name": api});
+    }
+    if (hasDescription) {
+      object.addAll({"description": description});
+    }
+    if (hasIcon) {
+      icon = controllerIcon.text;
+      object.addAll({"icon": icon});
+    }
     return object;
   }
 
@@ -51,78 +54,99 @@ class CustomForm extends StatefulWidget {
 }
 
 class Form extends State<CustomForm> {
-  String hintText = "";
   @override
   Widget build(BuildContext context) {
+    if (widget.type == "textfield") {
+      widget.hasApi = true;
+      widget.hasDescription = true;
+      widget.hasIcon = false;
+    }
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
       child: Column(children: [
-        Row(
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(right: 10),
-              child: Text("Type"),
-            ),
-            DropdownButton<String>(
-                hint: Text(widget.type!),
-                items: widget.fields,
-                onChanged: (value) => setState(() {
-                      if (value == "textfield") {
-                        widget.type = "textfield";
-                        widget.hasDescription = true;
-                        widget.hasIcon = false;
-                      } else if (value == "email") {
-                        hintText = "example@mail.com";
-                        widget.type = "email";
-                        widget.hasDescription = false;
-                        widget.hasIcon = false;
-                      } else if (value == "number") {
-                        hintText = "XXX XXX XX XX";
-                        widget.type = "number";
-                        widget.hasDescription = false;
-                        widget.hasIcon = false;
-                      } else if (value == "checkbox") {
-                        widget.type = "checkbox";
-                        widget.hasDescription = false;
-                        widget.hasIcon = false;
-                      } else if (value == "brand") {
-                        widget.type = "brand";
-                        widget.hasIcon = true;
-                        widget.hasDescription = false;
-                      }
-                    })),
-          ],
-        ),
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Api name"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: widget.controllerApi,
+        (widget.type != "front")
+            ? Row(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: Text("Type"),
+                  ),
+                  DropdownButton<String>(
+                      hint: Text(widget.type),
+                      items: widget.fields,
+                      onChanged: (value) => setState(() {
+                            if (value == "textfield") {
+                              widget.hasApi = true;
+                              widget.type = "textfield";
+                              widget.hasDescription = true;
+                              widget.hasIcon = false;
+                            } else if (value == "email") {
+                              widget.hasApi = true;
+                              widget.type = "email";
+                              widget.hasDescription = false;
+                              widget.hasIcon = false;
+                            } else if (value == "number") {
+                              widget.hasApi = true;
+                              widget.type = "number";
+                              widget.hasDescription = false;
+                              widget.hasIcon = false;
+                            } else if (value == "checkbox") {
+                              widget.hasApi = true;
+                              widget.type = "checkbox";
+                              widget.hasDescription = false;
+                              widget.hasIcon = false;
+                            } else if (value == "brand") {
+                              widget.hasApi = true;
+                              widget.type = "brand";
+                              widget.hasIcon = true;
+                              widget.hasDescription = false;
+                            }
+                          })),
+                ],
+              )
+            : const SizedBox(),
+        (widget.hasApi)
+            ? Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Row(
+                  children: [
+                    const Text("Key"),
+                    SizedBox(
+                      width: 250,
+                      height: 40,
+                      child: TextFormField(
+                        controller: widget.controllerApi,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        ),
+              )
+            : const SizedBox(),
+        Padding(
+            padding: const EdgeInsets.only(bottom: 15),
+            child: SizedBox(
+              height: 40,
+              child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: languagelist.length,
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    return TextButton(
+                        onPressed: () => setState(() {
+                              currentLang = languagelist.elementAt(index);
+                            }),
+                        child: Text(languagelist.elementAt(index)));
+                  }),
+            )),
         Column(
           children: [
             const Text("Zagolovok"),
-            SizedBox(
-              height: 30,
-              child: TextFormField(
-                onEditingComplete: () {
-                  widget.title
-                      .addAll({currentLang: widget.controllerName.text});
-                },
-                controller: widget.controllerName,
-                decoration: InputDecoration(hintText: hintText),
-              ),
+            TextFormField(
+              onChanged: (value) => setState(() {
+                widget.title.addAll({currentLang: value});
+              }),
             ),
           ],
         ),
@@ -131,17 +155,13 @@ class Form extends State<CustomForm> {
                 children: [
                   const Text("Podzagolovok"),
                   TextFormField(
-                    controller: widget.controllerHint,
-                    onEditingComplete: () {
-                      widget.title
-                          .addAll({currentLang: widget.controllerName.text});
-                    },
+                    onChanged: (value) => setState(() {
+                      widget.description.addAll({currentLang: value});
+                    }),
                   ),
                 ],
               )
-            : const SizedBox(
-                height: 1.0,
-              ),
+            : const SizedBox(),
         (widget.hasIcon)
             ? Row(
                 children: [
@@ -154,9 +174,7 @@ class Form extends State<CustomForm> {
                   ),
                 ],
               )
-            : const SizedBox(
-                height: 1.0,
-              ),
+            : const SizedBox(),
       ]),
     );
   }
