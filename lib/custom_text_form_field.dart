@@ -124,22 +124,20 @@ class Form extends State<CustomForm> {
                 ),
               )
             : const SizedBox(),
-        Padding(
-            padding: const EdgeInsets.only(bottom: 15),
-            child: SizedBox(
-              height: 40,
-              child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: languagelist.length,
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    return TextButton(
-                        onPressed: () => setState(() {
-                              currentLang = languagelist.elementAt(index);
-                            }),
-                        child: Text(languagelist.elementAt(index)));
-                  }),
-            )),
+        SizedBox(
+          height: 50,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: languagelist.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return TextButton(
+                    onPressed: () => setState(() {
+                          currentLang = languagelist.elementAt(index);
+                        }),
+                    child: Text(languagelist.elementAt(index)));
+              }),
+        ),
         Column(
           children: [
             const Text("Zagolovok"),

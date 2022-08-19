@@ -138,68 +138,63 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget contentPageThree() {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Container(
-          padding: const EdgeInsets.only(top: 20),
-          width: 350,
-          height: 600,
-          child: Column(
-            children: [
-              contentHeader(),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Column(
-                  children: [
-                    const Text("Send form to"),
-                    SizedBox(
-                      height: 40,
-                      child: TextFormField(
-                        controller: sendTo,
-                      ),
-                    ),
-                  ],
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      height: 600,
+      child: Column(
+        children: [
+          contentHeader(),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Column(
+              children: [
+                const Text("Send form to"),
+                SizedBox(
+                  height: 40,
+                  child: TextFormField(
+                    controller: sendTo,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                ElevatedButton(
-                    onPressed: () => setState(() {
-                          stage = 2;
-                        }),
-                    child: const Text("Back")),
-                ElevatedButton(
-                  onPressed: () {
-                    fields.add(a);
-                    for (int i = 0; i < fields.length; i++) {
-                      Map<String, Map<String, dynamic>> map = {
-                        "object[$i]": fields.elementAt(i).commit()
-                      };
-                      post.addAll(map);
-                    }
-                    post.addAll({
-                      "langs": languagelist,
-                      "langs_count": languagelist.length,
-                      "fields_count": fields.length,
-                      "send_to": sendTo.text,
-                    });
-                    /*http.post(Uri.parse("$server:27017"),
+              ],
+            ),
+          ),
+          const Spacer(),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            ElevatedButton(
+                onPressed: () => setState(() {
+                      stage = 2;
+                    }),
+                child: const Text("Back")),
+            ElevatedButton(
+              onPressed: () {
+                fields.add(a);
+                for (int i = 0; i < fields.length; i++) {
+                  Map<String, Map<String, dynamic>> map = {
+                    "object[$i]": fields.elementAt(i).commit()
+                  };
+                  post.addAll(map);
+                }
+                post.addAll({
+                  "langs": languagelist,
+                  "langs_count": languagelist.length,
+                  "fields_count": fields.length,
+                  "send_to": sendTo.text,
+                });
+                /*http.post(Uri.parse("$server:27017"),
                         headers: {
                           "Content-type": "application/json",
                         },
                         body: json.encode(post));*/
-                    setState(() {
-                      stage = 4;
-                    });
-                  },
-                  child: const Text("Ready"),
-                ),
-              ]),
-            ],
-          ),
-        ),
-      ],
+                setState(() {
+                  stage = 4;
+                });
+              },
+              child: const Text("Ready"),
+            ),
+          ]),
+        ],
+      ),
     );
   }
 
@@ -208,9 +203,22 @@ class AdminPageState extends State<AdminPage> {
       padding: const EdgeInsets.only(top: 20),
       width: 350,
       child: ListView(
-        shrinkWrap: true,
         children: [
           contentHeader(),
+          /*SizedBox(
+            height: 50,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: languagelist.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return TextButton(
+                      onPressed: () => setState(() {
+                            currentLang = languagelist.elementAt(index);
+                          }),
+                      child: Text(languagelist.elementAt(index)));
+                }),
+          ),*/
           Column(
             children: fields,
           ),
@@ -281,6 +289,7 @@ class AdminPageState extends State<AdminPage> {
                             items: languages,
                             onChanged: (value) => setState(() {
                                   languagelist[index] = value!;
+                                  a = CustomForm.front();
                                 })),
                       );
                     },
@@ -289,6 +298,8 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () => setState(() {
                             languagelist
                                 .add(languages[languagelist.length].value!);
+                            debugPrint(languagelist.length.toString());
+                            a = CustomForm.front();
                           }),
                       child: const Text(
                         "Добавить язык +",
@@ -298,6 +309,20 @@ class AdminPageState extends State<AdminPage> {
               ),
             ),
           ),
+          /*SizedBox(
+            height: 50,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: languagelist.length,
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  return TextButton(
+                      onPressed: () => setState(() {
+                            currentLang = languagelist.elementAt(index);
+                          }),
+                      child: Text(languagelist.elementAt(index)));
+                }),
+          ),*/
           a,
           Row(
             children: [
