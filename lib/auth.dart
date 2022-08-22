@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'auth_forms.dart';
+import 'main.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -9,8 +12,6 @@ class AuthPage extends StatefulWidget {
 }
 
 class AuthPageState extends State<AuthPage> {
-  TextEditingController controllerType = TextEditingController();
-  TextEditingController controllerName = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,29 +22,58 @@ class AuthPageState extends State<AuthPage> {
         children: [
           FutureBuilder(
             future: getLines(),
-            builder: (context, AsyncSnapshot<List<String>> snapshot) {
+            builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
               if (snapshot.hasData &&
                   snapshot.connectionState == ConnectionState.done) {
-                return ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.length - 1,
-                    itemBuilder: (context, i) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          children: [
-                            Text("element[$i]"),
-                            Column(
-                              children: twoStrings(
-                                  snapshot.data!.elementAt(i).split(",")),
-                            ),
-                          ],
-                        ),
-                      );
-                    });
+                List<DropdownMenuItem<String>> languagelist = [
+                  const DropdownMenuItem(
+                    value: "rus",
+                    child: Text("rus"),
+                  ),
+                  const DropdownMenuItem(
+                    value: "eng",
+                    child: Text("eng"),
+                  ),
+                  const DropdownMenuItem(
+                    value: "kaz",
+                    child: Text("kaz"),
+                  ),
+                ];
+                return Center(
+                  child: Column(
+                    children: [
+                      DropdownButton<String>(
+                          hint: Text(currentLang),
+                          items: languagelist,
+                          onChanged: (value) => setState(() {
+                                currentLang = value!;
+                              })),
+                      Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                            color: Colors.black,
+                            width: 4,
+                          )),
+                          width: 250,
+                          height: 650,
+                          child: Column(
+                            children: [
+                              ListView.builder(
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  return AuthForm(
+                                      type: snapshot.data!["type"],
+                                      data: snapshot.data!);
+                                },
+                              ),
+                            ],
+                          )),
+                    ],
+                  ),
+                );
               } else {
                 return const Center(
-                  child: Text("Not loaded"),
+                  child: CircularProgressIndicator(),
                 );
               }
             },
@@ -79,8 +109,8 @@ class AuthPageState extends State<AuthPage> {
   }
 }
 
-Future<List<String>> getLines() async {
+Future<Map<String, dynamic>> getLines() async {
   var response = await http
       .get(Uri.parse("http://192.168.43.87/admin/admin.php/?cmd=find"));
-  return response.body.split(";");
+  return json.decode(response.body);
 }

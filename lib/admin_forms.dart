@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
-import 'admin.dart';
+import 'main.dart';
 
 // ignore: must_be_immutable
-class CustomForm extends StatefulWidget {
-  CustomForm({super.key});
+class AdminForm extends StatefulWidget {
+  AdminForm({super.key});
 
-  var a = CustomField();
+  var a = AdminField();
 
-  CustomField getChild() {
+  AdminField getChild() {
     return a;
   }
 
-  void setChild(CustomField cf) {
+  void setChild(AdminField cf) {
     a = cf;
   }
 
   @override
-  State<CustomForm> createState() => FormState();
+  State<AdminForm> createState() => AdminFormState();
 }
 
-class FormState extends State<CustomForm> {
-  FormState();
+class AdminFormState extends State<AdminForm> {
+  AdminFormState();
 
   final List<DropdownMenuItem<String>> fields = [
     const DropdownMenuItem(value: "textfield", child: Text("textfield")),
@@ -49,15 +49,15 @@ class FormState extends State<CustomForm> {
                   onChanged: (value) {
                     setState(() {
                       if (value == "email") {
-                        widget.a = CustomField.email();
+                        widget.a = AdminField.email();
                       } else if (value == "number") {
-                        widget.a = CustomField.number();
+                        widget.a = AdminField.number();
                       } else if (value == "checkbox") {
-                        widget.a = CustomField.checkbox();
+                        widget.a = AdminField.checkbox();
                       } else if (value == "brand") {
-                        widget.a = CustomField.brand();
+                        widget.a = AdminField.brand();
                       } else {
-                        widget.a = CustomField();
+                        widget.a = AdminField();
                       }
                     });
                   }),
@@ -69,80 +69,99 @@ class FormState extends State<CustomForm> {
 }
 
 // ignore: must_be_immutable
-class CustomField extends StatefulWidget {
-  CustomField({super.key}) {
+class AdminField extends StatefulWidget {
+  AdminField({super.key}) {
     type = "textfield";
     hasApi = true;
     hasDescription = true;
     hasIcon = false;
   }
-  CustomField.front({super.key}) {
+  AdminField.front({super.key}) {
     type = "front";
     hasApi = false;
     hasDescription = true;
     hasIcon = false;
   }
-  CustomField.email({super.key}) {
+  AdminField.email({super.key}) {
     type = "email";
     hasApi = true;
     hasDescription = false;
     hasIcon = false;
   }
-  CustomField.number({super.key}) {
+  AdminField.number({super.key}) {
     type = "number";
     hasApi = true;
     hasDescription = false;
     hasIcon = false;
   }
-  CustomField.checkbox({super.key}) {
+  AdminField.checkbox({super.key}) {
     type = "checkbox";
     hasApi = true;
     hasDescription = false;
     hasIcon = false;
   }
-  CustomField.brand({super.key}) {
+  AdminField.brand({super.key}) {
     type = "brand";
     hasApi = true;
     hasDescription = false;
     hasIcon = true;
   }
   String type = "textfield";
-  String? api;
-  Map<String, String> title = {};
-  Map<String, String> description = {};
-  String? icon;
   bool hasApi = true;
   bool hasDescription = false;
   bool hasIcon = false;
-  TextEditingController controllerTitle = TextEditingController();
-  TextEditingController controllerDesciption = TextEditingController();
+  Map<String, String> title = {};
+  Map<String, String> description = {};
+
+  String? api;
+  String? icon;
   TextEditingController controllerApi = TextEditingController();
   TextEditingController controllerIcon = TextEditingController();
 
   Map<String, dynamic> commit() {
-    api = controllerApi.text;
     Map<String, dynamic> object = {
-      "type": type,
-      "title": title,
+      "number": i,
+      "field_type": type,
     };
+    i++;
     if (hasApi) {
+      api = controllerApi.text;
       object.addAll({"api_name": api});
     }
+    List<Map<String, String>> fieldTitle = [];
+    for (int j = 0; j < title.length; ++j) {
+      fieldTitle.add(
+          {"lang": title.keys.elementAt(j), "data": title.values.elementAt(j)});
+    }
+    object.addAll({
+      "field_title": fieldTitle,
+    });
     if (hasDescription) {
-      object.addAll({"description": description});
+      List<Map<String, String>> list = [];
+      for (int j = 0; j < description.length; ++j) {
+        list.add({
+          "lang": description.keys.elementAt(j),
+          "data": description.values.elementAt(j)
+        });
+      }
+      object.addAll({
+        "description": list,
+      });
     }
     if (hasIcon) {
       icon = controllerIcon.text;
-      object.addAll({"icon": icon});
+      object.addAll({
+        "brands": {"brands_img": icon, "brands_api_name": api}
+      });
     }
     return object;
   }
 
   @override
-  State<CustomField> createState() => Field();
+  State<AdminField> createState() => AdminFieldState();
 }
 
-class Field extends State<CustomField> {
+class AdminFieldState extends State<AdminField> {
   @override
   Widget build(BuildContext context) {
     return Container(
