@@ -4,12 +4,24 @@ import 'admin.dart';
 // ignore: must_be_immutable
 class CustomForm extends StatefulWidget {
   CustomForm({super.key});
-  CustomForm.front({super.key}) {
-    type = "front";
-    hasApi = false;
-    hasDescription = true;
-    hasIcon = false;
+
+  var a = CustomField();
+
+  CustomField getChild() {
+    return a;
   }
+
+  void setChild(CustomField cf) {
+    a = cf;
+  }
+
+  @override
+  State<CustomForm> createState() => FormState();
+}
+
+class FormState extends State<CustomForm> {
+  FormState();
+
   final List<DropdownMenuItem<String>> fields = [
     const DropdownMenuItem(value: "textfield", child: Text("textfield")),
     const DropdownMenuItem(value: "email", child: Text("email")),
@@ -17,6 +29,83 @@ class CustomForm extends StatefulWidget {
     const DropdownMenuItem(value: "checkbox", child: Text("checkbox")),
     const DropdownMenuItem(value: "brand", child: Text("brand")),
   ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.only(bottom: 10),
+        decoration:
+            const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
+        child: Column(children: [
+          Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(right: 10),
+                child: Text("Type"),
+              ),
+              DropdownButton<String>(
+                  hint: Text(widget.a.type),
+                  items: fields,
+                  onChanged: (value) {
+                    setState(() {
+                      if (value == "email") {
+                        widget.a = CustomField.email();
+                      } else if (value == "number") {
+                        widget.a = CustomField.number();
+                      } else if (value == "checkbox") {
+                        widget.a = CustomField.checkbox();
+                      } else if (value == "brand") {
+                        widget.a = CustomField.brand();
+                      } else {
+                        widget.a = CustomField();
+                      }
+                    });
+                  }),
+            ],
+          ),
+          widget.a,
+        ]));
+  }
+}
+
+// ignore: must_be_immutable
+class CustomField extends StatefulWidget {
+  CustomField({super.key}) {
+    type = "textfield";
+    hasApi = true;
+    hasDescription = true;
+    hasIcon = false;
+  }
+  CustomField.front({super.key}) {
+    type = "front";
+    hasApi = false;
+    hasDescription = true;
+    hasIcon = false;
+  }
+  CustomField.email({super.key}) {
+    type = "email";
+    hasApi = true;
+    hasDescription = false;
+    hasIcon = false;
+  }
+  CustomField.number({super.key}) {
+    type = "number";
+    hasApi = true;
+    hasDescription = false;
+    hasIcon = false;
+  }
+  CustomField.checkbox({super.key}) {
+    type = "checkbox";
+    hasApi = true;
+    hasDescription = false;
+    hasIcon = false;
+  }
+  CustomField.brand({super.key}) {
+    type = "brand";
+    hasApi = true;
+    hasDescription = false;
+    hasIcon = true;
+  }
   String type = "textfield";
   String? api;
   Map<String, String> title = {};
@@ -50,63 +139,17 @@ class CustomForm extends StatefulWidget {
   }
 
   @override
-  State<CustomForm> createState() => Form();
+  State<CustomField> createState() => Field();
 }
 
-class Form extends State<CustomForm> {
+class Field extends State<CustomField> {
   @override
   Widget build(BuildContext context) {
-    if (widget.type == "textfield") {
-      widget.hasApi = true;
-      widget.hasDescription = true;
-      widget.hasIcon = false;
-    }
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       decoration:
           const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
       child: Column(children: [
-        (widget.type != "front")
-            ? Row(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: Text("Type"),
-                  ),
-                  DropdownButton<String>(
-                      hint: Text(widget.type),
-                      items: widget.fields,
-                      onChanged: (value) => setState(() {
-                            if (value == "textfield") {
-                              widget.hasApi = true;
-                              widget.type = "textfield";
-                              widget.hasDescription = true;
-                              widget.hasIcon = false;
-                            } else if (value == "email") {
-                              widget.hasApi = true;
-                              widget.type = "email";
-                              widget.hasDescription = false;
-                              widget.hasIcon = false;
-                            } else if (value == "number") {
-                              widget.hasApi = true;
-                              widget.type = "number";
-                              widget.hasDescription = false;
-                              widget.hasIcon = false;
-                            } else if (value == "checkbox") {
-                              widget.hasApi = true;
-                              widget.type = "checkbox";
-                              widget.hasDescription = false;
-                              widget.hasIcon = false;
-                            } else if (value == "brand") {
-                              widget.hasApi = true;
-                              widget.type = "brand";
-                              widget.hasIcon = true;
-                              widget.hasDescription = false;
-                            }
-                          })),
-                ],
-              )
-            : const SizedBox(),
         (widget.hasApi)
             ? Padding(
                 padding: const EdgeInsets.only(bottom: 10),

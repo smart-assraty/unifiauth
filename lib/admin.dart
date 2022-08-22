@@ -28,8 +28,8 @@ class AdminPageState extends State<AdminPage> {
   String description = "";
   /*String background = "";
   String icon = "";*/
-  var a = CustomForm.front();
-  List<CustomForm> fields = [];
+  var a = CustomField.front();
+  List<CustomForm> forms = [];
   TextEditingController sendTo = TextEditingController();
   TextEditingController controllerTitle = TextEditingController();
   TextEditingController controllerDescription = TextEditingController();
@@ -168,17 +168,19 @@ class AdminPageState extends State<AdminPage> {
                 child: const Text("Back")),
             ElevatedButton(
               onPressed: () {
-                fields.add(a);
-                for (int i = 0; i < fields.length; i++) {
+                var b = CustomForm();
+                b.setChild(a);
+                forms.add(b);
+                for (int i = 0; i < forms.length; i++) {
                   Map<String, Map<String, dynamic>> map = {
-                    "object[$i]": fields.elementAt(i).commit()
+                    "object[$i]": forms.elementAt(i).getChild().commit()
                   };
                   post.addAll(map);
                 }
                 post.addAll({
                   "langs": languagelist,
                   "langs_count": languagelist.length,
-                  "fields_count": fields.length,
+                  "fields_count": forms.length,
                   "send_to": sendTo.text,
                 });
                 /*http.post(Uri.parse("$server:27017"),
@@ -205,22 +207,8 @@ class AdminPageState extends State<AdminPage> {
       child: ListView(
         children: [
           contentHeader(),
-          /*SizedBox(
-            height: 50,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: languagelist.length,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return TextButton(
-                      onPressed: () => setState(() {
-                            currentLang = languagelist.elementAt(index);
-                          }),
-                      child: Text(languagelist.elementAt(index)));
-                }),
-          ),*/
           Column(
-            children: fields,
+            children: forms,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -228,14 +216,14 @@ class AdminPageState extends State<AdminPage> {
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      fields.add(CustomForm());
+                      forms.add(CustomForm());
                     });
                   },
                   child: const Text("Add new field")),
               ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      fields.removeLast();
+                      forms.removeLast();
                     });
                   },
                   child: const Text("Remove field")),
@@ -250,9 +238,11 @@ class AdminPageState extends State<AdminPage> {
                       }),
                   child: const Text("Back")),
               ElevatedButton(
-                  onPressed: () => setState(() {
-                        stage = 3;
-                      }),
+                  onPressed: () {
+                    setState(() {
+                      stage = 3;
+                    });
+                  },
                   child: const Text("Next")),
             ],
           ),
@@ -289,7 +279,7 @@ class AdminPageState extends State<AdminPage> {
                             items: languages,
                             onChanged: (value) => setState(() {
                                   languagelist[index] = value!;
-                                  a = CustomForm.front();
+                                  a = CustomField.front();
                                 })),
                       );
                     },
@@ -298,8 +288,7 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () => setState(() {
                             languagelist
                                 .add(languages[languagelist.length].value!);
-                            debugPrint(languagelist.length.toString());
-                            a = CustomForm.front();
+                            a = CustomField.front();
                           }),
                       child: const Text(
                         "Добавить язык +",
@@ -353,9 +342,12 @@ class AdminPageState extends State<AdminPage> {
           Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
-                onPressed: () => setState(() {
-                  stage = 2;
-                }),
+                onPressed: () {
+                  setState(() {
+                    currentLang = "rus";
+                    stage = 2;
+                  });
+                },
                 child: const Text("Next"),
               )),
         ],
