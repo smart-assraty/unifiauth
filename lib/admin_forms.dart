@@ -5,37 +5,49 @@ import 'admin.dart';
 class AdminForm extends StatefulWidget {
   AdminForm({super.key});
 
-  var a = AdminField();
+  var adminField = AdminField.textfield(); // ??? волшебная переменая
 
-  AdminField getChild() {
-    return a;
-  }
+  AdminField getChild() => adminField;
 
-  void setChild(AdminField cf) {
-    a = cf;
+  void setChild(AdminField newAdminField) {
+    adminField = newAdminField;
   }
 
   @override
   State<AdminForm> createState() => AdminFormState();
 }
 
-class AdminFormState extends State<AdminForm> {
-  AdminFormState();
+enum FieldsTypes { textfield, email, number, checkbox, brand }
 
-  final List<DropdownMenuItem<String>> fields = [
-    const DropdownMenuItem(value: "textfield", child: Text("textfield")),
-    const DropdownMenuItem(value: "email", child: Text("email")),
-    const DropdownMenuItem(value: "number", child: Text("number")),
-    const DropdownMenuItem(value: "checkbox", child: Text("checkbox")),
-    const DropdownMenuItem(value: "brand", child: Text("brand")),
+class AdminFormState extends State<AdminForm> {
+  List<DropdownMenuItem<AdminField>> fields = [
+    DropdownMenuItem(
+      value: AdminField.textfield(),
+      child: const Text("textfield"),
+    ),
+    DropdownMenuItem(
+      value: AdminField.email(),
+      child: const Text("email"),
+    ),
+    DropdownMenuItem(
+      value: AdminField.number(),
+      child: const Text("number"),
+    ),
+    DropdownMenuItem(
+      value: AdminField.checkbox(),
+      child: const Text("checkbox"),
+    ),
+    DropdownMenuItem(
+      value: AdminField.brand(),
+      child: const Text("brand"),
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.only(bottom: 10),
-        decoration:
-            const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
+        decoration: const BoxDecoration(color: Colors.white),
         child: Column(children: [
           Row(
             children: [
@@ -43,34 +55,24 @@ class AdminFormState extends State<AdminForm> {
                 padding: EdgeInsets.only(right: 10),
                 child: Text("Type"),
               ),
-              DropdownButton<String>(
-                  hint: Text(widget.a.type),
+              DropdownButton<AdminField>(
+                  hint: Text(widget.adminField.type),
                   items: fields,
                   onChanged: (value) {
                     setState(() {
-                      if (value == "email") {
-                        widget.a = AdminField.email();
-                      } else if (value == "number") {
-                        widget.a = AdminField.number();
-                      } else if (value == "checkbox") {
-                        widget.a = AdminField.checkbox();
-                      } else if (value == "brand") {
-                        widget.a = AdminField.brand();
-                      } else {
-                        widget.a = AdminField();
-                      }
+                      widget.adminField = value!;
                     });
                   }),
             ],
           ),
-          widget.a,
+          widget.adminField,
         ]));
   }
 }
 
 // ignore: must_be_immutable
 class AdminField extends StatefulWidget {
-  AdminField({super.key}) {
+  AdminField.textfield({super.key}) {
     type = "textfield";
     hasApi = true;
     hasDescription = true;
@@ -166,8 +168,7 @@ class AdminFieldState extends State<AdminField> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration:
-          const BoxDecoration(color: Color.fromARGB(255, 255, 255, 255)),
+      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         (widget.hasApi)
             ? Padding(
