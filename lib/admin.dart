@@ -31,7 +31,7 @@ class AdminPageState extends State<AdminPage> {
   String description = "";
   /*String background = "";
   String icon = "";*/
-  var a = AdminField.front();
+  var frontAdminField = AdminField.front();
   List<AdminForm> forms = [];
   TextEditingController sendTo = TextEditingController();
   Map<String, dynamic> post = {};
@@ -140,7 +140,7 @@ class AdminPageState extends State<AdminPage> {
                   post.clear();
                   forms.clear();
                   stage = 1;
-                  a = AdminField.front();
+                  frontAdminField = AdminField.front();
                   sendTo.text = "";
                 }),
             child: const Text("Back"))
@@ -193,9 +193,9 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Future<String> postToServer() async {
-    var b = AdminForm();
-    b.setChild(a);
-    forms.add(b);
+    var formForAdminField = AdminForm();
+    formForAdminField.setChild(frontAdminField);
+    forms.add(formForAdminField);
     List<Map<String, dynamic>> list = [];
     for (int i = 0; i < forms.length; i++) {
       list.add(forms.elementAt(i).getChild().commit());
@@ -303,7 +303,7 @@ class AdminPageState extends State<AdminPage> {
                             items: languages,
                             onChanged: (value) => setState(() {
                                   languagelist[index] = value!;
-                                  a = AdminField.front();
+                                  frontAdminField = AdminField.front();
                                 })),
                       );
                     },
@@ -312,7 +312,7 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () => setState(() {
                             languagelist
                                 .add(languages[languagelist.length].value!);
-                            a = AdminField.front();
+                            frontAdminField = AdminField.front();
                           }),
                       child: const Text(
                         "Добавить язык +",
@@ -322,7 +322,7 @@ class AdminPageState extends State<AdminPage> {
               ),
             ),
           ),
-          a,
+          frontAdminField,
           Row(
             children: [
               Column(
