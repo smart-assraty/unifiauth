@@ -1,8 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:routemaster/routemaster.dart';
 import 'admin_forms.dart';
 import 'main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+
+int i = 0;
+String currentLang = "rus";
+List<String> languagelist = ["rus", "eng", "kaz"];
+List<DropdownMenuItem<String>> languages = [
+  const DropdownMenuItem(value: "rus", child: Text("rus")),
+  const DropdownMenuItem(value: "eng", child: Text("eng")),
+  const DropdownMenuItem(value: "kaz", child: Text("kaz")),
+  const DropdownMenuItem(value: "ita", child: Text("ita")),
+  const DropdownMenuItem(value: "tur", child: Text("tur")),
+  const DropdownMenuItem(value: "uzb", child: Text("uzb")),
+];
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -10,8 +23,6 @@ class AdminPage extends StatefulWidget {
   @override
   State<AdminPage> createState() => AdminPageState();
 }
-
-String response = "";
 
 class AdminPageState extends State<AdminPage> {
   int stage = 1;
@@ -115,14 +126,6 @@ class AdminPageState extends State<AdminPage> {
     return ListView(
       shrinkWrap: true,
       children: [
-        const Text("Sent:"),
-        /*ListView.builder(
-            shrinkWrap: true,
-            itemCount: json.encode(post).split(',').length,
-            itemBuilder: (context, index) {
-              return Text(json.encode(post).split(',')[index]);
-            }),
-        const Text("-----------"),*/
         ListView.builder(
             shrinkWrap: true,
             itemCount: response.split(',').length,
@@ -133,7 +136,6 @@ class AdminPageState extends State<AdminPage> {
         ElevatedButton(
             onPressed: () => setState(() {
                   currentLang = "rus";
-                  i = 0;
                   post.clear();
                   forms.clear();
                   stage = 1;
@@ -178,7 +180,7 @@ class AdminPageState extends State<AdminPage> {
               onPressed: () async {
                 response = await postToServer();
                 setState(() {
-                  stage = 4;
+                  Routemaster.of(context).push("/guest/s/default");
                 });
               },
               child: const Text("Ready"),
@@ -211,13 +213,14 @@ class AdminPageState extends State<AdminPage> {
       },
       "fields": list,
     });
-    var request = await http.post(Uri.parse("$server:8000/LoginForm/"),
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: json.encode(post));
+    var request =
+        await http.post(Uri.parse("http://185.125.88.30:8000/LoginForm/"),
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: json.encode(post));
 
-    return request.body;
+    return json.encode(request.body);
   }
 
   Widget contentPageTwo() {

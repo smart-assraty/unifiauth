@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
 
 // ignore: must_be_immutable
 class AuthForm extends StatefulWidget {
   late String type;
-  late Map<String, dynamic> data;
+  late String title;
+  String? description;
   AuthForm({
     super.key,
     required this.type,
-    required this.data,
+    required this.title,
+    this.description,
   });
+
+  factory AuthForm.fromJson(Map<String, dynamic> json) {
+    return AuthForm(
+      type: json["field_type"],
+      title: json["field_title"],
+      description: json["description"],
+    );
+  }
 
   @override
   State<AuthForm> createState() => AuthFormState();
@@ -23,9 +32,10 @@ class AuthFormState extends State<AuthForm> {
     if (widget.type == "email") {
       return SizedBox(
         width: 250,
+        height: 150,
         child: Column(
           children: [
-            Text(widget.data["title"]![currentLang]!),
+            Text(widget.title),
             TextFormField(
               controller: controller,
               keyboardType: TextInputType.emailAddress,
@@ -36,9 +46,10 @@ class AuthFormState extends State<AuthForm> {
     } else if (widget.type == "number") {
       return SizedBox(
         width: 250,
+        height: 150,
         child: Column(
           children: [
-            Text(widget.data["title"]![currentLang]!),
+            Text(widget.title),
             TextFormField(
               controller: controller,
               keyboardType: TextInputType.number,
@@ -50,9 +61,10 @@ class AuthFormState extends State<AuthForm> {
       bool b = false;
       return SizedBox(
         width: 250,
+        height: 50,
         child: Column(
           children: [
-            Text(widget.data["title"]![currentLang]!),
+            Text(widget.title),
             Checkbox(
                 value: b,
                 onChanged: (value) => setState(() {
@@ -73,18 +85,15 @@ class AuthFormState extends State<AuthForm> {
     } else {
       return SizedBox(
         width: 250,
+        height: 250,
         child: Column(
           children: [
-            Text(widget.data["title"]![currentLang]!),
+            Text(widget.title),
             TextFormField(
               controller: controller,
               keyboardType: TextInputType.text,
-            ),
-            SizedBox(
-              height: 50,
-              width: 150,
-              child: ListView(
-                children: [Text(widget.data["description"]![currentLang]!)],
+              decoration: InputDecoration(
+                hintText: widget.description,
               ),
             ),
           ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'admin.dart';
 
 // ignore: must_be_immutable
 class AdminForm extends StatefulWidget {

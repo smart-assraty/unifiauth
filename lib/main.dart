@@ -1,24 +1,48 @@
 import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'dart:io';
 import 'admin.dart';
 import 'auth.dart';
 
-int i = 0;
+String response = json.encode({
+  "login": "string",
+  "settings": {
+    "langs": ["rus"],
+    "count_langs": 1,
+    "logo_img": "string",
+    "bg_img": "string",
+    "count_fields": 3,
+    "api_url": "string"
+  },
+  "fields": [
+    {
+      "number": 0,
+      "field_type": "textfield",
+      "api_name": "string",
+      "field_title": "Name",
+      "description": "Write your name",
+    },
+    {
+      "number": 1,
+      "field_type": "email",
+      "api_name": "string",
+      "field_title": "Email",
+    },
+    {
+      "number": 2,
+      "field_type": "front",
+      "api_name": "string",
+      "field_title": "Welcome",
+      "description": "How are ya?",
+    }
+  ]
+});
+
 /*String currentLogo = "";
 String currentBG = "";*/
 String server = "http://185.125.88.30";
-String currentLang = "rus";
-List<String> languagelist = ["rus", "eng", "kaz"];
-List<DropdownMenuItem<String>> languages = [
-  const DropdownMenuItem(value: "rus", child: Text("rus")),
-  const DropdownMenuItem(value: "eng", child: Text("eng")),
-  const DropdownMenuItem(value: "kaz", child: Text("kaz")),
-  const DropdownMenuItem(value: "ita", child: Text("ita")),
-  const DropdownMenuItem(value: "tur", child: Text("tur")),
-  const DropdownMenuItem(value: "uzb", child: Text("uzb")),
-];
 
 void main() {
   setPathUrlStrategy();
@@ -31,7 +55,7 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => const MaterialPage(child: AdminPage()),
+  "/": (_) => const MaterialPage(child: AuthPage()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
   "/admin": (_) => const MaterialPage(child: AdminPage()),
   "/logged": (_) => const MaterialPage(
