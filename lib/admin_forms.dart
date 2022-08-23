@@ -5,15 +5,11 @@ import 'admin.dart';
 class AdminForm extends StatefulWidget {
   AdminForm({super.key});
 
-  var a = AdminField();
+  var adminField = AdminField();
 
-  AdminField getChild() {
-    return a;
-  }
+  AdminField getChild() => adminField;
 
-  void setChild(AdminField cf) {
-    a = cf;
-  }
+  void setChild(AdminField newAdminField) => adminField = newAdminField;
 
   @override
   State<AdminForm> createState() => AdminFormState();
@@ -44,26 +40,26 @@ class AdminFormState extends State<AdminForm> {
                 child: Text("Type"),
               ),
               DropdownButton<String>(
-                  hint: Text(widget.a.type),
+                  hint: Text(widget.adminField.type),
                   items: fields,
                   onChanged: (value) {
                     setState(() {
                       if (value == "email") {
-                        widget.a = AdminField.email();
+                        widget.adminField = AdminField.email();
                       } else if (value == "number") {
-                        widget.a = AdminField.number();
+                        widget.adminField = AdminField.number();
                       } else if (value == "checkbox") {
-                        widget.a = AdminField.checkbox();
+                        widget.adminField = AdminField.checkbox();
                       } else if (value == "brand") {
-                        widget.a = AdminField.brand();
+                        widget.adminField = AdminField.brand();
                       } else {
-                        widget.a = AdminField();
+                        widget.adminField = AdminField();
                       }
                     });
                   }),
             ],
           ),
-          widget.a,
+          widget.adminField,
         ]));
   }
 }
@@ -120,10 +116,10 @@ class AdminField extends StatefulWidget {
 
   Map<String, dynamic> commit() {
     Map<String, dynamic> object = {
-      "number": i,
+      "number": numerator,
       "field_type": type,
     };
-    i++;
+    numerator++;
     if (hasApi) {
       api = controllerApi.text;
       object.addAll({"api_name": api});

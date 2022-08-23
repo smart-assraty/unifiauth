@@ -5,7 +5,7 @@ import 'main.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-int i = 0;
+int numerator = 0;
 String currentLang = "rus";
 List<String> languagelist = ["rus", "eng", "kaz"];
 List<DropdownMenuItem<String>> languages = [
