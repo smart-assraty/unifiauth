@@ -116,6 +116,13 @@ class AdminPageState extends State<AdminPage> {
       shrinkWrap: true,
       children: [
         const Text("Sent:"),
+        /*ListView.builder(
+            shrinkWrap: true,
+            itemCount: json.encode(post).split(',').length,
+            itemBuilder: (context, index) {
+              return Text(json.encode(post).split(',')[index]);
+            }),
+        const Text("-----------"),*/
         ListView.builder(
             shrinkWrap: true,
             itemCount: response.split(',').length,
@@ -199,13 +206,10 @@ class AdminPageState extends State<AdminPage> {
         "logo_img": "string",
         "bg_image": "string",
         "bg_color": null,
-        "count_fields": forms.length
+        "count_fields": forms.length,
+        "api_url": sendTo.text
       },
       "fields": list,
-      "langs": languagelist,
-      "langs_count": languagelist.length,
-      "fields_count": forms.length,
-      "send_to": sendTo.text,
     });
     var request = await http.post(Uri.parse("$server:8000/LoginForm/"),
         headers: {

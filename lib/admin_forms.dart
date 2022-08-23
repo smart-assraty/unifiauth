@@ -131,7 +131,7 @@ class AdminField extends StatefulWidget {
     List<Map<String, String>> fieldTitle = [];
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
-          {"lang": title.keys.elementAt(j), "data": title.values.elementAt(j)});
+          {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
     }
     object.addAll({
       "field_title": fieldTitle,
@@ -141,7 +141,7 @@ class AdminField extends StatefulWidget {
       for (int j = 0; j < description.length; ++j) {
         list.add({
           "lang": description.keys.elementAt(j),
-          "data": description.values.elementAt(j)
+          "text": description.values.elementAt(j)
         });
       }
       object.addAll({
