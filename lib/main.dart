@@ -13,7 +13,7 @@ String response = json.encode({
     "count_langs": 1,
     "logo_img": "string",
     "bg_img": "string",
-    "count_fields": 3,
+    "count_fields": 4,
     "api_url": "string"
   },
   "fields": [
@@ -32,6 +32,12 @@ String response = json.encode({
     },
     {
       "number": 2,
+      "field_type": "number",
+      "api_name": "string",
+      "field_title": "Number",
+    },
+    {
+      "number": 3,
       "field_type": "front",
       "api_name": "string",
       "field_title": "Welcome",
@@ -55,13 +61,8 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => const MaterialPage(child: AuthPage()),
+  "/": (_) => const MaterialPage(child: AdminPage()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
-  "/admin": (_) => const MaterialPage(child: AdminPage()),
-  "/logged": (_) => const MaterialPage(
-          child: Center(
-        child: Text("Logged"),
-      )),
 });
 
 class DevHttpOverrides extends HttpOverrides {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class AuthForm extends StatefulWidget {
   late String type;
   late String title;
+  late String data;
   String? description;
   AuthForm({
     super.key,
@@ -31,12 +32,17 @@ class AuthFormState extends State<AuthForm> {
   Widget build(BuildContext context) {
     if (widget.type == "email") {
       return SizedBox(
-        width: 250,
-        height: 150,
+        height: 80,
         child: Column(
           children: [
-            Text(widget.title),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(widget.title),
+            ),
             TextFormField(
+              onChanged: (value) => setState(() {
+                widget.data = value;
+              }),
               controller: controller,
               keyboardType: TextInputType.emailAddress,
             ),
@@ -45,12 +51,17 @@ class AuthFormState extends State<AuthForm> {
       );
     } else if (widget.type == "number") {
       return SizedBox(
-        width: 250,
-        height: 150,
+        height: 80,
         child: Column(
           children: [
-            Text(widget.title),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(widget.title),
+            ),
             TextFormField(
+              onChanged: (value) => setState(() {
+                widget.data = value;
+              }),
               controller: controller,
               keyboardType: TextInputType.number,
             ),
@@ -60,7 +71,6 @@ class AuthFormState extends State<AuthForm> {
     } else if (widget.type == "checkbox") {
       bool b = false;
       return SizedBox(
-        width: 250,
         height: 50,
         child: Column(
           children: [
@@ -84,12 +94,17 @@ class AuthFormState extends State<AuthForm> {
       );
     } else {
       return SizedBox(
-        width: 250,
-        height: 250,
+        height: 80,
         child: Column(
           children: [
-            Text(widget.title),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(widget.title),
+            ),
             TextFormField(
+              onChanged: (value) => setState(() {
+                widget.data = value;
+              }),
               controller: controller,
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
