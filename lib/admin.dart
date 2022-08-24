@@ -1,3 +1,4 @@
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class AdminPage extends StatefulWidget {
 }
 
 class AdminPageState extends State<AdminPage> {
-  int stage = 1;
+  int stage = 0;
   String title = "";
   String description = "";
   /*String background = "";
@@ -38,10 +39,6 @@ class AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text("Admin Panel"),
-      ),
       body: Center(
         child: getContent(),
       ),
@@ -49,7 +46,9 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget getContent() {
-    if (stage == 1) {
+    if (stage == 0) {
+      return adminLogin();
+    } else if (stage == 1) {
       return contentPageOne();
     } else if (stage == 2) {
       return contentPageTwo();
@@ -58,6 +57,96 @@ class AdminPageState extends State<AdminPage> {
     } else {
       return contentPageFour();
     }
+  }
+
+  Widget adminLogin() {
+    TextEditingController login = TextEditingController();
+    TextEditingController password = TextEditingController();
+    http.Response resp;
+    return Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(image: AssetImage("assets/bg.jpeg"))),
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 400),
+            child: Column(
+              children: const [
+                Text(
+                  "TechnoGym",
+                  style: TextStyle(fontSize: 48),
+                ),
+                Text(
+                  "The Wellness Company",
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                )
+              ],
+            ),
+          ),
+          Container(
+              height: 500,
+              width: 350,
+              decoration: const BoxDecoration(color: Colors.white),
+              child: Padding(
+                padding: const EdgeInsets.all(30),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    const Text(
+                      "Login to free-WiFi Admin",
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                    Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text("Login"),
+                        ),
+                        TextFormField(
+                          controller: login,
+                          autofocus: true,
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text("Password"),
+                        ),
+                        TextFormField(
+                          controller: password,
+                          autofocus: true,
+                        ),
+                      ],
+                    ),
+                    ElevatedButton(
+                        onPressed: () async {
+                          resp = await http.post(
+                            Uri.parse("http://185.125.77.30"),
+                            headers: {"Content-type": "application/json"},
+                            body: json.encode({
+                              "login": login.text,
+                              "password": password.text,
+                            }),
+                          );
+                          if (resp.statusCode == 200) {
+                            stage = 1;
+                          } else {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Card(
+                                    child: HtmlWidget(resp.body),
+                                  );
+                                });
+                          }
+                        },
+                        child: const Text("Submit")),
+                  ],
+                ),
+              )),
+        ]));
   }
 
   Widget contentHeader() {

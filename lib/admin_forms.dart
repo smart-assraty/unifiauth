@@ -5,7 +5,7 @@ import 'admin.dart';
 class AdminForm extends StatefulWidget {
   AdminForm({super.key});
 
-  var adminField = AdminField.textfield(); // ??? волшебная переменая
+  var adminField = AdminField.textfield();
 
   AdminField getChild() => adminField;
 
@@ -16,8 +16,6 @@ class AdminForm extends StatefulWidget {
   @override
   State<AdminForm> createState() => AdminFormState();
 }
-
-enum FieldsTypes { textfield, email, number, checkbox, brand }
 
 class AdminFormState extends State<AdminForm> {
   List<DropdownMenuItem<AdminField>> fields = [
