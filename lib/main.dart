@@ -8,7 +8,7 @@ import 'admin.dart';
 import 'auth.dart';
 
 // TEST
-String response = json.encode({
+String theJson = json.encode({
   "login": "string",
   "settings": {
     "langs": ["rus"],

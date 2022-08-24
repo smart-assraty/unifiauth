@@ -15,7 +15,7 @@ class AuthPage extends StatefulWidget {
 class AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> parsed = json.decode(response);
+    Map<String, dynamic> parsed = json.decode(theJson);
     var languagelist = List.generate(
         parsed["settings"]["count_langs"],
         (index) => DropdownMenuItem<String>(

@@ -1,10 +1,10 @@
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
+    show HtmlWidget;
 import 'package:file_picker/file_picker.dart';
 import 'package:routemaster/routemaster.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'dart:convert' show json;
-import 'dart:typed_data';
 
 import 'admin_forms.dart';
 import 'main.dart';
@@ -30,14 +30,14 @@ class AdminPage extends StatefulWidget {
 
 class AdminPageState extends State<AdminPage> {
   int stage = 1;
-  String title = "";
-  String description = "";
+  late String title;
+  late String description;
   late dynamic backgroundImage;
-  late dynamic icon;
+  late dynamic logo;
   var frontAdminField = AdminField.front();
   List<AdminForm> forms = [];
+  Map<String, dynamic> mapToPost = {};
   TextEditingController sendTo = TextEditingController();
-  Map<String, dynamic> post = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +64,7 @@ class AdminPageState extends State<AdminPage> {
   Widget adminLogin() {
     TextEditingController login = TextEditingController();
     TextEditingController password = TextEditingController();
-    http.Response resp;
+    Response resp;
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(image: AssetImage("assets/bg.jpeg"))),
@@ -124,7 +124,7 @@ class AdminPageState extends State<AdminPage> {
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          resp = await http.post(
+                          resp = await post(
                             Uri.parse("http://185.125.77.30"),
                             headers: {"Content-type": "application/json"},
                             body: json.encode({
@@ -274,12 +274,12 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () async {
                         backgroundImage = await pickfile();
                         (backgroundImage.runtimeType == FilePickerResult)
-                            ? debugPrint(
-                                "${(backgroundImage as FilePickerResult).files.first.name}\n${((backgroundImage as FilePickerResult).files.first.bytes as Uint8List)}")
+                            ? await sendImage(backgroundImage, "UploadBGImage")
                             : debugPrint(backgroundImage);
                       }),
                 ],
               ),
+              const VerticalDivider(),
               Column(
                 children: [
                   const Text("Icon"),
@@ -288,12 +288,13 @@ class AdminPageState extends State<AdminPage> {
                         Icons.abc,
                       ),
                       onPressed: () async {
-                        icon = await pickfile();
-                        debugPrint(icon);
+                        logo = await pickfile();
+                        (logo.runtimeType == FilePickerResult)
+                            ? await sendImage(logo, "UploadLogoImage")
+                            : debugPrint(logo);
                       }),
                 ],
               ),
-              const VerticalDivider(),
             ],
           ),
           Align(
@@ -394,7 +395,7 @@ class AdminPageState extends State<AdminPage> {
                 child: const Text("Back")),
             ElevatedButton(
               onPressed: () async {
-                response = await postToServer();
+                theJson = await postToServer();
                 setState(() {
                   Routemaster.of(context).push("/guest/s/default");
                 });
@@ -413,15 +414,15 @@ class AdminPageState extends State<AdminPage> {
       children: [
         ListView.builder(
             shrinkWrap: true,
-            itemCount: response.split(',').length,
+            itemCount: theJson.split(',').length,
             itemBuilder: (context, index) {
-              return Text(response.split(',')[index]);
+              return Text(theJson.split(',')[index]);
             }),
         const Spacer(),
         ElevatedButton(
             onPressed: () => setState(() {
                   currentLang = "rus";
-                  post.clear();
+                  mapToPost.clear();
                   forms.clear();
                   stage = 1;
                   frontAdminField = AdminField.front();
@@ -442,7 +443,7 @@ class AdminPageState extends State<AdminPage> {
         list.add(forms.elementAt(i).getChild().commit());
       }
 
-      post.addAll({
+      mapToPost.addAll({
         "login": "string",
         "settings": {
           "langs": languagelist,
@@ -455,12 +456,11 @@ class AdminPageState extends State<AdminPage> {
         },
         "fields": list,
       });
-      var request =
-          await http.post(Uri.parse("http://185.125.88.30:8000/LoginForm/"),
-              headers: {
-                "Content-type": "application/json",
-              },
-              body: json.encode(post));
+      var request = await post(Uri.parse("$server:8000/LoginForm/"),
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: json.encode(post));
 
       return json.encode(request.body);
     } catch (e) {
@@ -473,11 +473,22 @@ class AdminPageState extends State<AdminPage> {
       FilePickerResult? file = await FilePicker.platform.pickFiles(
         type: FileType.image,
         allowCompression: false,
-        onFileLoading: (status) => debugPrint(status.toString()),
       );
       return file;
     } catch (e) {
-      return "Error: $e";
+      return "$e";
     }
+  }
+
+  Future<void> sendImage(FilePickerResult image, String toDir) async {
+    var bytes = image.files.first.bytes!;
+    var request = MultipartRequest(
+      "POST",
+      Uri.parse("$server:8000/$toDir/"),
+    );
+    var listImage = List<int>.from(bytes);
+    request.files.add(MultipartFile.fromBytes("bg image", listImage));
+    var imageResponse = await request.send();
+    debugPrint(imageResponse.reasonPhrase);
   }
 }
