@@ -9,42 +9,39 @@ import 'auth.dart';
 // TEST
 String theJson = json.encode({
   "login": "string",
-  "settings": {
-    "langs": ["rus"],
-    "count_langs": 1,
-    "logo_img": "string",
-    "bg_img": "string",
-    "count_fields": 4,
-    "api_url": "string"
-  },
+  "langs": ["rus", "eng", "kaz"],
   "fields": [
     {
-      "number": 0,
-      "field_type": "textfield",
-      "api_name": "string",
-      "field_title": "Name",
+      "type": "textfield",
+      "title": "Name",
       "description": "Write your name",
     },
     {
-      "number": 1,
-      "field_type": "email",
-      "api_name": "string",
-      "field_title": "Email",
+      "type": "email",
+      "title": "Email",
     },
     {
-      "number": 2,
-      "field_type": "number",
-      "api_name": "string",
-      "field_title": "Number",
+      "type": "number",
+      "title": "number",
     },
     {
-      "number": 3,
-      "field_type": "front",
-      "api_name": "string",
-      "field_title": "Welcome",
-      "description": "How are ya?",
+      "type": "checkbox",
+      "title": "confirm",
+    },
+    {
+      "type": "brand",
+      "title": "theHub.su",
+    },
+    {
+      "type": "front",
+      "title": "Welcome!",
+      "description": "Please register",
     }
-  ]
+  ],
+  "bg_img":
+      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.technogym.com%2Fwpress%2Fwp-content%2Fuploads%2F2019%2F07%2Fog_img_fb.jpg&f=1&nofb=1",
+  "logo_img":
+      "https://thehubstmarys.co.uk/wp-content/uploads/2019/08/STM-LetterSize.png",
 });
 // END TEST
 

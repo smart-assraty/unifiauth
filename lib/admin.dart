@@ -1,7 +1,6 @@
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
     show HtmlWidget;
 import 'package:file_picker/file_picker.dart';
-import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert' show json;
@@ -397,7 +396,7 @@ class AdminPageState extends State<AdminPage> {
               onPressed: () async {
                 theJson = await postToServer();
                 setState(() {
-                  Routemaster.of(context).push("/guest/s/default");
+                  stage = 4;
                 });
               },
               child: const Text("Ready"),
@@ -460,7 +459,7 @@ class AdminPageState extends State<AdminPage> {
           headers: {
             "Content-type": "application/json",
           },
-          body: json.encode(post));
+          body: json.encode(mapToPost));
 
       return json.encode(request.body);
     } catch (e) {
