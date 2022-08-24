@@ -1,8 +1,10 @@
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import 'dart:convert' show json;
+import 'dart:typed_data';
 
 import 'admin_forms.dart';
 import 'main.dart';
@@ -27,11 +29,11 @@ class AdminPage extends StatefulWidget {
 }
 
 class AdminPageState extends State<AdminPage> {
-  int stage = 0;
+  int stage = 1;
   String title = "";
   String description = "";
-  /*String background = "";
-  String icon = "";*/
+  late dynamic backgroundImage;
+  late dynamic icon;
   var frontAdminField = AdminField.front();
   List<AdminForm> forms = [];
   TextEditingController sendTo = TextEditingController();
@@ -212,105 +214,102 @@ class AdminPageState extends State<AdminPage> {
         ));
   }
 
-  Widget contentPageFour() {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        ListView.builder(
-            shrinkWrap: true,
-            itemCount: response.split(',').length,
-            itemBuilder: (context, index) {
-              return Text(response.split(',')[index]);
-            }),
-        const Spacer(),
-        ElevatedButton(
-            onPressed: () => setState(() {
-                  currentLang = "rus";
-                  post.clear();
-                  forms.clear();
-                  stage = 1;
-                  frontAdminField = AdminField.front();
-                  sendTo.text = "";
-                }),
-            child: const Text("Back"))
-      ],
-    );
-  }
-
-  Widget contentPageThree() {
+  Widget contentPageOne() {
     return Container(
       padding: const EdgeInsets.only(top: 20),
       width: 350,
-      height: 600,
-      child: Column(
+      height: 610,
+      child: ListView(
+        shrinkWrap: true,
         children: [
           contentHeader(),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Column(
-              children: [
-                const Text("Send form to"),
-                SizedBox(
-                  height: 40,
-                  child: TextFormField(
-                    controller: sendTo,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 70,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text("Языки"),
+                  ListView.builder(
+                    itemCount: languagelist.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                        height: 35,
+                        child: DropdownButton<String>(
+                            hint: Text(languages[index].value!),
+                            items: languages,
+                            onChanged: (value) => setState(() {
+                                  languagelist[index] = value!;
+                                  frontAdminField = AdminField.front();
+                                })),
+                      );
+                    },
                   ),
-                ),
-              ],
+                  TextButton(
+                      onPressed: () => setState(() {
+                            languagelist
+                                .add(languages[languagelist.length].value!);
+                            frontAdminField = AdminField.front();
+                          }),
+                      child: const Text(
+                        "Добавить язык +",
+                        style: TextStyle(color: Colors.amber),
+                      ))
+                ],
+              ),
             ),
           ),
-          const Spacer(),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            ElevatedButton(
-                onPressed: () => setState(() {
-                      stage = 2;
-                    }),
-                child: const Text("Back")),
-            ElevatedButton(
-              onPressed: () async {
-                response = await postToServer();
-                setState(() {
-                  Routemaster.of(context).push("/guest/s/default");
-                });
-              },
-              child: const Text("Ready"),
-            ),
-          ]),
+          frontAdminField,
+          Row(
+            children: [
+              Column(
+                children: [
+                  const Text("Background Image"),
+                  IconButton(
+                      icon: const Icon(
+                        Icons.abc,
+                      ),
+                      onPressed: () async {
+                        backgroundImage = await pickfile();
+                        (backgroundImage.runtimeType == FilePickerResult)
+                            ? debugPrint(
+                                "${(backgroundImage as FilePickerResult).files.first.name}\n${((backgroundImage as FilePickerResult).files.first.bytes as Uint8List)}")
+                            : debugPrint(backgroundImage);
+                      }),
+                ],
+              ),
+              Column(
+                children: [
+                  const Text("Icon"),
+                  IconButton(
+                      icon: const Icon(
+                        Icons.abc,
+                      ),
+                      onPressed: () async {
+                        icon = await pickfile();
+                        debugPrint(icon);
+                      }),
+                ],
+              ),
+              const VerticalDivider(),
+            ],
+          ),
+          Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    currentLang = "rus";
+                    stage = 2;
+                  });
+                },
+                child: const Text("Next"),
+              )),
         ],
       ),
     );
-  }
-
-  Future<String> postToServer() async {
-    var formForAdminField = AdminForm();
-    formForAdminField.setChild(frontAdminField);
-    forms.add(formForAdminField);
-    List<Map<String, dynamic>> list = [];
-    for (int i = 0; i < forms.length; i++) {
-      list.add(forms.elementAt(i).getChild().commit());
-    }
-
-    post.addAll({
-      "login": "string",
-      "settings": {
-        "langs": languagelist,
-        "count_langs": languagelist.length,
-        "logo_img": "string",
-        "bg_image": "string",
-        "bg_color": null,
-        "count_fields": forms.length,
-        "api_url": sendTo.text
-      },
-      "fields": list,
-    });
-    var request =
-        await http.post(Uri.parse("http://185.125.88.30:8000/LoginForm/"),
-            headers: {
-              "Content-type": "application/json",
-            },
-            body: json.encode(post));
-
-    return json.encode(request.body);
   }
 
   Widget contentPageTwo() {
@@ -364,93 +363,121 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
-  Widget contentPageOne() {
+  Widget contentPageThree() {
     return Container(
       padding: const EdgeInsets.only(top: 20),
       width: 350,
-      height: 610,
-      child: ListView(
-        shrinkWrap: true,
+      height: 600,
+      child: Column(
         children: [
           contentHeader(),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-              width: 70,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text("Языки"),
-                  ListView.builder(
-                    itemCount: languagelist.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                        height: 35,
-                        child: DropdownButton<String>(
-                            hint: Text(languages[index].value!),
-                            items: languages,
-                            onChanged: (value) => setState(() {
-                                  languagelist[index] = value!;
-                                  frontAdminField = AdminField.front();
-                                })),
-                      );
-                    },
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Column(
+              children: [
+                const Text("Send form to"),
+                SizedBox(
+                  height: 40,
+                  child: TextFormField(
+                    controller: sendTo,
                   ),
-                  TextButton(
-                      onPressed: () => setState(() {
-                            languagelist
-                                .add(languages[languagelist.length].value!);
-                            frontAdminField = AdminField.front();
-                          }),
-                      child: const Text(
-                        "Добавить язык +",
-                        style: TextStyle(color: Colors.amber),
-                      ))
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          frontAdminField,
-          Row(
-            children: [
-              Column(
-                children: const [
-                  Text("Background Image"),
-                  Icon(
-                    Icons.abc,
-                    size: 80,
-                  ),
-                ],
-              ),
-              Column(
-                children: const [
-                  Text("Background Image"),
-                  Icon(Icons.abc, size: 80),
-                ],
-              ),
-              const VerticalDivider(),
-              Column(
-                children: const [
-                  Text("Logo"),
-                  Icon(Icons.abc, size: 80),
-                ],
-              ),
-            ],
-          ),
-          Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    currentLang = "rus";
-                    stage = 2;
-                  });
-                },
-                child: const Text("Next"),
-              )),
+          const Spacer(),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            ElevatedButton(
+                onPressed: () => setState(() {
+                      stage = 2;
+                    }),
+                child: const Text("Back")),
+            ElevatedButton(
+              onPressed: () async {
+                response = await postToServer();
+                setState(() {
+                  Routemaster.of(context).push("/guest/s/default");
+                });
+              },
+              child: const Text("Ready"),
+            ),
+          ]),
         ],
       ),
     );
+  }
+
+  Widget contentPageFour() {
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        ListView.builder(
+            shrinkWrap: true,
+            itemCount: response.split(',').length,
+            itemBuilder: (context, index) {
+              return Text(response.split(',')[index]);
+            }),
+        const Spacer(),
+        ElevatedButton(
+            onPressed: () => setState(() {
+                  currentLang = "rus";
+                  post.clear();
+                  forms.clear();
+                  stage = 1;
+                  frontAdminField = AdminField.front();
+                  sendTo.text = "";
+                }),
+            child: const Text("Back"))
+      ],
+    );
+  }
+
+  Future<String> postToServer() async {
+    try {
+      var formForAdminField = AdminForm();
+      formForAdminField.setChild(frontAdminField);
+      forms.add(formForAdminField);
+      List<Map<String, dynamic>> list = [];
+      for (int i = 0; i < forms.length; i++) {
+        list.add(forms.elementAt(i).getChild().commit());
+      }
+
+      post.addAll({
+        "login": "string",
+        "settings": {
+          "langs": languagelist,
+          "count_langs": languagelist.length,
+          "logo_img": "string",
+          "bg_image": "string",
+          "bg_color": null,
+          "count_fields": forms.length,
+          "api_url": sendTo.text
+        },
+        "fields": list,
+      });
+      var request =
+          await http.post(Uri.parse("http://185.125.88.30:8000/LoginForm/"),
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: json.encode(post));
+
+      return json.encode(request.body);
+    } catch (e) {
+      return "Error: $e";
+    }
+  }
+
+  Future<dynamic> pickfile() async {
+    try {
+      FilePickerResult? file = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowCompression: false,
+        onFileLoading: (status) => debugPrint(status.toString()),
+      );
+      return file;
+    } catch (e) {
+      return "Error: $e";
+    }
   }
 }

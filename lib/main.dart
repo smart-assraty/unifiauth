@@ -49,8 +49,6 @@ String response = json.encode({
 });
 // END TEST
 
-/*String currentLogo = "";
-String currentBG = "";*/
 String server = "http://185.125.88.30"; // To Config file
 
 void main() {
