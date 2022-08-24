@@ -481,14 +481,20 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Future<void> sendImage(FilePickerResult image, String toDir) async {
-    var bytes = image.files.first.bytes!;
-    var request = MultipartRequest(
-      "POST",
-      Uri.parse("$server:8000/$toDir/"),
-    );
-    var listImage = List<int>.from(bytes);
-    request.files.add(MultipartFile.fromBytes("bg image", listImage));
-    var imageResponse = await request.send();
-    debugPrint(imageResponse.reasonPhrase);
+    try {
+      var bytes = image.files.first.bytes!;
+      var request = MultipartRequest(
+        "POST",
+        Uri.parse("$server:8000/$toDir/"),
+      );
+      var listImage = List<int>.from(bytes);
+      request.headers["content-type"] = "multipart/form-data";
+      var file =
+          MultipartFile.fromBytes("file", listImage, filename: 'myImage.png');
+      request.files.add(file);
+      await request.send();
+    } catch (e) {
+      debugPrint("$e");
+    }
   }
 }

@@ -6,6 +6,7 @@ class AuthForm extends StatefulWidget {
   late String title;
   late String data;
   String? description;
+
   AuthForm({
     super.key,
     required this.type,
