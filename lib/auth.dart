@@ -13,7 +13,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class AuthPageState extends State<AuthPage> {
-  Map<String, String> dataToApi = {};
+  List<Map<String, dynamic>> dataToApi = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,23 +108,39 @@ class AuthPageState extends State<AuthPage> {
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
                           onPressed: () async {
-                            await http.get(
+                            /*await http.get(
                               Uri.parse(
                                   "$server/connecting/connecting.php/?${Uri.base.query}"),
                               headers: {
                                 "Charset": "utf-8",
                               },
-                            );
-                            for (int i = 0; i < forms.length; ++i) {
-                              dataToApi.addAll(forms.elementAt(i).commit());
+                            );*/
+                            for (int i = 0; i < forms.length; i++) {
+                              dataToApi.add(forms.elementAt(i).commit());
                             }
-                            await http.post(
+                            debugPrint(dataToApi.toString());
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  Map<String, dynamic> mapToServer = {
+                                    "fields": dataToApi
+                                  };
+                                  return ListView.builder(
+                                      itemCount: dataToApi.length - 1,
+                                      itemBuilder: (context, index) {
+                                        return Card(
+                                          child: Text(
+                                              "${mapToServer.entries.first.value[index]}"),
+                                        );
+                                      });
+                                });
+                            /*await http.post(
                               Uri.parse("$server/"),
                               headers: {
                                 "Content-type": "application/json",
                               },
                               body: json.encode(dataToApi),
-                            );
+                            );*/
                           },
                           child: const Text("Submit"),
                         ),
@@ -232,15 +248,17 @@ class AuthPageState extends State<AuthPage> {
                                     },
                                   );
                                   for (int i = 0; i < forms.length; ++i) {
-                                    dataToApi
-                                        .addAll(forms.elementAt(i).commit());
+                                    dataToApi.add(forms.elementAt(i).commit());
                                   }
+                                  Map<String, dynamic> mapToServer = {
+                                    "fields": dataToApi
+                                  };
                                   await http.post(
                                     Uri.parse("$server/"),
                                     headers: {
                                       "Content-type": "application/json",
                                     },
-                                    body: json.encode(dataToApi),
+                                    body: json.encode(mapToServer),
                                   );
                                 },
                                 child: const Text("Submit"),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:convert';
 import 'admin.dart';
 
 // ignore: must_be_immutable
@@ -11,6 +12,23 @@ class AdminForm extends StatefulWidget {
 
   void setChild(AdminField newAdminField) {
     adminField = newAdminField;
+  }
+
+  factory AdminForm.fromJson(String type, String title, String key,
+      String? description, String? brand) {
+    if (type == "email") {
+      return AdminForm()..setChild(AdminField.email());
+    } else if (type == "number") {
+      return AdminForm()..setChild(AdminField.number());
+    } else if (type == "checkbox") {
+      return AdminForm()..setChild(AdminField.checkbox());
+    } else if (type == "brand") {
+      return AdminForm()..setChild(AdminField.brand());
+    } else if (type == "front") {
+      return AdminForm()..setChild(AdminField.front());
+    } else {
+      return AdminForm();
+    }
   }
 
   @override
@@ -114,7 +132,8 @@ class AdminField extends StatefulWidget {
   Map<String, String> description = {};
 
   String? api;
-  String? icon;
+  String? brand;
+
   TextEditingController controllerApi = TextEditingController();
   TextEditingController controllerIcon = TextEditingController();
 
@@ -149,10 +168,7 @@ class AdminField extends StatefulWidget {
       });
     }
     if (hasIcon) {
-      icon = controllerIcon.text;
-      object.addAll({
-        "brands": {"brands_img": icon, "brands_api_name": api}
-      });
+      object.addAll({"brand_icon": brand});
     }
     return object;
   }
@@ -224,7 +240,11 @@ class AdminFieldState extends State<AdminField> {
         (widget.hasIcon)
             ? Row(
                 children: [
-                  const Icon(Icons.abc, size: 24),
+                  IconButton(
+                      onPressed: () async {
+                        widget.brand = await imgUrl();
+                      },
+                      icon: const Icon(Icons.abc)),
                   SizedBox(
                     width: 100,
                     child: TextFormField(
@@ -236,5 +256,10 @@ class AdminFieldState extends State<AdminField> {
             : const SizedBox(),
       ]),
     );
+  }
+
+  Future<String> imgUrl() async {
+    var response = json.decode(await sendImage(await pickfile(), "Brands"));
+    return response["url"];
   }
 }

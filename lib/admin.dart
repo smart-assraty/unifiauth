@@ -313,54 +313,62 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget contentPageTwo() {
-    return Container(
-      padding: const EdgeInsets.only(top: 20),
-      width: 350,
-      child: ListView(
-        children: [
-          contentHeader(),
-          Column(
-            children: forms,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      forms.add(AdminForm());
-                    });
-                  },
-                  child: const Text("Add new field")),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      forms.removeLast();
-                    });
-                  },
-                  child: const Text("Remove field")),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () => setState(() {
-                        stage = 1;
-                      }),
-                  child: const Text("Back")),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      stage = 3;
-                    });
-                  },
-                  child: const Text("Next")),
-            ],
-          ),
-        ],
-      ),
-    );
+    return FutureBuilder(
+        future: getForms(),
+        builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
+          if (snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.done) {
+            forms = snapshot.data!;
+          }
+          return Container(
+            padding: const EdgeInsets.only(top: 20),
+            width: 350,
+            child: ListView(
+              children: [
+                contentHeader(),
+                Column(
+                  children: forms,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            forms.add(AdminForm());
+                          });
+                        },
+                        child: const Text("Add new field")),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            forms.removeLast();
+                          });
+                        },
+                        child: const Text("Remove field")),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () => setState(() {
+                              stage = 1;
+                            }),
+                        child: const Text("Back")),
+                    ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            stage = 3;
+                          });
+                        },
+                        child: const Text("Next")),
+                  ],
+                ),
+              ],
+            ),
+          );
+        });
   }
 
   Widget contentPageThree() {
@@ -466,34 +474,50 @@ class AdminPageState extends State<AdminPage> {
       return "Error: $e";
     }
   }
+}
 
-  Future<dynamic> pickfile() async {
-    try {
-      FilePickerResult? file = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowCompression: false,
-      );
-      return file;
-    } catch (e) {
-      return "$e";
-    }
+Future<dynamic> pickfile() async {
+  try {
+    FilePickerResult? file = await FilePicker.platform.pickFiles(
+      type: FileType.image,
+      allowCompression: false,
+    );
+    return file;
+  } catch (e) {
+    return "$e";
   }
+}
 
-  Future<void> sendImage(FilePickerResult image, String toDir) async {
-    try {
-      var bytes = image.files.first.bytes!;
-      var request = MultipartRequest(
-        "POST",
-        Uri.parse("$server:8000/$toDir/"),
-      );
-      var listImage = List<int>.from(bytes);
-      request.headers["content-type"] = "multipart/form-data";
-      var file =
-          MultipartFile.fromBytes("file", listImage, filename: 'myImage.png');
-      request.files.add(file);
-      await request.send();
-    } catch (e) {
-      debugPrint("$e");
-    }
+Future<String> sendImage(FilePickerResult image, String toDir) async {
+  try {
+    var bytes = image.files.first.bytes!;
+    var request = MultipartRequest(
+      "POST",
+      Uri.parse("$server:8000/$toDir/"),
+    );
+    var listImage = List<int>.from(bytes);
+    request.headers["content-type"] = "multipart/form-data";
+    var file =
+        MultipartFile.fromBytes("file", listImage, filename: 'myImage.png');
+    request.files.add(file);
+    var response = await request.send();
+    return response.stream.bytesToString();
+  } catch (e) {
+    return "$e";
   }
+}
+
+Future<List<AdminForm>> getForms() async {
+  var response = await get(Uri.parse("$server/"));
+  var body = json.decode(response.body);
+  List<AdminForm> formsFromServer = [];
+  for (int i = 0; i < body["count_langs"]; ++i) {
+    formsFromServer.add(AdminForm.fromJson(
+        body["fields"][i]["type"],
+        body["fields"][i]["title"],
+        body["fields"][i]["api_name"],
+        body["fields"][i]["description"],
+        body["fields"][i]["brand_icon"]));
+  }
+  return formsFromServer;
 }

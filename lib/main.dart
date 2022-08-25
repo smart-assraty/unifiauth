@@ -10,7 +10,7 @@ import 'auth.dart';
 String theJson = json.encode({
   "langs": ["rus", "eng", "kaz"],
   "count_langs": 3,
-  "count_fields": 9,
+  "count_fields": 6,
   "fields": [
     {
       "type": "textfield",
@@ -20,18 +20,6 @@ String theJson = json.encode({
     {
       "type": "email",
       "title": "Email",
-    },
-    {
-      "type": "email",
-      "title": "Email",
-    },
-    {
-      "type": "number",
-      "title": "number",
-    },
-    {
-      "type": "number",
-      "title": "number",
     },
     {
       "type": "number",

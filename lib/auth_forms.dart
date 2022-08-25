@@ -1,4 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+import 'main.dart';
 
 // ignore: must_be_immutable
 class AuthForm extends StatefulWidget {
@@ -14,7 +18,7 @@ class AuthForm extends StatefulWidget {
     this.description,
   });
 
-  Map<String, String> commit() {
+  Map<String, dynamic> commit() {
     return {"data": data};
   }
 
@@ -190,6 +194,7 @@ class CheckBoxState extends State<CheckBox> {
               value: accept,
               onChanged: (value) => setState(() {
                     accept = value!;
+                    widget.data = accept;
                   }))
         ],
       ),
@@ -220,11 +225,45 @@ class BrandState extends State<Brand> {
           icon: const Icon(
             Icons.abc,
           ),
-          onPressed: () {
-            debugPrint(widget.title);
+          onPressed: () async {
+            String imageUrl = await sendImage(await pickfile(), "Brands");
+            setState(() {
+              widget.data = imageUrl;
+            });
           },
         ),
       ],
     ));
+  }
+
+  Future<dynamic> pickfile() async {
+    try {
+      FilePickerResult? file = await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        allowCompression: false,
+      );
+      return file;
+    } catch (e) {
+      return "$e";
+    }
+  }
+
+  Future<String> sendImage(FilePickerResult image, String toDir) async {
+    try {
+      var bytes = image.files.first.bytes!;
+      var request = MultipartRequest(
+        "POST",
+        Uri.parse("$server:8000/$toDir/"),
+      );
+      var listImage = List<int>.from(bytes);
+      request.headers["content-type"] = "multipart/form-data";
+      var file =
+          MultipartFile.fromBytes("file", listImage, filename: 'myImage.png');
+      request.files.add(file);
+      var response = await request.send();
+      return response.stream.bytesToString();
+    } catch (e) {
+      return "$e";
+    }
   }
 }
