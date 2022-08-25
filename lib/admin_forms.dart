@@ -108,7 +108,6 @@ class AdminField extends StatefulWidget {
   Map<String, String> title = {};
   Map<String, String> description = {};
 
-  String? api;
   String? brand;
 
   TextEditingController controllerApi = TextEditingController();
@@ -117,27 +116,24 @@ class AdminField extends StatefulWidget {
   Map<String, dynamic> commit() {
     List<Map<String, String>> fieldTitle = [];
     List<Map<String, String>> fieldDesc = [];
-    Map<String, dynamic> object = {
-      "field_type": type,
-      "api_name": controllerApi.text,
-      "brand_icon": brand,
-    };
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
-    }
-    object.addAll({
-      "field_title": fieldTitle,
-    });
-    for (int j = 0; j < description.length; ++j) {
       fieldDesc.add({
         "lang": description.keys.elementAt(j),
         "text": description.values.elementAt(j)
       });
-      object.addAll({
-        "description": fieldDesc,
-      });
     }
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "api_name": controllerApi.text,
+      "brand_icon": brand,
+      "field_title": fieldTitle,
+      "description": fieldDesc
+    };
+
     return object;
   }
 
@@ -158,29 +154,28 @@ class AdminFieldState extends State<AdminField> {
 class Front extends AdminField {
   Front({super.key, super.type = "front"});
 
+  TextEditingController controllerTitle = TextEditingController();
+  TextEditingController controllerDesc = TextEditingController();
+
   @override
   Map<String, dynamic> commit() {
-    Map<String, dynamic> object = {
-      "field_type": type,
-    };
     List<Map<String, String>> fieldTitle = [];
+    List<Map<String, String>> fieldDesc = [];
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
-    }
-    object.addAll({
-      "field_title": fieldTitle,
-    });
-    List<Map<String, String>> list = [];
-    for (int j = 0; j < description.length; ++j) {
-      list.add({
+      fieldDesc.add({
         "lang": description.keys.elementAt(j),
         "text": description.values.elementAt(j)
       });
     }
-    object.addAll({
-      "description": list,
-    });
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "field_title": fieldTitle,
+      "description": fieldDesc
+    };
     return object;
   }
 
@@ -238,30 +233,26 @@ class FrontState extends State<Front> {
 class TextField extends AdminField {
   TextField({super.key, super.type = "textfield"});
 
+  @override
   Map<String, dynamic> commit() {
-    Map<String, dynamic> object = {
-      "field_type": type,
-    };
-    api = controllerApi.text;
-    object.addAll({"api_name": api});
     List<Map<String, String>> fieldTitle = [];
+    List<Map<String, String>> fieldDesc = [];
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
-    }
-    object.addAll({
-      "field_title": fieldTitle,
-    });
-    List<Map<String, String>> list = [];
-    for (int j = 0; j < description.length; ++j) {
-      list.add({
+      fieldDesc.add({
         "lang": description.keys.elementAt(j),
         "text": description.values.elementAt(j)
       });
     }
-    object.addAll({
-      "description": list,
-    });
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "api_name": controllerApi.text,
+      "field_title": fieldTitle,
+      "description": fieldDesc
+    };
     return object;
   }
 
@@ -334,20 +325,20 @@ class TextFieldState extends State<TextField> {
 class Email extends AdminField {
   Email({super.key, super.type = "email"});
 
+  @override
   Map<String, dynamic> commit() {
-    Map<String, dynamic> object = {
-      "field_type": type,
-    };
-    api = controllerApi.text;
-    object.addAll({"api_name": api});
     List<Map<String, String>> fieldTitle = [];
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
     }
-    object.addAll({
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "api_name": controllerApi.text,
       "field_title": fieldTitle,
-    });
+    };
     return object;
   }
 
@@ -410,20 +401,20 @@ class EmailState extends State<Email> {
 class Number extends AdminField {
   Number({super.key, super.type = "number"});
 
+  @override
   Map<String, dynamic> commit() {
-    Map<String, dynamic> object = {
-      "field_type": type,
-    };
-    api = controllerApi.text;
-    object.addAll({"api_name": api});
     List<Map<String, String>> fieldTitle = [];
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
     }
-    object.addAll({
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "api_name": controllerApi.text,
       "field_title": fieldTitle,
-    });
+    };
     return object;
   }
 
@@ -486,22 +477,20 @@ class NumberState extends State<Number> {
 class Checkbox extends AdminField {
   Checkbox({super.key, super.type = "checkbox"});
 
+  @override
   Map<String, dynamic> commit() {
-    Map<String, dynamic> object = {
-      "number": numerator,
-      "field_type": type,
-    };
-    numerator++;
-    api = controllerApi.text;
-    object.addAll({"api_name": api});
     List<Map<String, String>> fieldTitle = [];
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
     }
-    object.addAll({
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "api_name": controllerApi.text,
       "field_title": fieldTitle,
-    });
+    };
     return object;
   }
 
@@ -564,21 +553,21 @@ class CheckboxState extends State<Checkbox> {
 class Brand extends AdminField {
   Brand({super.key, super.type = "Brand"});
 
+  @override
   Map<String, dynamic> commit() {
-    Map<String, dynamic> object = {
-      "field_type": type,
-    };
-    api = controllerApi.text;
-    object.addAll({"api_name": api});
     List<Map<String, String>> fieldTitle = [];
+
     for (int j = 0; j < title.length; ++j) {
       fieldTitle.add(
           {"lang": title.keys.elementAt(j), "text": title.values.elementAt(j)});
     }
-    object.addAll({
+
+    Map<String, dynamic> object = {
+      "field_type": type,
+      "api_name": controllerApi.text,
+      "brand_icon": brand,
       "field_title": fieldTitle,
-    });
-    object.addAll({"brand_icon": brand});
+    };
     return object;
   }
 
@@ -639,12 +628,6 @@ class BrandState extends State<Brand> {
                   widget.brand = await imgUrl();
                 },
                 icon: const Icon(Icons.abc)),
-            SizedBox(
-              width: 100,
-              child: TextFormField(
-                controller: widget.controllerIcon,
-              ),
-            ),
           ],
         )
       ]),

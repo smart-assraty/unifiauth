@@ -33,7 +33,7 @@ class AdminPageState extends State<AdminPage> {
   late String description;
   late dynamic backgroundImage;
   late dynamic logo;
-  var frontAdminField = AdminField.front();
+  var frontAdminField = Front();
   List<AdminForm> forms = [];
   Map<String, dynamic> mapToPost = {};
   TextEditingController sendTo = TextEditingController();
@@ -241,7 +241,7 @@ class AdminPageState extends State<AdminPage> {
                             items: languages,
                             onChanged: (value) => setState(() {
                                   languagelist[index] = value!;
-                                  frontAdminField = AdminField.front();
+                                  frontAdminField = Front();
                                 })),
                       );
                     },
@@ -250,7 +250,7 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () => setState(() {
                             languagelist
                                 .add(languages[languagelist.length].value!);
-                            frontAdminField = AdminField.front();
+                            frontAdminField = Front();
                           }),
                       child: const Text(
                         "Добавить язык +",
@@ -312,7 +312,60 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
+  //Test
   Widget contentPageTwo() {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      child: ListView(
+        children: [
+          contentHeader(),
+          Column(
+            children: forms,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      forms.add(AdminForm());
+                    });
+                  },
+                  child: const Text("Add new field")),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      forms.removeLast();
+                    });
+                  },
+                  child: const Text("Remove field")),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ElevatedButton(
+                  onPressed: () => setState(() {
+                        stage = 1;
+                      }),
+                  child: const Text("Back")),
+              ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      stage = 3;
+                    });
+                  },
+                  child: const Text("Next")),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  //End Test
+
+  Widget contentPageTwoServer() {
     return FutureBuilder(
         future: getForms(),
         builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
@@ -432,7 +485,7 @@ class AdminPageState extends State<AdminPage> {
                   mapToPost.clear();
                   forms.clear();
                   stage = 1;
-                  frontAdminField = AdminField.front();
+                  frontAdminField = Front();
                   sendTo.text = "";
                 }),
             child: const Text("Back"))
@@ -463,13 +516,14 @@ class AdminPageState extends State<AdminPage> {
         },
         "fields": list,
       });
-      var request = await post(Uri.parse("$server:8000/LoginForm/"),
+      /*var request = await post(Uri.parse("$server:8000/LoginForm/"),
           headers: {
             "Content-type": "application/json",
           },
           body: json.encode(mapToPost));
 
-      return json.encode(request.body);
+      return json.encode(request.body);*/
+      return json.encode(mapToPost); //Test
     } catch (e) {
       return "Error: $e";
     }
