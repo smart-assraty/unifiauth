@@ -14,8 +14,8 @@ class AdminForm extends StatefulWidget {
     adminField = newAdminField;
   }
 
-  factory AdminForm.fromJson(String type, Map<String, String> title,
-      String apiName, Map<String, String>? description, String? brand) {
+  factory AdminForm.fromJson(String type, dynamic title, dynamic description,
+      String apiName, String? brand) {
     if (type == "email") {
       return AdminForm()..setChild(Email.fromJson(title, apiName));
     } else if (type == "number") {
@@ -107,11 +107,13 @@ class AdminField extends StatefulWidget {
 
   String type;
   String currentLang = languages[0];
-  Map<String, String> title = {};
-  Map<String, String> description = {};
+  dynamic title;
+  dynamic description;
 
   String? brand;
 
+  TextEditingController controllerTitle = TextEditingController();
+  TextEditingController controllerDesc = TextEditingController();
   TextEditingController controllerApi = TextEditingController();
   TextEditingController controllerIcon = TextEditingController();
 
@@ -159,15 +161,13 @@ class Front extends AdminField {
     super.type = "front",
   });
 
-  Front.fromJson(Map<String, String> title, Map<String, String> descripion,
-      {Key? key})
+  Front.fromJson(dynamic title, dynamic description, {Key? key})
       : super(key: key, type: "front") {
     super.title = title;
-    super.description = descripion;
+    super.description = description;
+    super.controllerTitle.text = title.toString();
+    super.controllerDesc.text = description.toString();
   }
-
-  TextEditingController controllerTitle = TextEditingController();
-  TextEditingController controllerDesc = TextEditingController();
 
   @override
   Map<String, dynamic> commit() {
@@ -214,7 +214,6 @@ class FrontState extends State<Front> {
                       setState(() {
                         super.widget.currentLang = languages[index];
                       });
-                      debugPrint(super.widget.currentLang);
                     },
                     child: Text(languages[index]));
               }),
@@ -223,6 +222,7 @@ class FrontState extends State<Front> {
           children: [
             const Text("Zagolovok"),
             TextFormField(
+              controller: super.widget.controllerTitle,
               onChanged: (value) => setState(() {
                 widget.title.addAll({super.widget.currentLang: value});
               }),
@@ -233,6 +233,7 @@ class FrontState extends State<Front> {
           children: [
             const Text("Podzagolovok"),
             TextFormField(
+              controller: super.widget.controllerDesc,
               onChanged: (value) => setState(() {
                 widget.description.addAll({super.widget.currentLang: value});
               }),
@@ -248,11 +249,12 @@ class FrontState extends State<Front> {
 class TextField extends AdminField {
   TextField({super.key, super.type = "textfield"});
 
-  TextField.fromJson(
-      Map<String, String> title, Map<String, String> descripion, String apiName,
+  TextField.fromJson(dynamic title, dynamic descripion, String apiName,
       {Key? key})
       : super(key: key, type: "textfield") {
     super.controllerApi.text = apiName;
+    super.controllerTitle.text = title.toString();
+    super.controllerDesc.text = descripion.toString();
     super.title = title;
     super.description = descripion;
   }
@@ -318,7 +320,6 @@ class TextFieldState extends State<TextField> {
                       setState(() {
                         super.widget.currentLang = languages[index];
                       });
-                      debugPrint(super.widget.currentLang);
                     },
                     child: Text(languages[index]));
               }),
@@ -327,6 +328,7 @@ class TextFieldState extends State<TextField> {
           children: [
             const Text("Zagolovok"),
             TextFormField(
+              controller: super.widget.controllerTitle,
               onChanged: (value) => setState(() {
                 widget.title.addAll({super.widget.currentLang: value});
               }),
@@ -337,6 +339,7 @@ class TextFieldState extends State<TextField> {
           children: [
             const Text("Podzagolovok"),
             TextFormField(
+              controller: super.widget.controllerDesc,
               onChanged: (value) => setState(() {
                 widget.description.addAll({super.widget.currentLang: value});
               }),
@@ -352,9 +355,10 @@ class TextFieldState extends State<TextField> {
 class Email extends AdminField {
   Email({super.key, super.type = "email"});
 
-  Email.fromJson(Map<String, String> title, String apiName, {Key? key})
+  Email.fromJson(dynamic title, String apiName, {Key? key})
       : super(key: key, type: "email") {
     super.controllerApi.text = apiName;
+    super.controllerTitle.text = title.toString();
     super.title = title;
   }
 
@@ -413,7 +417,6 @@ class EmailState extends State<Email> {
                       setState(() {
                         super.widget.currentLang = languages[index];
                       });
-                      debugPrint(super.widget.currentLang);
                     },
                     child: Text(languages[index]));
               }),
@@ -422,6 +425,7 @@ class EmailState extends State<Email> {
           children: [
             const Text("Zagolovok"),
             TextFormField(
+              controller: super.widget.controllerTitle,
               onChanged: (value) => setState(() {
                 widget.title.addAll({super.widget.currentLang: value});
               }),
@@ -437,9 +441,10 @@ class EmailState extends State<Email> {
 class Number extends AdminField {
   Number({super.key, super.type = "number"});
 
-  Number.fromJson(Map<String, String> title, String apiName, {Key? key})
+  Number.fromJson(dynamic title, String apiName, {Key? key})
       : super(key: key, type: "number") {
     super.controllerApi.text = apiName;
+    super.controllerTitle.text = title.toString();
     super.title = title;
   }
 
@@ -498,7 +503,6 @@ class NumberState extends State<Number> {
                       setState(() {
                         super.widget.currentLang = languages[index];
                       });
-                      debugPrint(super.widget.currentLang);
                     },
                     child: Text(languages[index]));
               }),
@@ -507,6 +511,7 @@ class NumberState extends State<Number> {
           children: [
             const Text("Zagolovok"),
             TextFormField(
+              controller: super.widget.controllerTitle,
               onChanged: (value) => setState(() {
                 widget.title.addAll({super.widget.currentLang: value});
               }),
@@ -522,9 +527,10 @@ class NumberState extends State<Number> {
 class Checkbox extends AdminField {
   Checkbox({super.key, super.type = "checkbox"});
 
-  Checkbox.fromJson(Map<String, String> title, String apiName, {Key? key})
+  Checkbox.fromJson(dynamic title, String apiName, {Key? key})
       : super(key: key, type: "checkbox") {
     super.controllerApi.text = apiName;
+    super.controllerTitle.text = title.toString();
     super.title = title;
   }
 
@@ -583,7 +589,6 @@ class CheckboxState extends State<Checkbox> {
                       setState(() {
                         super.widget.currentLang = languages[index];
                       });
-                      debugPrint(super.widget.currentLang);
                     },
                     child: Text(languages[index]));
               }),
@@ -592,6 +597,7 @@ class CheckboxState extends State<Checkbox> {
           children: [
             const Text("Zagolovok"),
             TextFormField(
+              controller: super.widget.controllerTitle,
               onChanged: (value) => setState(() {
                 widget.title.addAll({super.widget.currentLang: value});
               }),
@@ -607,9 +613,10 @@ class CheckboxState extends State<Checkbox> {
 class Brand extends AdminField {
   Brand({super.key, super.type = "brand"});
 
-  Brand.fromJson(Map<String, String> title, String apiName, {Key? key})
+  Brand.fromJson(dynamic title, String apiName, {Key? key})
       : super(key: key, type: "brand") {
     super.controllerApi.text = apiName;
+    super.controllerTitle.text = title.toString();
     super.title = title;
   }
 
@@ -669,7 +676,6 @@ class BrandState extends State<Brand> {
                       setState(() {
                         super.widget.currentLang = languages[index];
                       });
-                      debugPrint(super.widget.currentLang);
                     },
                     child: Text(languages[index]));
               }),
@@ -678,6 +684,7 @@ class BrandState extends State<Brand> {
           children: [
             const Text("Zagolovok"),
             TextFormField(
+              controller: super.widget.controllerTitle,
               onChanged: (value) => setState(() {
                 widget.title.addAll({super.widget.currentLang: value});
               }),
