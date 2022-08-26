@@ -209,7 +209,6 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget contentPageOne() {
-    token = " "; //test
     return FutureBuilder(
         future: getForms(token!),
         builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
@@ -486,7 +485,7 @@ class AdminPageState extends State<AdminPage> {
         },
         "fields": list,
       });
-      /*var request = await post(Uri.parse("$server:8000/LoginForm/"),
+      var request = await post(Uri.parse("$server:8000/LoginForm/"),
           headers: {
             "Content-type": "application/json",
             "Authorization":
@@ -494,22 +493,22 @@ class AdminPageState extends State<AdminPage> {
           },
           body: json.encode(mapToPost));
 
-      return json.encode(request.body);*/
-      return json.encode(mapToPost); //Test
+      return json.encode(request.body);
+      //return json.encode(mapToPost); //Test
     } catch (e) {
       return "Error: $e";
     }
   }
 
   Future<List<AdminForm>> getForms(String token) async {
-    /*var response =
-      await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
-    "Authorization":
-        "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
-  });
-  var body = json.decode(response.body);*/
+    var response =
+        await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
+      "Authorization":
+          "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
+    });
+    var body = json.decode(response.body);
 
-    var body = json.decode(theJson); //Test
+    //var body = json.decode(theJson); //Test
 
     languagelist.clear();
     languages.clear();
