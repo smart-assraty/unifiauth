@@ -8,18 +8,6 @@ import 'dart:convert' show json;
 import 'admin_forms.dart';
 import 'main.dart';
 
-int numerator = 0;
-String currentLang = "rus";
-List<String> languagelist = ["rus", "eng", "kaz"];
-List<DropdownMenuItem<String>> languages = [
-  const DropdownMenuItem(value: "rus", child: Text("rus")),
-  const DropdownMenuItem(value: "eng", child: Text("eng")),
-  const DropdownMenuItem(value: "kaz", child: Text("kaz")),
-  const DropdownMenuItem(value: "ita", child: Text("ita")),
-  const DropdownMenuItem(value: "tur", child: Text("tur")),
-  const DropdownMenuItem(value: "uzb", child: Text("uzb")),
-];
-
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
 
@@ -27,7 +15,17 @@ class AdminPage extends StatefulWidget {
   State<AdminPage> createState() => AdminPageState();
 }
 
+List<String> lan = ["rus", "eng", "kaz", "ita", "tur"];
+
+int languagesNumber = 1;
+List<DropdownMenuItem<String>> languagelist = List.generate(lan.length,
+    (index) => DropdownMenuItem(value: lan[index], child: Text(lan[index])));
+List<String> languages =
+    List.generate(languagesNumber, (index) => languagelist[index].value!);
+
 class AdminPageState extends State<AdminPage> {
+  String currentLang = languages[0];
+  String? token;
   int stage = 1;
   late String title;
   late String description;
@@ -63,7 +61,6 @@ class AdminPageState extends State<AdminPage> {
   Widget adminLogin() {
     TextEditingController login = TextEditingController();
     TextEditingController password = TextEditingController();
-    Response resp;
     return Container(
         decoration: const BoxDecoration(
             image: DecorationImage(image: AssetImage("assets/bg.jpeg"))),
@@ -123,22 +120,26 @@ class AdminPageState extends State<AdminPage> {
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          resp = await post(
-                            Uri.parse("http://185.125.77.30"),
-                            headers: {"Content-type": "application/json"},
-                            body: json.encode({
-                              "login": login.text,
-                              "password": password.text,
-                            }),
-                          );
-                          if (resp.statusCode == 200) {
-                            stage = 1;
+                          var request = MultipartRequest("POST",
+                              Uri.parse("$server:8000/AdministratorSignIn"));
+                          request.fields.addAll({
+                            "username": login.text,
+                            "password": password.text
+                          });
+                          request.headers
+                              .addAll({"Content-type": "multipart/form/data"});
+                          var send = await request.send();
+                          token = await send.stream.bytesToString();
+                          if (send.statusCode == 200) {
+                            setState(() {
+                              stage = 1;
+                            });
                           } else {
                             showDialog(
                                 context: context,
                                 builder: (context) {
                                   return Card(
-                                    child: HtmlWidget(resp.body),
+                                    child: HtmlWidget(token.toString()),
                                   );
                                 });
                           }
@@ -231,25 +232,25 @@ class AdminPageState extends State<AdminPage> {
                 children: [
                   const Text("Языки"),
                   ListView.builder(
-                    itemCount: languagelist.length,
+                    itemCount: languages.length,
                     shrinkWrap: true,
                     itemBuilder: (context, index) {
                       return SizedBox(
-                        height: 35,
-                        child: DropdownButton<String>(
-                            hint: Text(languages[index].value!),
-                            items: languages,
-                            onChanged: (value) => setState(() {
-                                  languagelist[index] = value!;
+                          height: 35,
+                          child: DropdownButton<String>(
+                              hint: Text(languages[index]),
+                              items: languagelist,
+                              onChanged: (value) {
+                                setState(() {
+                                  languages[index] = value!;
                                   frontAdminField = Front();
-                                })),
-                      );
+                                });
+                              }));
                     },
                   ),
                   TextButton(
                       onPressed: () => setState(() {
-                            languagelist
-                                .add(languages[languagelist.length].value!);
+                            languages.add(languagelist[languagesNumber].value!);
                             frontAdminField = Front();
                           }),
                       child: const Text(
@@ -317,11 +318,14 @@ class AdminPageState extends State<AdminPage> {
     return Container(
       padding: const EdgeInsets.only(top: 20),
       width: 350,
-      child: ListView(
+      child: Column(
         children: [
           contentHeader(),
-          Column(
-            children: forms,
+          SizedBox(
+            height: 550,
+            child: ListView(
+              children: [Column(children: forms)],
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -367,7 +371,7 @@ class AdminPageState extends State<AdminPage> {
 
   Widget contentPageTwoServer() {
     return FutureBuilder(
-        future: getForms(),
+        future: getForms(token!),
         builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
@@ -506,8 +510,8 @@ class AdminPageState extends State<AdminPage> {
       mapToPost.addAll({
         "login": "string",
         "settings": {
-          "langs": languagelist,
-          "count_langs": languagelist.length,
+          "langs": languages,
+          "count_langs": languages.length,
           "logo_img": "string",
           "bg_image": "string",
           "bg_color": null,
@@ -519,6 +523,8 @@ class AdminPageState extends State<AdminPage> {
       /*var request = await post(Uri.parse("$server:8000/LoginForm/"),
           headers: {
             "Content-type": "application/json",
+            "Authorization":
+                "${json.decode(token!)['token_type']} ${json.decode(token!)['access_token']}"
           },
           body: json.encode(mapToPost));
 
@@ -551,8 +557,7 @@ Future<String> sendImage(FilePickerResult image, String toDir) async {
     );
     var listImage = List<int>.from(bytes);
     request.headers["content-type"] = "multipart/form-data";
-    var file =
-        MultipartFile.fromBytes("file", listImage, filename: 'myImage.png');
+    var file = MultipartFile.fromBytes("file", listImage);
     request.files.add(file);
     var response = await request.send();
     return response.stream.bytesToString();
@@ -561,9 +566,20 @@ Future<String> sendImage(FilePickerResult image, String toDir) async {
   }
 }
 
-Future<List<AdminForm>> getForms() async {
-  var response = await get(Uri.parse("$server/"));
+Future<List<AdminForm>> getForms(String resp) async {
+  var response = await get(Uri.parse("$server/"), headers: {
+    "Authorization":
+        "${json.decode(resp)['token_type']} ${json.decode(resp)['access_token']}"
+  });
   var body = json.decode(response.body);
+
+  languagelist = List.generate(
+      body["count_langs"],
+      (index) => DropdownMenuItem<String>(
+            value: body["langs"][index],
+            child: Text(body["langs"][index]),
+          ));
+
   List<AdminForm> formsFromServer = [];
   for (int i = 0; i < body["count_langs"]; ++i) {
     formsFromServer.add(AdminForm.fromJson(

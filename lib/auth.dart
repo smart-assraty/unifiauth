@@ -17,13 +17,13 @@ class AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: localTest(),
+      body: serverTest(),
     );
   }
 
   Future<String> getForms() async {
     var response =
-        await http.get(Uri.parse("http://185.125.88.30:8000/GetLoginForm/"));
+        await http.get(Uri.parse("http://185.125.88.30:8000/GetLoginForm/rus"));
     return response.body;
   }
 

@@ -14,20 +14,21 @@ class AdminForm extends StatefulWidget {
     adminField = newAdminField;
   }
 
-  factory AdminForm.fromJson(String type, String title, String key,
-      String? description, String? brand) {
+  factory AdminForm.fromJson(String type, Map<String, String> title,
+      String apiName, Map<String, String>? description, String? brand) {
     if (type == "email") {
-      return AdminForm()..setChild(Email());
+      return AdminForm()..setChild(Email.fromJson(title, apiName));
     } else if (type == "number") {
-      return AdminForm()..setChild(Number());
+      return AdminForm()..setChild(Number.fromJson(title, apiName));
     } else if (type == "checkbox") {
-      return AdminForm()..setChild(Checkbox());
+      return AdminForm()..setChild(Checkbox.fromJson(title, apiName));
     } else if (type == "brand") {
-      return AdminForm()..setChild(Brand());
+      return AdminForm()..setChild(Brand.fromJson(title, apiName));
     } else if (type == "front") {
-      return AdminForm()..setChild(Front());
+      return AdminForm()..setChild(Front.fromJson(title, description!));
     } else {
-      return AdminForm();
+      return AdminForm()
+        ..setChild(TextField.fromJson(title, description!, apiName));
     }
   }
 
@@ -105,6 +106,7 @@ class AdminField extends StatefulWidget {
   }
 
   String type;
+  String currentLang = languages[0];
   Map<String, String> title = {};
   Map<String, String> description = {};
 
@@ -152,7 +154,17 @@ class AdminFieldState extends State<AdminField> {
 
 // ignore: must_be_immutable
 class Front extends AdminField {
-  Front({super.key, super.type = "front"});
+  Front({
+    super.key,
+    super.type = "front",
+  });
+
+  Front.fromJson(Map<String, String> title, Map<String, String> descripion,
+      {Key? key})
+      : super(key: key, type: "front") {
+    super.title = title;
+    super.description = descripion;
+  }
 
   TextEditingController controllerTitle = TextEditingController();
   TextEditingController controllerDesc = TextEditingController();
@@ -194,14 +206,17 @@ class FrontState extends State<Front> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languagelist.length,
+              itemCount: languages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
-                    onPressed: () => setState(() {
-                          currentLang = languagelist.elementAt(index);
-                        }),
-                    child: Text(languagelist.elementAt(index)));
+                    onPressed: () {
+                      setState(() {
+                        super.widget.currentLang = languages[index];
+                      });
+                      debugPrint(super.widget.currentLang);
+                    },
+                    child: Text(languages[index]));
               }),
         ),
         Column(
@@ -209,7 +224,7 @@ class FrontState extends State<Front> {
             const Text("Zagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.title.addAll({currentLang: value});
+                widget.title.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -219,7 +234,7 @@ class FrontState extends State<Front> {
             const Text("Podzagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.description.addAll({currentLang: value});
+                widget.description.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -232,6 +247,15 @@ class FrontState extends State<Front> {
 // ignore: must_be_immutable
 class TextField extends AdminField {
   TextField({super.key, super.type = "textfield"});
+
+  TextField.fromJson(
+      Map<String, String> title, Map<String, String> descripion, String apiName,
+      {Key? key})
+      : super(key: key, type: "textfield") {
+    super.controllerApi.text = apiName;
+    super.title = title;
+    super.description = descripion;
+  }
 
   @override
   Map<String, dynamic> commit() {
@@ -286,14 +310,17 @@ class TextFieldState extends State<TextField> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languagelist.length,
+              itemCount: languages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
-                    onPressed: () => setState(() {
-                          currentLang = languagelist.elementAt(index);
-                        }),
-                    child: Text(languagelist.elementAt(index)));
+                    onPressed: () {
+                      setState(() {
+                        super.widget.currentLang = languages[index];
+                      });
+                      debugPrint(super.widget.currentLang);
+                    },
+                    child: Text(languages[index]));
               }),
         ),
         Column(
@@ -301,7 +328,7 @@ class TextFieldState extends State<TextField> {
             const Text("Zagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.title.addAll({currentLang: value});
+                widget.title.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -311,7 +338,7 @@ class TextFieldState extends State<TextField> {
             const Text("Podzagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.description.addAll({currentLang: value});
+                widget.description.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -324,6 +351,12 @@ class TextFieldState extends State<TextField> {
 // ignore: must_be_immutable
 class Email extends AdminField {
   Email({super.key, super.type = "email"});
+
+  Email.fromJson(Map<String, String> title, String apiName, {Key? key})
+      : super(key: key, type: "email") {
+    super.controllerApi.text = apiName;
+    super.title = title;
+  }
 
   @override
   Map<String, dynamic> commit() {
@@ -372,14 +405,17 @@ class EmailState extends State<Email> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languagelist.length,
+              itemCount: languages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
-                    onPressed: () => setState(() {
-                          currentLang = languagelist.elementAt(index);
-                        }),
-                    child: Text(languagelist.elementAt(index)));
+                    onPressed: () {
+                      setState(() {
+                        super.widget.currentLang = languages[index];
+                      });
+                      debugPrint(super.widget.currentLang);
+                    },
+                    child: Text(languages[index]));
               }),
         ),
         Column(
@@ -387,7 +423,7 @@ class EmailState extends State<Email> {
             const Text("Zagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.title.addAll({currentLang: value});
+                widget.title.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -400,6 +436,12 @@ class EmailState extends State<Email> {
 // ignore: must_be_immutable
 class Number extends AdminField {
   Number({super.key, super.type = "number"});
+
+  Number.fromJson(Map<String, String> title, String apiName, {Key? key})
+      : super(key: key, type: "number") {
+    super.controllerApi.text = apiName;
+    super.title = title;
+  }
 
   @override
   Map<String, dynamic> commit() {
@@ -448,14 +490,17 @@ class NumberState extends State<Number> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languagelist.length,
+              itemCount: languages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
-                    onPressed: () => setState(() {
-                          currentLang = languagelist.elementAt(index);
-                        }),
-                    child: Text(languagelist.elementAt(index)));
+                    onPressed: () {
+                      setState(() {
+                        super.widget.currentLang = languages[index];
+                      });
+                      debugPrint(super.widget.currentLang);
+                    },
+                    child: Text(languages[index]));
               }),
         ),
         Column(
@@ -463,7 +508,7 @@ class NumberState extends State<Number> {
             const Text("Zagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.title.addAll({currentLang: value});
+                widget.title.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -476,6 +521,12 @@ class NumberState extends State<Number> {
 // ignore: must_be_immutable
 class Checkbox extends AdminField {
   Checkbox({super.key, super.type = "checkbox"});
+
+  Checkbox.fromJson(Map<String, String> title, String apiName, {Key? key})
+      : super(key: key, type: "checkbox") {
+    super.controllerApi.text = apiName;
+    super.title = title;
+  }
 
   @override
   Map<String, dynamic> commit() {
@@ -524,14 +575,17 @@ class CheckboxState extends State<Checkbox> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languagelist.length,
+              itemCount: languages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
-                    onPressed: () => setState(() {
-                          currentLang = languagelist.elementAt(index);
-                        }),
-                    child: Text(languagelist.elementAt(index)));
+                    onPressed: () {
+                      setState(() {
+                        super.widget.currentLang = languages[index];
+                      });
+                      debugPrint(super.widget.currentLang);
+                    },
+                    child: Text(languages[index]));
               }),
         ),
         Column(
@@ -539,7 +593,7 @@ class CheckboxState extends State<Checkbox> {
             const Text("Zagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.title.addAll({currentLang: value});
+                widget.title.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
@@ -551,7 +605,13 @@ class CheckboxState extends State<Checkbox> {
 
 // ignore: must_be_immutable
 class Brand extends AdminField {
-  Brand({super.key, super.type = "Brand"});
+  Brand({super.key, super.type = "brand"});
+
+  Brand.fromJson(Map<String, String> title, String apiName, {Key? key})
+      : super(key: key, type: "brand") {
+    super.controllerApi.text = apiName;
+    super.title = title;
+  }
 
   @override
   Map<String, dynamic> commit() {
@@ -601,14 +661,17 @@ class BrandState extends State<Brand> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languagelist.length,
+              itemCount: languages.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
-                    onPressed: () => setState(() {
-                          currentLang = languagelist.elementAt(index);
-                        }),
-                    child: Text(languagelist.elementAt(index)));
+                    onPressed: () {
+                      setState(() {
+                        super.widget.currentLang = languages[index];
+                      });
+                      debugPrint(super.widget.currentLang);
+                    },
+                    child: Text(languages[index]));
               }),
         ),
         Column(
@@ -616,7 +679,7 @@ class BrandState extends State<Brand> {
             const Text("Zagolovok"),
             TextFormField(
               onChanged: (value) => setState(() {
-                widget.title.addAll({currentLang: value});
+                widget.title.addAll({super.widget.currentLang: value});
               }),
             ),
           ],
