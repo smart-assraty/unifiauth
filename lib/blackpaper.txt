@@ -1,93 +1,32 @@
-Widget build(BuildContext context) {
-    if (widget.type == "email") {
-      return SizedBox(
-        height: 80,
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(widget.title),
-            ),
-            TextFormField(
-              onChanged: (value) => setState(() {
-                widget.data = value;
-              }),
-              controller: controller,
-              keyboardType: TextInputType.emailAddress,
-            ),
-          ],
-        ),
-      );
-    } else if (widget.type == "number") {
-      return SizedBox(
-        height: 80,
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(widget.title),
-            ),
-            TextFormField(
-              onChanged: (value) => setState(() {
-                widget.data = value;
-              }),
-              controller: controller,
-              keyboardType: TextInputType.number,
-            ),
-          ],
-        ),
-      );
-    } else if (widget.type == "checkbox") {
-      widget.data = false;
-      return SizedBox(
-        height: 50,
-        child: Column(
-          children: [
-            Text(widget.title),
-            Checkbox(
-                value: widget.data,
-                onChanged: (value) => setState(() {
-                      widget.data = value!;
-                    }))
-          ],
-        ),
-      );
-    } else if (widget.type == "brand") {
-      return SizedBox(
-          child: Column(
-        children: [
-          Text(widget.title),
-          IconButton(
-            iconSize: 50,
-            icon: const Icon(
-              Icons.abc,
-            ),
-            onPressed: () {
-              debugPrint(widget.title);
-            },
-          ),
-        ],
-      ));
-    } else {
-      return SizedBox(
-        height: 80,
-        child: Column(
-          children: [
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(widget.title),
-            ),
-            TextFormField(
-              onChanged: (value) => setState(() {
-                widget.data = value;
-              }),
-              controller: controller,
-              keyboardType: TextInputType.text,
-              decoration: InputDecoration(
-                hintText: widget.description,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
+{
+  "langs":["rus","eng"],
+  "count_langs":2,
+  "count_fields":4
+  "fields":
+    [
+      {
+        "type":"textfield",
+        "title":"trstring",
+        "description":"trstring",
+        "brands":null
+      },
+      {
+        "type":"textfield",
+        "title":"asdasd",
+        "description":"dasdas",
+        "brands":null
+      },
+      {
+        "type":"email",
+        "title":"dasda",
+        "description":null,
+        "brands":null
+      },
+      {
+        "type":"front",
+        "title":"rus Welcome",
+        "description":"rus Welcome",
+        "brands":null
+      }
+    ],
+}

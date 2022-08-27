@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
-import 'main.dart';
+import 'server_connector.dart' show AuthHelper;
 import 'auth_forms.dart';
+
+//See if updates automaticly
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -13,6 +12,10 @@ class AuthPage extends StatefulWidget {
 }
 
 class AuthPageState extends State<AuthPage> {
+  String currentLang = "rus";
+  AuthHelper authHelper = AuthHelper();
+  List<AuthForm> fields = [];
+  List<AuthForm> brands = [];
   List<Map<String, dynamic>> dataToApi = [];
   @override
   Widget build(BuildContext context) {
@@ -21,175 +24,44 @@ class AuthPageState extends State<AuthPage> {
     );
   }
 
-  Future<String> getForms() async {
-    var response =
-        await http.get(Uri.parse("http://185.125.88.30:8000/GetLoginForm/rus"));
-    return response.body;
-  }
-
-  Widget localTest() {
-    dynamic parsed = json.decode(theJson);
-    var languagelist = List.generate(
-        parsed["count_langs"],
-        (index) => DropdownMenuItem<String>(
-              value: parsed["langs"][index],
-              child: Text(parsed["langs"][index]),
-            ));
-    String currentLang = languagelist[0].value!;
-    List<AuthForm> forms = [];
-    for (int index = 0; index < parsed["count_fields"] - 1; ++index) {
-      forms.add(AuthForm.createForm(
-        parsed["fields"][index]["type"],
-        parsed["fields"][index]["title"],
-        parsed["fields"][index]["description"],
-      ));
-    }
-    return Container(
-      decoration: BoxDecoration(
-          image: DecorationImage(
-        image: NetworkImage(parsed["bg_img"]),
-      )),
-      child: Center(
-          child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Padding(
-              padding: const EdgeInsets.all(20),
-              child: Image(
-                image: NetworkImage(parsed["logo_img"]),
-                height: 300,
-                width: 300,
-              )),
-          Container(
-              width: 400,
-              height: 600,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(5), color: Colors.white),
-              child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: DropdownButton(
-                            hint: Text(
-                              currentLang,
-                            ),
-                            items: languagelist,
-                            onChanged: (value) => setState(() {
-                                  currentLang = value.toString();
-                                  //get json for language
-                                })),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: Column(
-                          children: [
-                            Text(
-                              parsed["fields"][parsed["count_fields"] - 1]
-                                  ["title"],
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(parsed["fields"][parsed["count_fields"] - 1]
-                                ["description"]),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 420,
-                        child: ListView(
-                          children: forms,
-                        ),
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            /*await http.get(
-                              Uri.parse(
-                                  "$server/connecting/connecting.php/?${Uri.base.query}"),
-                              headers: {
-                                "Charset": "utf-8",
-                              },
-                            );*/
-                            for (int i = 0; i < forms.length; i++) {
-                              dataToApi.add(forms.elementAt(i).commit());
-                            }
-                            debugPrint(dataToApi.toString());
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  Map<String, dynamic> mapToServer = {
-                                    "fields": dataToApi
-                                  };
-                                  return ListView.builder(
-                                      itemCount: dataToApi.length - 1,
-                                      itemBuilder: (context, index) {
-                                        return Card(
-                                          child: Text(
-                                              "${mapToServer.entries.first.value[index]}"),
-                                        );
-                                      });
-                                });
-                            /*await http.post(
-                              Uri.parse("$server/"),
-                              headers: {
-                                "Content-type": "application/json",
-                              },
-                              body: json.encode(dataToApi),
-                            );*/
-                          },
-                          child: const Text("Submit"),
-                        ),
-                      ),
-                    ],
-                  ))),
-        ],
-      )),
-    );
-  }
-
   Widget serverTest() {
     return FutureBuilder(
-      future: getForms(),
-      builder: (context, AsyncSnapshot<String> snapshot) {
+      future: authHelper.getForms(currentLang),
+      builder: (context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.hasData &&
             snapshot.connectionState == ConnectionState.done) {
-          dynamic parsed = json.decode(theJson);
+          dynamic body = snapshot.data!;
+          generateForms(body);
           var languagelist = List.generate(
-              parsed["count_langs"],
+              body["count_langs"],
               (index) => DropdownMenuItem<String>(
-                    value: parsed["langs"][index],
-                    child: Text(parsed["langs"][index]),
+                    value: body["langs"][index],
+                    child: Text(body["langs"][index]),
                   ));
-          String currentLang = languagelist[0].value!;
           List<AuthForm> forms = [];
-          for (int index = 0; index < parsed["count_fields"] - 1; ++index) {
+          for (int index = 0; index < body["count_fields"] - 1; ++index) {
             forms.add(AuthForm.createForm(
-              parsed["fields"][index]["type"],
-              parsed["fields"][index]["title"],
-              parsed["fields"][index]["description"],
+              body["fields"][index]["type"],
+              body["fields"][index]["title"],
+              body["fields"][index]["description"],
             ));
           }
           return Container(
-            decoration: BoxDecoration(
+            /*decoration: BoxDecoration(
                 image: DecorationImage(
-              image: NetworkImage(parsed["bg_img"]),
-            )),
+              image: NetworkImage(body["bg_img"]),
+            )),*/
             child: Center(
                 child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Padding(
+                /*Padding(
                     padding: const EdgeInsets.all(20),
                     child: Image(
-                      image: NetworkImage(parsed["logo_img"]),
+                      image: NetworkImage(body["logo_img"]),
                       height: 300,
                       width: 300,
-                    )),
+                    )),*/
                 Container(
                     width: 400,
                     height: 600,
@@ -209,7 +81,6 @@ class AuthPageState extends State<AuthPage> {
                                   items: languagelist,
                                   onChanged: (value) => setState(() {
                                         currentLang = value.toString();
-                                        //get json for language
                                       })),
                             ),
                             Padding(
@@ -217,49 +88,48 @@ class AuthPageState extends State<AuthPage> {
                               child: Column(
                                 children: [
                                   Text(
-                                    parsed["fields"][parsed["count_fields"] - 1]
+                                    body["fields"][body["count_fields"] - 1]
                                         ["title"],
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text(parsed["fields"]
-                                          [parsed["count_fields"] - 1]
+                                  Text(body["fields"][body["count_fields"] - 1]
                                       ["description"]),
                                 ],
                               ),
                             ),
                             SizedBox(
-                              height: 420,
+                              height: 320,
                               child: ListView(
-                                children: forms,
+                                children: fields,
                               ),
+                            ),
+                            SizedBox(
+                              height: 100,
+                              child: ListView(
+                                  scrollDirection: Axis.vertical,
+                                  children: [
+                                    Row(
+                                      children: brands,
+                                    )
+                                  ]),
                             ),
                             Align(
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
                                 onPressed: () async {
-                                  await http.get(
-                                    Uri.parse(
-                                        "$server/connecting/connecting.php/?${Uri.base.query}"),
-                                    headers: {
-                                      "Charset": "utf-8",
-                                    },
-                                  );
-                                  for (int i = 0; i < forms.length; ++i) {
-                                    dataToApi.add(forms.elementAt(i).commit());
+                                  for (int i = 0; i < forms.length; i++) {
+                                    if (forms[i]
+                                        .formkey
+                                        .currentState!
+                                        .validate()) {
+                                      continue;
+                                    }
                                   }
-                                  Map<String, dynamic> mapToServer = {
-                                    "fields": dataToApi
-                                  };
-                                  await http.post(
-                                    Uri.parse("$server/"),
-                                    headers: {
-                                      "Content-type": "application/json",
-                                    },
-                                    body: json.encode(mapToServer),
-                                  );
+                                  authHelper.connecting();
+                                  authHelper.postData(dataToApi, forms);
                                 },
                                 child: const Text("Submit"),
                               ),
@@ -274,5 +144,15 @@ class AuthPageState extends State<AuthPage> {
         }
       },
     );
+  }
+
+  void generateForms(dynamic body) {
+    for (int i = 0; i < body["count_fields"] - 1; ++i) {
+      (body["fields"][i]["type"] != "brand")
+          ? fields.add(AuthForm.createForm(body["fields"][i]["type"],
+              body["fields"][i]["title"], body["fields"][i]["description"]))
+          : brands.add(AuthForm.createForm(body["fields"][i]["type"],
+              body["fields"][i]["title"], body["fields"][i]["description"]));
+    }
   }
 }

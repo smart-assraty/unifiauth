@@ -1,6 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:http/http.dart' show MultipartFile, MultipartRequest;
 
 import 'main.dart';
 
@@ -10,6 +10,7 @@ class AuthForm extends StatefulWidget {
   String title;
   dynamic data;
   String? description;
+  final formkey = GlobalKey<FormState>();
 
   AuthForm({
     super.key,
@@ -111,6 +112,8 @@ class Email extends AuthForm {
 
 class EmailState extends State<Email> {
   TextEditingController controller = TextEditingController();
+  RegExp regExp = RegExp(
+      "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*\$");
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -122,6 +125,16 @@ class EmailState extends State<Email> {
             child: Text(widget.title),
           ),
           TextFormField(
+            key: widget.formkey,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Fill the form";
+              } else if (value.contains(regExp)) {
+                return "Hint: example@mail.com";
+              } else {
+                return null;
+              }
+            },
             onChanged: (value) => setState(() {
               widget.data = value;
             }),
@@ -147,6 +160,7 @@ class Number extends AuthForm {
 
 class NumberState extends State<Number> {
   TextEditingController controller = TextEditingController();
+  RegExp regExp = RegExp("[1-9]{11}");
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -158,6 +172,16 @@ class NumberState extends State<Number> {
             child: Text(widget.title),
           ),
           TextFormField(
+            key: widget.formkey,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Fill the field";
+              } else if (value.contains(regExp)) {
+                return "Hint: must contain 11 digits";
+              } else {
+                return null;
+              }
+            },
             onChanged: (value) => setState(() {
               widget.data = value;
             }),

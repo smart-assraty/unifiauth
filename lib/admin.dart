@@ -1,12 +1,10 @@
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
     show HtmlWidget;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
-import 'dart:convert' show json;
+import 'dart:convert';
 
+import 'server_connector.dart' show AdminHelper;
 import 'admin_forms.dart';
-import 'main.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -19,16 +17,20 @@ List<DropdownMenuItem<String>> languagelist = [];
 List<String> languages = ["rus"];
 
 class AdminPageState extends State<AdminPage> {
+  AdminHelper adminHelper = AdminHelper();
+
+  int numerator = 0;
+  late String theJson;
   String? token;
-  int stage = 1;
-  late String title;
-  late String description;
+  int stage = 0;
   late dynamic backgroundImage;
   late dynamic logo;
   var frontAdminField = Front();
+  late List<String> langs;
   List<AdminForm> forms = [];
-  Map<String, dynamic> mapToPost = {};
+
   TextEditingController sendTo = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -96,7 +98,6 @@ class AdminPageState extends State<AdminPage> {
                         ),
                         TextFormField(
                           controller: login,
-                          autofocus: true,
                         ),
                       ],
                     ),
@@ -108,22 +109,15 @@ class AdminPageState extends State<AdminPage> {
                         ),
                         TextFormField(
                           controller: password,
-                          autofocus: true,
                         ),
                       ],
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          var request = MultipartRequest("POST",
-                              Uri.parse("$server:8000/AdministratorSignIn"));
-                          request.fields.addAll({
-                            "username": login.text,
-                            "password": password.text
-                          });
-                          request.headers
-                              .addAll({"Content-type": "multipart/form/data"});
-                          var send = await request.send();
-                          token = await send.stream.bytesToString();
+                          langs = await adminHelper.getLangs();
+                          var send = await adminHelper.login(
+                              login.text, password.text);
+                          token = await send!.stream.bytesToString();
                           if (send.statusCode == 200) {
                             setState(() {
                               stage = 1;
@@ -210,7 +204,7 @@ class AdminPageState extends State<AdminPage> {
 
   Widget contentPageOne() {
     return FutureBuilder(
-        future: getForms(token!),
+        future: generateForms(),
         builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
@@ -292,12 +286,9 @@ class AdminPageState extends State<AdminPage> {
                                 Icons.abc,
                               ),
                               onPressed: () async {
-                                backgroundImage = await pickfile();
-                                (backgroundImage.runtimeType ==
-                                        FilePickerResult)
-                                    ? await sendImage(
-                                        backgroundImage, "UploadBGImage")
-                                    : debugPrint(backgroundImage);
+                                backgroundImage = await adminHelper.pickfile();
+                                await adminHelper.sendImage(
+                                    backgroundImage, "UploadBGImage");
                               }),
                         ],
                       ),
@@ -310,10 +301,9 @@ class AdminPageState extends State<AdminPage> {
                                 Icons.abc,
                               ),
                               onPressed: () async {
-                                logo = await pickfile();
-                                (logo.runtimeType == FilePickerResult)
-                                    ? await sendImage(logo, "UploadLogoImage")
-                                    : debugPrint(logo);
+                                logo = await adminHelper.pickfile();
+                                await adminHelper.sendImage(
+                                    logo, "UploadLogoImage");
                               }),
                         ],
                       ),
@@ -425,7 +415,11 @@ class AdminPageState extends State<AdminPage> {
                 child: const Text("Back")),
             ElevatedButton(
               onPressed: () async {
-                theJson = await postToServer();
+                var formForAdminField = AdminForm();
+                formForAdminField.setChild(frontAdminField);
+                forms.add(formForAdminField);
+                theJson = await adminHelper.postToServer(
+                    forms, languages, sendTo.text, token!);
                 setState(() {
                   stage = 4;
                 });
@@ -451,7 +445,6 @@ class AdminPageState extends State<AdminPage> {
         const Spacer(),
         ElevatedButton(
             onPressed: () => setState(() {
-                  mapToPost.clear();
                   forms.clear();
                   stage = 1;
                   frontAdminField = Front();
@@ -462,53 +455,8 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
-  Future<String> postToServer() async {
-    try {
-      var formForAdminField = AdminForm();
-      formForAdminField.setChild(frontAdminField);
-      forms.add(formForAdminField);
-      List<Map<String, dynamic>> list = [];
-      for (int i = 0; i < forms.length; i++) {
-        list.add(forms.elementAt(i).getChild().commit());
-      }
-
-      mapToPost.addAll({
-        "login": "string",
-        "settings": {
-          "langs": languages,
-          "count_langs": languages.length,
-          "logo_img": "string",
-          "bg_image": "string",
-          "bg_color": null,
-          "count_fields": forms.length,
-          "api_url": sendTo.text
-        },
-        "fields": list,
-      });
-      var request = await post(Uri.parse("$server:8000/LoginForm/"),
-          headers: {
-            "Content-type": "application/json",
-            "Authorization":
-                "${json.decode(token!)['token_type']} ${json.decode(token!)['access_token']}"
-          },
-          body: json.encode(mapToPost));
-
-      return json.encode(request.body);
-      //return json.encode(mapToPost); //Test
-    } catch (e) {
-      return "Error: $e";
-    }
-  }
-
-  Future<List<AdminForm>> getForms(String token) async {
-    var response =
-        await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
-      "Authorization":
-          "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
-    });
-    var body = json.decode(response.body);
-
-    //var body = json.decode(theJson); //Test
+  Future<List<AdminForm>> generateForms() async {
+    var body = await adminHelper.getJson(token!);
 
     languagelist.clear();
     languages.clear();
@@ -524,45 +472,22 @@ class AdminPageState extends State<AdminPage> {
     }
     List<AdminForm> formsFromServer = [];
     for (int i = 0; i < body["settings"]["count_fields"]; ++i) {
-      for (int j = 0; j < body["settings"]["count_langs"]; j++) {
-        formsFromServer.add(AdminForm.fromJson(
-            body["fields"][i]["type"],
-            body["fields"][i]["title"][j],
-            body["fields"][i]["description"][j],
-            body["fields"][i]["api_name"],
-            body["fields"][i]["brand_icon"]));
-      }
+      String type = "";
+      Map<String, dynamic> title;
+      Map<String, dynamic> description;
+      String? apiName = "";
+      String? brand = "";
+      type = body["fields"][i]["type"];
+      title = Map.from(body["fields"][i]["title"]);
+      description = Map.from(body["fields"][i]["description"]);
+      apiName = body["fields"][i]["api_url"];
+      brand = body["fields"][i]["brand_icon"];
+      apiName ??= "";
+
+      formsFromServer.add(AdminForm.fromJson(
+          type, numerator, title, description, apiName, brand));
+      numerator++;
     }
     return formsFromServer;
-  }
-}
-
-Future<dynamic> pickfile() async {
-  try {
-    FilePickerResult? file = await FilePicker.platform.pickFiles(
-      type: FileType.image,
-      allowCompression: false,
-    );
-    return file;
-  } catch (e) {
-    return "$e";
-  }
-}
-
-Future<String> sendImage(FilePickerResult image, String toDir) async {
-  try {
-    var bytes = image.files.first.bytes!;
-    var request = MultipartRequest(
-      "POST",
-      Uri.parse("$server:8000/$toDir/"),
-    );
-    var listImage = List<int>.from(bytes);
-    request.headers["content-type"] = "multipart/form-data";
-    var file = MultipartFile.fromBytes("file", listImage);
-    request.files.add(file);
-    var response = await request.send();
-    return response.stream.bytesToString();
-  } catch (e) {
-    return "$e";
   }
 }
