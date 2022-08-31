@@ -14,13 +14,13 @@ class AdminPage extends StatefulWidget {
 
 List<DropdownMenuItem<dynamic>> languages = [];
 List<dynamic> languagelist = ["rus"];
+String? token;
 
 class AdminPageState extends State<AdminPage> {
   AdminHelper adminHelper = AdminHelper();
 
   int numerator = 0;
   late String theJson;
-  String? token;
   int stage = 0;
   late dynamic backgroundImage;
   late dynamic logo;
@@ -116,6 +116,9 @@ class AdminPageState extends State<AdminPage> {
                               login.text, password.text);
                           token = await send!.stream.bytesToString();
                           if (send.statusCode == 200) {
+                            forms = await generateForms();
+                            frontAdminField = (forms.last.getChild() as Front);
+                            forms.removeLast();
                             setState(() {
                               stage = 1;
                             });
@@ -200,131 +203,118 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget contentPageOne() {
-    return FutureBuilder(
-        future: generateForms(),
-        builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
-          if (snapshot.hasData &&
-              snapshot.connectionState == ConnectionState.done) {
-            forms = snapshot.data!;
-            frontAdminField = (forms.last.getChild() as Front);
-            forms.removeLast();
-            return Container(
-              padding: const EdgeInsets.only(top: 20),
-              width: 350,
-              height: 610,
-              child: ListView(
-                shrinkWrap: true,
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      height: 610,
+      child: ListView(
+        shrinkWrap: true,
+        children: [
+          contentHeader(),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: 70,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  contentHeader(),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: SizedBox(
-                      width: 70,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Text("Языки"),
-                          ListView.builder(
-                            itemCount: languagelist.length,
-                            shrinkWrap: true,
-                            itemBuilder: (context, index) {
-                              return SizedBox(
-                                  height: 35,
-                                  child: DropdownButton<dynamic>(
-                                      hint: Text(languagelist[index]),
-                                      items: languages,
-                                      onChanged: (value) {
-                                        setState(() {
-                                          languages[index] = value!;
-                                          frontAdminField = Front();
-                                        });
-                                      }));
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                  const Text("Языки"),
+                  ListView.builder(
+                    itemCount: languagelist.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return SizedBox(
+                          height: 35,
+                          child: DropdownButton<dynamic>(
+                              hint: Text(languagelist[index]),
+                              items: languages,
+                              onChanged: (value) {
+                                setState(() {
+                                  languagelist[index] = value!;
+                                  frontAdminField = Front();
+                                });
+                              }));
+                    },
                   ),
-                  Row(
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              languagelist
-                                  .add(languages[languagelist.length].value!);
-                              frontAdminField = Front();
-                            });
-                          },
-                          child: const Text(
-                            "Добавить язык +",
-                            style: TextStyle(color: Colors.amber),
-                          )),
-                      TextButton(
-                          onPressed: () {
-                            setState(() {
-                              languages.removeLast();
-                              frontAdminField = Front();
-                            });
-                          },
-                          child: const Text(
-                            "Remove language",
-                            style: TextStyle(color: Colors.amber),
-                          )),
-                    ],
-                  ),
-                  frontAdminField,
-                  Row(
-                    children: [
-                      Column(
-                        children: [
-                          const Text("Background Image"),
-                          IconButton(
-                              icon: const Icon(
-                                Icons.abc,
-                              ),
-                              onPressed: () async {
-                                backgroundImage = await adminHelper.pickfile();
-                                await adminHelper.sendImage(
-                                    backgroundImage, "UploadBGImage");
-                              }),
-                        ],
-                      ),
-                      const VerticalDivider(),
-                      Column(
-                        children: [
-                          const Text("Icon"),
-                          IconButton(
-                              icon: const Icon(
-                                Icons.abc,
-                              ),
-                              onPressed: () async {
-                                logo = await adminHelper.pickfile();
-                                await adminHelper.sendImage(
-                                    logo, "UploadLogoImage");
-                              }),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Align(
-                      alignment: Alignment.bottomRight,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            stage = 2;
-                          });
-                        },
-                        child: const Text("Next"),
-                      )),
                 ],
               ),
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        });
+            ),
+          ),
+          Row(
+            children: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      languagelist.add(languages[languagelist.length].value!);
+                      debugPrint(languagelist.length.toString());
+                      frontAdminField = Front();
+                    });
+                  },
+                  child: const Text(
+                    "Добавить язык +",
+                    style: TextStyle(color: Colors.amber),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      languagelist.removeLast();
+                      frontAdminField = Front();
+                    });
+                  },
+                  child: const Text(
+                    "Remove language",
+                    style: TextStyle(color: Colors.amber),
+                  )),
+            ],
+          ),
+          frontAdminField,
+          Row(
+            children: [
+              Column(
+                children: [
+                  const Text("Background Image"),
+                  IconButton(
+                      icon: const Icon(
+                        Icons.abc,
+                      ),
+                      onPressed: () async {
+                        backgroundImage = await adminHelper.pickfile();
+                        var result = await adminHelper.sendImage(
+                            backgroundImage, "UploadBGImage", token!);
+                        debugPrint(result);
+                      }),
+                ],
+              ),
+              const VerticalDivider(),
+              Column(
+                children: [
+                  const Text("Icon"),
+                  IconButton(
+                      icon: const Icon(
+                        Icons.abc,
+                      ),
+                      onPressed: () async {
+                        logo = await adminHelper.pickfile();
+                        await adminHelper.sendImage(
+                            logo, "UploadLogoImage", token!);
+                      }),
+                ],
+              ),
+            ],
+          ),
+          Align(
+              alignment: Alignment.bottomRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    stage = 2;
+                  });
+                },
+                child: const Text("Next"),
+              )),
+        ],
+      ),
+    );
   }
 
   Widget contentPageTwo() {
@@ -335,7 +325,7 @@ class AdminPageState extends State<AdminPage> {
         children: [
           contentHeader(),
           SizedBox(
-            height: 550,
+            height: 500,
             child: ListView(
               children: [Column(children: forms)],
             ),
@@ -416,7 +406,7 @@ class AdminPageState extends State<AdminPage> {
                 formForAdminField.setChild(frontAdminField);
                 forms.add(formForAdminField);
                 theJson = await adminHelper.postToServer(
-                    forms, languages, sendTo.text, token!);
+                    forms, languagelist, sendTo.text, token!);
                 setState(() {
                   stage = 4;
                 });
@@ -456,39 +446,43 @@ class AdminPageState extends State<AdminPage> {
     var body = await adminHelper.getJson(token!);
     var getLangs = await adminHelper.getLangs();
 
-    languagelist.clear();
-    languages.clear();
+    if (body != null) {
+      languagelist.clear();
+      languages.clear();
 
-    languagelist = List.generate(
-        getLangs.length,
-        (index) => DropdownMenuItem<String>(
-              value: getLangs[index],
-              child: Text(getLangs[index]),
-            ));
+      languages = List.generate(
+          getLangs.length,
+          (index) => DropdownMenuItem<String>(
+                value: getLangs[index],
+                child: Text(getLangs[index]),
+              ));
 
-    for (int i = 0; i < body["settings"]["count_langs"]; i++) {
-      languages.add(languagelist.elementAt(i).value!);
+      for (int i = 0; i < body["settings"]["count_langs"]; i++) {
+        languagelist.add(languages.elementAt(i).value!);
+      }
+      debugPrint(languagelist.toString());
+      List<AdminForm> formsFromServer = [];
+
+      for (int i = 0; i < body["settings"]["count_fields"]; ++i) {
+        String type = "";
+        Map<String, dynamic> title;
+        Map<String, dynamic> description;
+        String? apiName = "";
+        String? brand = "";
+        type = body["fields"][i]["type"];
+        title = Map.from(body["fields"][i]["title"]);
+        description = Map.from(body["fields"][i]["description"]);
+        apiName = body["fields"][i]["api_url"];
+        brand = body["fields"][i]["brand_icon"];
+        apiName ??= "";
+
+        formsFromServer.add(AdminForm.fromJson(
+            type, numerator, title, description, apiName, brand));
+        numerator++;
+      }
+      return formsFromServer;
+    } else {
+      return [AdminForm()..setChild(Front())];
     }
-
-    List<AdminForm> formsFromServer = [];
-
-    for (int i = 0; i < body["settings"]["count_fields"]; ++i) {
-      String type = "";
-      Map<String, dynamic> title;
-      Map<String, dynamic> description;
-      String? apiName = "";
-      String? brand = "";
-      type = body["fields"][i]["type"];
-      title = Map.from(body["fields"][i]["title"]);
-      description = Map.from(body["fields"][i]["description"]);
-      apiName = body["fields"][i]["api_url"];
-      brand = body["fields"][i]["brand_icon"];
-      apiName ??= "";
-
-      formsFromServer.add(AdminForm.fromJson(
-          type, numerator, title, description, apiName, brand));
-      numerator++;
-    }
-    return formsFromServer;
   }
 }

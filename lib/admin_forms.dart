@@ -23,7 +23,7 @@ class AdminForm extends StatefulWidget {
     } else if (type == "checkbox") {
       return AdminForm()..setChild(Checkbox.fromJson(id, title, apiName));
     } else if (type == "brand") {
-      return AdminForm()..setChild(Brand.fromJson(id, title, apiName));
+      return AdminForm()..setChild(Brand.fromJson(id, title, apiName, brand));
     } else if (type == "front") {
       return AdminForm()..setChild(Front.fromJson(id, title, description));
     } else {
@@ -210,7 +210,7 @@ class FrontState extends State<Front> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
+              itemCount: languagelist.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
@@ -333,7 +333,7 @@ class TextFieldState extends State<TextField> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
+              itemCount: languagelist.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
@@ -442,7 +442,7 @@ class EmailState extends State<Email> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
+              itemCount: languagelist.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
@@ -541,7 +541,7 @@ class NumberState extends State<Number> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
+              itemCount: languagelist.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
@@ -632,7 +632,7 @@ class CheckboxState extends State<Checkbox> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
+              itemCount: languagelist.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
@@ -672,11 +672,13 @@ class Brand extends AdminField {
     super.id = 0,
   });
 
-  Brand.fromJson(int id, dynamic title, String apiName, {Key? key})
+  Brand.fromJson(int id, dynamic title, String apiName, String? brand,
+      {Key? key})
       : super(key: key, type: "brand", id: id) {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = title[currentLang];
     super.title = title;
+    super.brand = brand;
   }
 
   @override
@@ -729,7 +731,7 @@ class BrandState extends State<Brand> {
           height: 50,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: languages.length,
+              itemCount: languagelist.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return TextButton(
@@ -762,7 +764,7 @@ class BrandState extends State<Brand> {
                 onPressed: () async {
                   var response = await adminHelper.pickfile();
                   widget.brand = await adminHelper.sendIcon(
-                      response, "UploadBrandImage", widget.id);
+                      response, "UploadBrandImage", token!, widget.id);
                 },
                 icon: const Icon(Icons.abc)),
           ],

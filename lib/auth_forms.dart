@@ -23,7 +23,8 @@ class AuthForm extends StatefulWidget {
     return {"data": data};
   }
 
-  factory AuthForm.createForm(String type, String title, String? description) {
+  factory AuthForm.createForm(
+      String type, String title, String? description, String? brand) {
     if (type == "email") {
       return Email(title: title);
     } else if (type == "number") {
@@ -37,6 +38,7 @@ class AuthForm extends StatefulWidget {
     } else if (type == "brand") {
       return Brand(
         title: title,
+        brand: brand!,
       );
     } else {
       return TextField(
@@ -228,9 +230,11 @@ class CheckBoxState extends State<CheckBox> {
 
 //ignore: must_be_immutable
 class Brand extends AuthForm {
+  String brand;
   Brand({
     super.key,
     required super.title,
+    required this.brand,
   }) : super(type: "brand");
 
   @override
@@ -246,8 +250,8 @@ class BrandState extends State<Brand> {
         Text(widget.title),
         IconButton(
           iconSize: 50,
-          icon: const Icon(
-            Icons.abc,
+          icon: Image(
+            image: NetworkImage("http://185.125.88.30/img/${widget.brand}"),
           ),
           onPressed: () async {
             String imageUrl = await sendImage(await pickfile(), "Brands");

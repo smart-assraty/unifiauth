@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'server_connector.dart' show AuthHelper;
 import 'auth_forms.dart';
 
-//See if updates automaticly
-
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
 
@@ -41,27 +39,28 @@ class AuthPageState extends State<AuthPage> {
           List<AuthForm> forms = [];
           for (int index = 0; index < body["count_fields"] - 1; ++index) {
             forms.add(AuthForm.createForm(
-              body["fields"][index]["type"],
-              body["fields"][index]["title"],
-              body["fields"][index]["description"],
-            ));
+                body["fields"][index]["type"],
+                body["fields"][index]["title"],
+                body["fields"][index]["description"],
+                body["fields"][index]["brand_icon"]));
           }
           return Container(
-            /*decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 image: DecorationImage(
-              image: NetworkImage(body["bg_img"]),
-            )),*/
+              image: NetworkImage("http://185.125.88.30/img/imageBG.jpeg"),
+            )),
             child: Center(
                 child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                /*Padding(
-                    padding: const EdgeInsets.all(20),
+                const Padding(
+                    padding: EdgeInsets.all(20),
                     child: Image(
-                      image: NetworkImage(body["logo_img"]),
+                      image: NetworkImage(
+                          "http://185.125.88.30/img/imageLogo.jpeg"),
                       height: 300,
                       width: 300,
-                    )),*/
+                    )),
                 Container(
                     width: 400,
                     height: 600,
@@ -147,12 +146,21 @@ class AuthPageState extends State<AuthPage> {
   }
 
   void generateForms(dynamic body) {
+    fields.clear();
+    brands.clear();
+
     for (int i = 0; i < body["count_fields"] - 1; ++i) {
       (body["fields"][i]["type"] != "brand")
-          ? fields.add(AuthForm.createForm(body["fields"][i]["type"],
-              body["fields"][i]["title"], body["fields"][i]["description"]))
-          : brands.add(AuthForm.createForm(body["fields"][i]["type"],
-              body["fields"][i]["title"], body["fields"][i]["description"]));
+          ? fields.add(AuthForm.createForm(
+              body["fields"][i]["type"],
+              body["fields"][i]["title"],
+              body["fields"][i]["description"],
+              body["fields"][i]["brand_icon"]))
+          : brands.add(AuthForm.createForm(
+              body["fields"][i]["type"],
+              body["fields"][i]["title"],
+              body["fields"][i]["description"],
+              body["fields"][i]["brand_icon"]));
     }
   }
 }

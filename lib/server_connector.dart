@@ -46,8 +46,23 @@ class AdminHelper {
       var request = MultipartRequest(
           "POST", Uri.parse("$server:8000/AdministratorSignIn"));
       request.fields.addAll({"username": username, "password": password});
-      request.headers.addAll({"Content-type": "multipart/form/data"});
+      request.headers.addAll({"Content-type": "multipart/form-data"});
       return await request.send();
+    } catch (e) {
+      debugPrint("$e");
+      return null;
+    }
+  }
+
+  Future<dynamic> getJson(String token) async {
+    try {
+      var response =
+          await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
+        "Authorization":
+            "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
+      });
+      debugPrint(response.body);
+      return json.decode(response.body);
     } catch (e) {
       debugPrint("$e");
       return null;
@@ -100,20 +115,6 @@ class AdminHelper {
     }
   }
 
-  Future<dynamic> getJson(String token) async {
-    try {
-      var response =
-          await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
-        "Authorization":
-            "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
-      });
-      return json.decode(response.body);
-    } catch (e) {
-      debugPrint("$e");
-      return null;
-    }
-  }
-
   Future<dynamic> pickfile() async {
     try {
       FilePickerResult? file = await FilePicker.platform.pickFiles(
@@ -127,7 +128,8 @@ class AdminHelper {
     }
   }
 
-  Future<String> sendImage(FilePickerResult image, String toDir) async {
+  Future<String> sendImage(
+      FilePickerResult image, String toDir, String token) async {
     try {
       var bytes = image.files.first.bytes!;
       var request = MultipartRequest(
@@ -135,9 +137,16 @@ class AdminHelper {
         Uri.parse("$server:8000/$toDir/"),
       );
       var listImage = List<int>.from(bytes);
-      request.headers["content-type"] = "multipart/form-data";
+      request.headers.addAll({
+        "Content-type": "multipart/form-data",
+        "Authorization":
+            "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
+      });
+
       var file = MultipartFile.fromBytes("file", listImage);
+      request.fields.addAll({"img_type": "${image.files.first.extension}"});
       request.files.add(file);
+
       var response = await request.send();
       return response.stream.bytesToString();
     } catch (e) {
@@ -147,7 +156,7 @@ class AdminHelper {
   }
 
   Future<String> sendIcon(
-      FilePickerResult image, String toDir, int number) async {
+      FilePickerResult image, String toDir, String token, int number) async {
     try {
       var bytes = image.files.first.bytes!;
       var request = MultipartRequest(
@@ -155,9 +164,16 @@ class AdminHelper {
         Uri.parse("$server:8000/$toDir/"),
       );
       var listImage = List<int>.from(bytes);
-      request.headers["content-type"] = "multipart/form-data";
+      request.headers.addAll({
+        "Content-type": "multipart/form-data",
+        "Authorization":
+            "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
+      });
       var file = MultipartFile.fromBytes("file", listImage);
-      request.fields.addAll({"number": number.toString()});
+      request.fields.addAll({
+        "number": number.toString(),
+        "img_type": "${image.files.first.extension}"
+      });
       request.files.add(file);
       var response = await request.send();
       return response.stream.bytesToString();
