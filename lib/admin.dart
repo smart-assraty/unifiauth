@@ -1,7 +1,6 @@
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
     show HtmlWidget;
 import 'package:flutter/material.dart';
-import 'dart:convert';
 
 import 'server_connector.dart' show AdminHelper;
 import 'admin_forms.dart';
@@ -13,8 +12,8 @@ class AdminPage extends StatefulWidget {
   State<AdminPage> createState() => AdminPageState();
 }
 
-List<DropdownMenuItem<String>> languagelist = [];
-List<String> languages = ["rus"];
+List<DropdownMenuItem<dynamic>> languages = [];
+List<dynamic> languagelist = ["rus"];
 
 class AdminPageState extends State<AdminPage> {
   AdminHelper adminHelper = AdminHelper();
@@ -26,7 +25,6 @@ class AdminPageState extends State<AdminPage> {
   late dynamic backgroundImage;
   late dynamic logo;
   var frontAdminField = Front();
-  late List<String> langs;
   List<AdminForm> forms = [];
 
   TextEditingController sendTo = TextEditingController();
@@ -114,7 +112,6 @@ class AdminPageState extends State<AdminPage> {
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          langs = await adminHelper.getLangs();
                           var send = await adminHelper.login(
                               login.text, password.text);
                           token = await send!.stream.bytesToString();
@@ -228,14 +225,14 @@ class AdminPageState extends State<AdminPage> {
                         children: [
                           const Text("Языки"),
                           ListView.builder(
-                            itemCount: languages.length,
+                            itemCount: languagelist.length,
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               return SizedBox(
                                   height: 35,
-                                  child: DropdownButton<String>(
-                                      hint: Text(languages[index]),
-                                      items: languagelist,
+                                  child: DropdownButton<dynamic>(
+                                      hint: Text(languagelist[index]),
+                                      items: languages,
                                       onChanged: (value) {
                                         setState(() {
                                           languages[index] = value!;
@@ -253,8 +250,8 @@ class AdminPageState extends State<AdminPage> {
                       TextButton(
                           onPressed: () {
                             setState(() {
-                              languages
-                                  .add(languagelist[languages.length].value!);
+                              languagelist
+                                  .add(languages[languagelist.length].value!);
                               frontAdminField = Front();
                             });
                           },
@@ -457,20 +454,24 @@ class AdminPageState extends State<AdminPage> {
 
   Future<List<AdminForm>> generateForms() async {
     var body = await adminHelper.getJson(token!);
+    var getLangs = await adminHelper.getLangs();
 
     languagelist.clear();
     languages.clear();
 
     languagelist = List.generate(
-        body["settings"]["count_langs"],
+        getLangs.length,
         (index) => DropdownMenuItem<String>(
-              value: body["settings"]["langs"][index],
-              child: Text(body["settings"]["langs"][index]),
+              value: getLangs[index],
+              child: Text(getLangs[index]),
             ));
-    for (int i = 0; i < languagelist.length; i++) {
+
+    for (int i = 0; i < body["settings"]["count_langs"]; i++) {
       languages.add(languagelist.elementAt(i).value!);
     }
+
     List<AdminForm> formsFromServer = [];
+
     for (int i = 0; i < body["settings"]["count_fields"]; ++i) {
       String type = "";
       Map<String, dynamic> title;

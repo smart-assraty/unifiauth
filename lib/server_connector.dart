@@ -54,7 +54,7 @@ class AdminHelper {
     }
   }
 
-  Future<List<String>> getLangs() async {
+  Future<List<dynamic>> getLangs() async {
     try {
       var request = await get(Uri.parse("$server:8000/GetAllLangsList/"));
       return json.decode(request.body);

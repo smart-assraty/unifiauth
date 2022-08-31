@@ -107,7 +107,7 @@ abstract class AdminField extends StatefulWidget {
 
   int id;
   String type;
-  String currentLang = languages[0];
+  String currentLang = languagelist[0];
   Map<String, dynamic> title = {};
   Map<String, dynamic> description = {};
 
@@ -216,7 +216,7 @@ class FrontState extends State<Front> {
                 return TextButton(
                     onPressed: () {
                       setState(() {
-                        super.widget.currentLang = languages[index];
+                        super.widget.currentLang = languagelist[index];
                         (widget.title[widget.currentLang] != null)
                             ? super.widget.controllerTitle.text =
                                 widget.title[widget.currentLang]!
@@ -227,7 +227,7 @@ class FrontState extends State<Front> {
                             : null;
                       });
                     },
-                    child: Text(languages[index]));
+                    child: Text(languagelist[index]));
               }),
         ),
         Column(
@@ -339,7 +339,7 @@ class TextFieldState extends State<TextField> {
                 return TextButton(
                     onPressed: () {
                       setState(() {
-                        super.widget.currentLang = languages[index];
+                        super.widget.currentLang = languagelist[index];
                         (widget.title[widget.currentLang] != null)
                             ? widget.controllerTitle.text =
                                 widget.title[widget.currentLang]!
@@ -350,7 +350,7 @@ class TextFieldState extends State<TextField> {
                             : null;
                       });
                     },
-                    child: Text(languages[index]));
+                    child: Text(languagelist[index]));
               }),
         ),
         Column(
@@ -448,7 +448,7 @@ class EmailState extends State<Email> {
                 return TextButton(
                     onPressed: () {
                       setState(() {
-                        super.widget.currentLang = languages[index];
+                        super.widget.currentLang = languagelist[index];
                         (widget.title[widget.currentLang] != null)
                             ? widget.controllerTitle.text =
                                 widget.title[widget.currentLang]!
@@ -459,7 +459,7 @@ class EmailState extends State<Email> {
                             : null;
                       });
                     },
-                    child: Text(languages[index]));
+                    child: Text(languagelist[index]));
               }),
         ),
         Column(
@@ -547,14 +547,14 @@ class NumberState extends State<Number> {
                 return TextButton(
                     onPressed: () {
                       setState(() {
-                        super.widget.currentLang = languages[index];
+                        super.widget.currentLang = languagelist[index];
                         (widget.title[widget.currentLang] != null)
                             ? widget.controllerTitle.text =
                                 widget.title[widget.currentLang]!
                             : null;
                       });
                     },
-                    child: Text(languages[index]));
+                    child: Text(languagelist[index]));
               }),
         ),
         Column(
@@ -638,14 +638,14 @@ class CheckboxState extends State<Checkbox> {
                 return TextButton(
                     onPressed: () {
                       setState(() {
-                        super.widget.currentLang = languages[index];
+                        super.widget.currentLang = languagelist[index];
                         (widget.title[widget.currentLang] != null)
                             ? widget.controllerTitle.text =
                                 widget.title[widget.currentLang]!
                             : null;
                       });
                     },
-                    child: Text(languages[index]));
+                    child: Text(languagelist[index]));
               }),
         ),
         Column(
@@ -735,14 +735,14 @@ class BrandState extends State<Brand> {
                 return TextButton(
                     onPressed: () {
                       setState(() {
-                        super.widget.currentLang = languages[index];
+                        super.widget.currentLang = languagelist[index];
                         (widget.title[widget.currentLang] != null)
                             ? widget.controllerTitle.text =
                                 widget.title[widget.currentLang]!
                             : null;
                       });
                     },
-                    child: Text(languages[index]));
+                    child: Text(languagelist[index]));
               }),
         ),
         Column(
