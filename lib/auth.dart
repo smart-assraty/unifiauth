@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:routemaster/routemaster.dart';
 import 'server_connector.dart' show AuthHelper;
 import 'auth_forms.dart';
 
@@ -22,14 +23,14 @@ class AuthPageState extends State<AuthPage> {
     return Scaffold(
       body: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth < 800) {
-          return webMobile(constraints.maxWidth, constraints.maxHeight);
+          return webMobile();
         }
         return webDesktop();
       }),
     );
   }
 
-  Widget webMobile(double width, double height) {
+  Widget webMobile() {
     return FutureBuilder(
       future: authHelper.getForms(currentLang),
       builder: (context, AsyncSnapshot<dynamic> snapshot) {
@@ -215,7 +216,8 @@ class AuthPageState extends State<AuthPage> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
-                                onPressed: () async {
+                                onPressed: () {
+                                  Routemaster.of(context).push("/logged");
                                   authHelper.connecting();
                                   authHelper.postData(
                                       currentLang, dataToApi, forms);
@@ -235,11 +237,17 @@ class AuthPageState extends State<AuthPage> {
     );
   }
 
+  List<TextEditingController> controllers = [];
+
   void generateForms(dynamic body) {
     forms.clear();
     fields.clear();
     brands.clear();
     languagelist.clear();
+    controllers.clear();
+
+    controllers =
+        List.generate(body["count_fields"], (index) => TextEditingController());
 
     languagelist = List.generate(
         body["count_langs"],
@@ -254,20 +262,23 @@ class AuthPageState extends State<AuthPage> {
           body["fields"][i]["api_name"],
           body["fields"][i]["title"],
           body["fields"][i]["description"],
-          body["fields"][i]["brand_icon"]));
+          body["fields"][i]["brand_icon"],
+          controllers[i]));
       (body["fields"][i]["type"] != "brand")
           ? fields.add(AuthForm.createForm(
               body["fields"][i]["type"],
               body["fields"][i]["api_name"],
               body["fields"][i]["title"],
               body["fields"][i]["description"],
-              body["fields"][i]["brand_icon"]))
+              body["fields"][i]["brand_icon"],
+              controllers[i]))
           : brands.add(AuthForm.createForm(
               body["fields"][i]["type"],
               body["fields"][i]["api_name"],
               body["fields"][i]["title"],
               body["fields"][i]["description"],
-              body["fields"][i]["brand_icon"]));
+              body["fields"][i]["brand_icon"],
+              controllers[i]));
     }
   }
 }

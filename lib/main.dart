@@ -16,6 +16,21 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => const MaterialPage(child: AuthPage()),
+  "/": (_) => const MaterialPage(child: AdminPage()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
+  "/logged": (_) => MaterialPage(
+          child: Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
+                  fit: BoxFit.fill)),
+          child: const Center(
+              child: Text("Welcome! Please wait until you are authorized.",
+                  style: TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white))),
+        ),
+      ))
 });

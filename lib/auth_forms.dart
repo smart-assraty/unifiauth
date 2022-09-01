@@ -26,11 +26,19 @@ abstract class AuthForm extends StatefulWidget {
   }
 
   factory AuthForm.createForm(String type, String apiKey, String title,
-      String? description, String? brand) {
+      String? description, String? brand, TextEditingController? controller) {
     if (type == "email") {
-      return Email(title: title, apiKey: apiKey);
+      return Email(
+        title: title,
+        apiKey: apiKey,
+        controller: controller!,
+      );
     } else if (type == "number") {
-      return Number(title: title, apiKey: apiKey);
+      return Number(
+        title: title,
+        apiKey: apiKey,
+        controller: controller!,
+      );
     } else if (type == "checkbox") {
       return CheckBox(title: title, apiKey: apiKey);
     } else if (type == "brand") {
@@ -43,6 +51,7 @@ abstract class AuthForm extends StatefulWidget {
       return TextField(
         apiKey: apiKey,
         title: title,
+        controller: controller!,
       );
     }
   }
@@ -50,14 +59,15 @@ abstract class AuthForm extends StatefulWidget {
 
 // ignore: must_be_immutable
 class TextField extends AuthForm {
-  TextField({
-    super.key,
-    required super.apiKey,
-    required super.title,
-    super.description,
-  }) : super(type: "textfield");
+  TextField(
+      {super.key,
+      required super.apiKey,
+      required super.title,
+      super.description,
+      required this.controller})
+      : super(type: "textfield");
 
-  final TextEditingController controller = TextEditingController();
+  TextEditingController controller;
 
   @override
   Map<String, dynamic> commit() {
@@ -83,12 +93,6 @@ class TextFieldState extends State<TextField> {
             ),
           ),
           TextFormField(
-            onChanged: (value) {
-              widget.data = value;
-            },
-            onEditingComplete: () {
-              debugPrint(widget.controller.text);
-            },
             controller: widget.controller,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
@@ -107,9 +111,16 @@ class Email extends AuthForm {
     super.key,
     required super.apiKey,
     required super.title,
+    required this.controller,
   }) : super(type: "email");
 
-  TextEditingController controller = TextEditingController();
+  TextEditingController controller;
+
+  @override
+  Map<String, dynamic> commit() {
+    data = controller.text;
+    return {"type": type, "title": title, "api_name": apiKey, "value": data};
+  }
 
   @override
   State<Email> createState() => EmailState();
@@ -131,15 +142,6 @@ class EmailState extends State<Email> {
             ),
           ),
           TextFormField(
-            validator: (value) {
-              if (value!.isEmpty) {
-                return "Fill the form";
-              } else if (!value.contains(regExp)) {
-                return "Hint: example@mail.com";
-              } else {
-                return null;
-              }
-            },
             controller: widget.controller,
             keyboardType: TextInputType.emailAddress,
           ),
@@ -155,9 +157,16 @@ class Number extends AuthForm {
     super.key,
     required super.apiKey,
     required super.title,
+    required this.controller,
   }) : super(type: "number");
 
-  TextEditingController controller = TextEditingController();
+  TextEditingController controller;
+
+  @override
+  Map<String, dynamic> commit() {
+    data = controller.text;
+    return {"type": type, "title": title, "api_name": apiKey, "value": data};
+  }
 
   @override
   State<Number> createState() => NumberState();
@@ -178,15 +187,6 @@ class NumberState extends State<Number> {
             ),
           ),
           TextFormField(
-            validator: (value) {
-              if (value!.isEmpty) {
-                return "Fill the field";
-              } else if (!value.contains(regExp)) {
-                return "Hint: must contain 11 digits";
-              } else {
-                return null;
-              }
-            },
             controller: widget.controller,
             keyboardType: TextInputType.number,
           ),

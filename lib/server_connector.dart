@@ -30,8 +30,7 @@ class AuthHelper {
       dataToApi.add(forms.elementAt(i).commit());
     }
     Map<String, dynamic> mapToServer = {"lang": lang, "fields": dataToApi};
-    debugPrint(dataToApi.toString());
-    var response = await post(
+    await post(
       Uri.parse("$server:8000/GuestAuth/"),
       headers: {
         "Content-type": "application/json",
@@ -39,7 +38,6 @@ class AuthHelper {
       body: json.encode(mapToServer),
     );
     dataToApi.clear();
-    //debugPrint("${response.statusCode}: ${response.body}");
   }
 }
 
