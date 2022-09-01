@@ -38,6 +38,7 @@ dependencies:
   routemaster: ^1.0.1
   flutter_widget_from_html_core: ^0.8.5+3
   file_picker: ^5.0.1
+  google_language_fonts: ^2.0.0
 
 dev_dependencies:
   flutter_test:

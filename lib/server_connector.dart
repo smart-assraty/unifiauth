@@ -9,7 +9,7 @@ class AuthHelper {
   Future<dynamic> getForms(String language) async {
     var response = await get(Uri.parse("$server:8000/GetLoginForm/$language"));
     try {
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       return "$e";
     }
@@ -17,7 +17,7 @@ class AuthHelper {
 
   Future<void> connecting() async {
     await get(
-      Uri.parse("$server/connecting/connecting.php/?${Uri.base.query}"),
+      Uri.parse("$server/admin/connecting.php/?${Uri.base.query}"),
       headers: {
         "Charset": "utf-8",
       },
@@ -25,18 +25,21 @@ class AuthHelper {
   }
 
   Future<void> postData(
-      List<Map<String, dynamic>> dataToApi, List forms) async {
+      String lang, List<Map<String, dynamic>> dataToApi, List forms) async {
     for (int i = 0; i < forms.length; ++i) {
       dataToApi.add(forms.elementAt(i).commit());
     }
-    Map<String, dynamic> mapToServer = {"fields": dataToApi};
-    await post(
-      Uri.parse("$server/"),
+    Map<String, dynamic> mapToServer = {"lang": lang, "fields": dataToApi};
+    debugPrint(dataToApi.toString());
+    var response = await post(
+      Uri.parse("$server:8000/GuestAuth/"),
       headers: {
         "Content-type": "application/json",
       },
       body: json.encode(mapToServer),
     );
+    dataToApi.clear();
+    //debugPrint("${response.statusCode}: ${response.body}");
   }
 }
 
@@ -54,15 +57,14 @@ class AdminHelper {
     }
   }
 
-  Future<dynamic> getJson(String token) async {
+  Future<dynamic> getForms(String token) async {
     try {
       var response =
           await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
-      debugPrint(response.body);
-      return json.decode(response.body);
+      return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       debugPrint("$e");
       return null;

@@ -5,59 +5,46 @@ import 'package:http/http.dart' show MultipartFile, MultipartRequest;
 import 'main.dart';
 
 // ignore: must_be_immutable
-class AuthForm extends StatefulWidget {
+abstract class AuthForm extends StatefulWidget {
+  dynamic data;
+  String apiKey;
   String type;
   String title;
-  dynamic data;
   String? description;
-  final formkey = GlobalKey<FormState>();
+  //final formkey = GlobalKey<FormState>();
 
   AuthForm({
     super.key,
+    required this.apiKey,
     required this.type,
     required this.title,
     this.description,
   });
 
   Map<String, dynamic> commit() {
-    return {"data": data};
+    return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
 
-  factory AuthForm.createForm(
-      String type, String title, String? description, String? brand) {
+  factory AuthForm.createForm(String type, String apiKey, String title,
+      String? description, String? brand) {
     if (type == "email") {
-      return Email(title: title);
+      return Email(title: title, apiKey: apiKey);
     } else if (type == "number") {
-      return Number(
-        title: title,
-      );
+      return Number(title: title, apiKey: apiKey);
     } else if (type == "checkbox") {
-      return CheckBox(
-        title: title,
-      );
+      return CheckBox(title: title, apiKey: apiKey);
     } else if (type == "brand") {
       return Brand(
         title: title,
+        apiKey: apiKey,
         brand: brand!,
       );
     } else {
       return TextField(
+        apiKey: apiKey,
         title: title,
       );
     }
-  }
-
-  @override
-  State<AuthForm> createState() => AuthFormState();
-}
-
-class AuthFormState extends State<AuthForm> {
-  TextEditingController controller = TextEditingController();
-  AuthFormState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text("Something went wrong");
   }
 }
 
@@ -65,16 +52,24 @@ class AuthFormState extends State<AuthForm> {
 class TextField extends AuthForm {
   TextField({
     super.key,
+    required super.apiKey,
     required super.title,
     super.description,
   }) : super(type: "textfield");
+
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  Map<String, dynamic> commit() {
+    data = controller.text;
+    return {"type": type, "title": title, "api_name": apiKey, "value": data};
+  }
 
   @override
   State<TextField> createState() => TextFieldState();
 }
 
 class TextFieldState extends State<TextField> {
-  TextEditingController controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -83,13 +78,18 @@ class TextFieldState extends State<TextField> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(widget.title),
+            child: Text(
+              widget.title,
+            ),
           ),
           TextFormField(
-            onChanged: (value) => setState(() {
+            onChanged: (value) {
               widget.data = value;
-            }),
-            controller: controller,
+            },
+            onEditingComplete: () {
+              debugPrint(widget.controller.text);
+            },
+            controller: widget.controller,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
               hintText: widget.description,
@@ -105,15 +105,17 @@ class TextFieldState extends State<TextField> {
 class Email extends AuthForm {
   Email({
     super.key,
+    required super.apiKey,
     required super.title,
   }) : super(type: "email");
+
+  TextEditingController controller = TextEditingController();
 
   @override
   State<Email> createState() => EmailState();
 }
 
 class EmailState extends State<Email> {
-  TextEditingController controller = TextEditingController();
   RegExp regExp = RegExp(
       "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*\$");
   @override
@@ -124,23 +126,21 @@ class EmailState extends State<Email> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(widget.title),
+            child: Text(
+              widget.title,
+            ),
           ),
           TextFormField(
-            key: widget.formkey,
             validator: (value) {
               if (value!.isEmpty) {
                 return "Fill the form";
-              } else if (value.contains(regExp)) {
+              } else if (!value.contains(regExp)) {
                 return "Hint: example@mail.com";
               } else {
                 return null;
               }
             },
-            onChanged: (value) => setState(() {
-              widget.data = value;
-            }),
-            controller: controller,
+            controller: widget.controller,
             keyboardType: TextInputType.emailAddress,
           ),
         ],
@@ -153,15 +153,17 @@ class EmailState extends State<Email> {
 class Number extends AuthForm {
   Number({
     super.key,
+    required super.apiKey,
     required super.title,
   }) : super(type: "number");
+
+  TextEditingController controller = TextEditingController();
 
   @override
   State<Number> createState() => NumberState();
 }
 
 class NumberState extends State<Number> {
-  TextEditingController controller = TextEditingController();
   RegExp regExp = RegExp("[1-9]{11}");
   @override
   Widget build(BuildContext context) {
@@ -171,23 +173,21 @@ class NumberState extends State<Number> {
         children: [
           Align(
             alignment: Alignment.centerLeft,
-            child: Text(widget.title),
+            child: Text(
+              widget.title,
+            ),
           ),
           TextFormField(
-            key: widget.formkey,
             validator: (value) {
               if (value!.isEmpty) {
                 return "Fill the field";
-              } else if (value.contains(regExp)) {
+              } else if (!value.contains(regExp)) {
                 return "Hint: must contain 11 digits";
               } else {
                 return null;
               }
             },
-            onChanged: (value) => setState(() {
-              widget.data = value;
-            }),
-            controller: controller,
+            controller: widget.controller,
             keyboardType: TextInputType.number,
           ),
         ],
@@ -200,6 +200,7 @@ class NumberState extends State<Number> {
 class CheckBox extends AuthForm {
   CheckBox({
     super.key,
+    required super.apiKey,
     required super.title,
   }) : super(type: "checkbox");
 
@@ -215,7 +216,9 @@ class CheckBoxState extends State<CheckBox> {
       height: 50,
       child: Column(
         children: [
-          Text(widget.title),
+          Text(
+            widget.title,
+          ),
           Checkbox(
               value: accept,
               onChanged: (value) => setState(() {
@@ -233,6 +236,7 @@ class Brand extends AuthForm {
   String brand;
   Brand({
     super.key,
+    required super.apiKey,
     required super.title,
     required this.brand,
   }) : super(type: "brand");
@@ -247,7 +251,9 @@ class BrandState extends State<Brand> {
     return SizedBox(
         child: Column(
       children: [
-        Text(widget.title),
+        Text(
+          widget.title,
+        ),
         IconButton(
           iconSize: 50,
           icon: Image(

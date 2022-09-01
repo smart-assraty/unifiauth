@@ -1,6 +1,7 @@
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
     show HtmlWidget;
 import 'package:flutter/material.dart';
+import 'package:routemaster/routemaster.dart';
 
 import 'server_connector.dart' show AdminHelper;
 import 'admin_forms.dart';
@@ -57,7 +58,8 @@ class AdminPageState extends State<AdminPage> {
     TextEditingController password = TextEditingController();
     return Container(
         decoration: const BoxDecoration(
-            image: DecorationImage(image: AssetImage("assets/bg.jpeg"))),
+            image: DecorationImage(
+                image: AssetImage("assets/bg.jpeg"), fit: BoxFit.fill)),
         child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           Padding(
             padding: const EdgeInsets.only(top: 400),
@@ -437,13 +439,18 @@ class AdminPageState extends State<AdminPage> {
                   frontAdminField = Front();
                   sendTo.text = "";
                 }),
-            child: const Text("Back"))
+            child: const Text("Back")),
+        //TEST
+        ElevatedButton(
+            onPressed: () => Routemaster.of(context).push("/guest/s/default"),
+            child: const Text("Auth")),
+        //TEST
       ],
     );
   }
 
   Future<List<AdminForm>> generateForms() async {
-    var body = await adminHelper.getJson(token!);
+    var body = await adminHelper.getForms(token!);
     var getLangs = await adminHelper.getLangs();
 
     if (body != null) {
