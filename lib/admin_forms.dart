@@ -63,26 +63,35 @@ class AdminFormState extends State<AdminForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.only(bottom: 10),
-        decoration: const BoxDecoration(color: Colors.white),
+        decoration: const BoxDecoration(
+            color: Color.fromARGB(255, 240, 240, 240),
+            border: Border(
+              left: BorderSide(width: 5, color: Colors.amber),
+            )),
         child: Column(children: [
-          Row(
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(right: 10),
-                child: Text("Type"),
-              ),
-              DropdownButton<AdminField>(
-                  hint: Text(widget.adminField.type),
-                  items: fields,
-                  onChanged: (value) {
-                    setState(() {
-                      widget.adminField = value!;
-                    });
-                  }),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: Row(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: Text("Type"),
+                ),
+                DropdownButton<AdminField>(
+                    hint: Text(widget.adminField.type),
+                    items: fields,
+                    onChanged: (value) {
+                      setState(() {
+                        widget.adminField = value!;
+                      });
+                    }),
+              ],
+            ),
           ),
-          widget.adminField,
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: widget.adminField,
+          ),
         ]));
   }
 }
@@ -105,6 +114,7 @@ abstract class AdminField extends StatefulWidget {
     }
   }
 
+  Color onSelected = Colors.amber;
   int id;
   String type;
   String currentLang = languagelist[0];
@@ -215,7 +225,13 @@ class FrontState extends State<Front> {
                             : null;
                       });
                     },
-                    child: Text(languagelist[index]));
+                    child: Text(
+                      languagelist[index],
+                      style: TextStyle(
+                          color: (widget.currentLang == languagelist[index])
+                              ? widget.onSelected
+                              : Colors.black),
+                    ));
               }),
         ),
         Focus(
@@ -299,7 +315,6 @@ class TextFieldState extends State<TextField> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -337,7 +352,13 @@ class TextFieldState extends State<TextField> {
                             : null;
                       });
                     },
-                    child: Text(languagelist[index]));
+                    child: Text(
+                      languagelist[index],
+                      style: TextStyle(
+                          color: (widget.currentLang == languagelist[index])
+                              ? widget.onSelected
+                              : Colors.black),
+                    ));
               }),
         ),
         Focus(
@@ -407,7 +428,6 @@ class EmailState extends State<Email> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -445,7 +465,13 @@ class EmailState extends State<Email> {
                             : null;
                       });
                     },
-                    child: Text(languagelist[index]));
+                    child: Text(
+                      languagelist[index],
+                      style: TextStyle(
+                          color: (widget.currentLang == languagelist[index])
+                              ? widget.onSelected
+                              : Colors.black),
+                    ));
               }),
         ),
         Focus(
@@ -507,7 +533,6 @@ class NumberState extends State<Number> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -541,7 +566,13 @@ class NumberState extends State<Number> {
                             : null;
                       });
                     },
-                    child: Text(languagelist[index]));
+                    child: Text(
+                      languagelist[index],
+                      style: TextStyle(
+                          color: (widget.currentLang == languagelist[index])
+                              ? widget.onSelected
+                              : Colors.black),
+                    ));
               }),
         ),
         Focus(
@@ -599,7 +630,6 @@ class CheckboxState extends State<Checkbox> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -633,7 +663,13 @@ class CheckboxState extends State<Checkbox> {
                             : null;
                       });
                     },
-                    child: Text(languagelist[index]));
+                    child: Text(
+                      languagelist[index],
+                      style: TextStyle(
+                          color: (widget.currentLang == languagelist[index])
+                              ? widget.onSelected
+                              : Colors.black),
+                    ));
               }),
         ),
         Column(
@@ -698,7 +734,6 @@ class BrandState extends State<Brand> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
@@ -732,7 +767,13 @@ class BrandState extends State<Brand> {
                             : null;
                       });
                     },
-                    child: Text(languagelist[index]));
+                    child: Text(
+                      languagelist[index],
+                      style: TextStyle(
+                          color: (widget.currentLang == languagelist[index])
+                              ? widget.onSelected
+                              : Colors.black),
+                    ));
               }),
         ),
         Column(

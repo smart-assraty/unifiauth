@@ -1,5 +1,3 @@
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart'
-    show HtmlWidget;
 import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
 
@@ -54,6 +52,7 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget adminLogin() {
+    GlobalKey<FormState> formKey = GlobalKey<FormState>();
     TextEditingController login = TextEditingController();
     TextEditingController password = TextEditingController();
     return Container(
@@ -90,20 +89,30 @@ class AdminPageState extends State<AdminPage> {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                    TextFormField(
-                      decoration: const InputDecoration(labelText: "Login"),
-                      controller: login,
-                    ),
-                    TextFormField(
-                      decoration: const InputDecoration(labelText: "Password"),
-                      obscureText: true,
-                      controller: password,
+                    Form(
+                      key: formKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            decoration:
+                                const InputDecoration(labelText: "Login"),
+                            controller: login,
+                          ),
+                          TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: "Password",
+                            ),
+                            obscureText: true,
+                            controller: password,
+                          ),
+                        ],
+                      ),
                     ),
                     ElevatedButton(
                         onPressed: () async {
-                          var send = await adminHelper.login(
-                              login.text, password.text);
-                          token = await send!.stream.bytesToString();
+                          var send = (await adminHelper.login(
+                              login.text, password.text))!;
+                          token = await send.stream.bytesToString();
                           if (send.statusCode == 200) {
                             forms = await generateForms();
                             frontAdminField = (forms.last.getChild() as Front);
@@ -112,13 +121,10 @@ class AdminPageState extends State<AdminPage> {
                               stage = 1;
                             });
                           } else {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Card(
-                                    child: HtmlWidget(token.toString()),
-                                  );
-                                });
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content:
+                                        Text("Invalid username or password")));
                           }
                         },
                         child: const Text("Submit")),
@@ -146,39 +152,29 @@ class AdminPageState extends State<AdminPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(1000),
-                      color: Colors.white,
-                      border: Border.all(
-                          width: 2,
-                          color: (stage == 1) ? Colors.amber : Colors.grey),
-                    ),
-                    child: Center(
-                      child: TextButton(
-                          onPressed: () {
-                            stage = 1;
-                          },
-                          child: const Text("1")),
-                    )),
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(1000),
+                    color: Colors.white,
+                    border: Border.all(
+                        width: 2,
+                        color: (stage == 1) ? Colors.amber : Colors.grey),
+                  ),
+                  child: const Center(child: Text("1")),
+                ),
                 Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Colors.white,
-                      border: Border.all(
-                          width: 2,
-                          color: (stage == 2) ? Colors.amber : Colors.grey),
-                    ),
-                    child: Center(
-                      child: TextButton(
-                          onPressed: () {
-                            stage = 2;
-                          },
-                          child: const Text("2")),
-                    )),
+                  height: 30,
+                  width: 30,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                    color: Colors.white,
+                    border: Border.all(
+                        width: 2,
+                        color: (stage == 2) ? Colors.amber : Colors.grey),
+                  ),
+                  child: const Center(child: Text("2")),
+                ),
                 Container(
                   height: 30,
                   width: 30,
@@ -189,13 +185,7 @@ class AdminPageState extends State<AdminPage> {
                         width: 2,
                         color: (stage == 3) ? Colors.amber : Colors.grey),
                   ),
-                  child: Center(
-                    child: TextButton(
-                        onPressed: () {
-                          stage = 3;
-                        },
-                        child: const Text("3")),
-                  ),
+                  child: const Center(child: Text("3")),
                 ),
               ],
             ),
@@ -320,52 +310,90 @@ class AdminPageState extends State<AdminPage> {
   Widget contentPageTwo() {
     return Container(
       padding: const EdgeInsets.only(top: 20),
-      width: 350,
+      width: 400,
       child: Column(
         children: [
           contentHeader(),
           SizedBox(
             height: 500,
-            child: ListView(
-              children: [Column(children: forms)],
+            child: ListView.builder(
+              itemCount: forms.length,
+              itemBuilder: (context, index) {
+                return Column(
+                  children: [
+                    forms[index],
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
+                );
+              },
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      forms.add(AdminForm());
-                    });
-                  },
-                  child: const Text("Add new field")),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      forms.removeLast();
-                    });
-                  },
-                  child: const Text("Remove field")),
-            ],
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        forms.add(AdminForm());
+                      });
+                    },
+                    child: const Text(
+                      "Add new field",
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    )),
+                OutlinedButton(
+                    onPressed: () {
+                      setState(() {
+                        forms.removeLast();
+                      });
+                    },
+                    child: const Text(
+                      "Remove field",
+                      style: TextStyle(fontSize: 14, color: Colors.black),
+                    )),
+              ],
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                  onPressed: () => setState(() {
-                        stage = 1;
-                      }),
-                  child: const Text("Back")),
-              ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      stage = 3;
-                    });
-                  },
-                  child: const Text("Next")),
-            ],
-          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                OutlinedButton(
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all<Size>(
+                            const Size(150, 20)),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.amber)),
+                    onPressed: () => setState(() {
+                          stage = 1;
+                        }),
+                    child: const Text(
+                      "Back",
+                      style: TextStyle(fontSize: 24, color: Colors.black),
+                    )),
+                OutlinedButton(
+                    style: ButtonStyle(
+                        fixedSize: MaterialStateProperty.all<Size>(
+                            const Size(150, 20)),
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.amber)),
+                    onPressed: () {
+                      setState(() {
+                        stage = 3;
+                      });
+                    },
+                    child: const Text(
+                      "Next",
+                      style: TextStyle(fontSize: 24, color: Colors.black),
+                    )),
+              ],
+            ),
+          )
         ],
       ),
     );
