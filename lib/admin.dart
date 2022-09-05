@@ -90,28 +90,14 @@ class AdminPageState extends State<AdminPage> {
                       style:
                           TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     ),
-                    Column(
-                      children: [
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text("Login"),
-                        ),
-                        TextFormField(
-                          controller: login,
-                        ),
-                      ],
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: "Login"),
+                      controller: login,
                     ),
-                    Column(
-                      children: [
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text("Password"),
-                        ),
-                        TextFormField(
-                          obscureText: true,
-                          controller: password,
-                        ),
-                      ],
+                    TextFormField(
+                      decoration: const InputDecoration(labelText: "Password"),
+                      obscureText: true,
+                      controller: password,
                     ),
                     ElevatedButton(
                         onPressed: () async {
@@ -169,8 +155,12 @@ class AdminPageState extends State<AdminPage> {
                           width: 2,
                           color: (stage == 1) ? Colors.amber : Colors.grey),
                     ),
-                    child: const Center(
-                      child: Text("1"),
+                    child: Center(
+                      child: TextButton(
+                          onPressed: () {
+                            stage = 1;
+                          },
+                          child: const Text("1")),
                     )),
                 Container(
                     height: 30,
@@ -182,8 +172,12 @@ class AdminPageState extends State<AdminPage> {
                           width: 2,
                           color: (stage == 2) ? Colors.amber : Colors.grey),
                     ),
-                    child: const Center(
-                      child: Text("2"),
+                    child: Center(
+                      child: TextButton(
+                          onPressed: () {
+                            stage = 2;
+                          },
+                          child: const Text("2")),
                     )),
                 Container(
                   height: 30,
@@ -195,8 +189,12 @@ class AdminPageState extends State<AdminPage> {
                         width: 2,
                         color: (stage == 3) ? Colors.amber : Colors.grey),
                   ),
-                  child: const Center(
-                    child: Text("3"),
+                  child: Center(
+                    child: TextButton(
+                        onPressed: () {
+                          stage = 3;
+                        },
+                        child: const Text("3")),
                   ),
                 ),
               ],
