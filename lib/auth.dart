@@ -1,3 +1,4 @@
+import 'package:avoid_keyboard/avoid_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
 import 'server_connector.dart' show AuthHelper;
@@ -11,7 +12,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class AuthPageState extends State<AuthPage> {
-  GlobalKey formkey = GlobalKey<FormState>();
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
   String currentLang = "rus";
   AuthHelper authHelper = AuthHelper();
   List<AuthForm> fields = [];
@@ -24,7 +25,7 @@ class AuthPageState extends State<AuthPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       body: LayoutBuilder(builder: (context, constraints) {
-        if (constraints.maxWidth < 800) {
+        if (constraints.maxWidth < 600) {
           return webMobile();
         }
         return webDesktop();
@@ -40,89 +41,95 @@ class AuthPageState extends State<AuthPage> {
             snapshot.connectionState == ConnectionState.done) {
           dynamic body = snapshot.data!;
           generateForms(body);
-          return SingleChildScrollView(
-            child: Stack(children: [
-              Container(
-                decoration: const BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage(
-                            "http://185.125.88.30/img/imageBG.jpg"),
-                        fit: BoxFit.fill)),
-                child: ListView(shrinkWrap: true, children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              color: Colors.white),
-                          child: Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Column(
-                                children: [
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: DropdownButton(
-                                        hint: Text(
-                                          currentLang,
-                                        ),
-                                        items: languagelist,
-                                        onChanged: (value) => setState(() {
-                                              currentLang = value.toString();
-                                            })),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 20),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          body["fields"]
-                                                  [body["count_fields"] - 1]
-                                              ["title"],
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        Text(body["fields"]
-                                                [body["count_fields"] - 1]
-                                            ["description"]),
-                                      ],
+          return Container(
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
+                    fit: BoxFit.fill)),
+            child: ListView(shrinkWrap: true, children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(5),
+                          color: Colors.white),
+                      child: Container(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: DropdownButton(
+                                    hint: Text(
+                                      currentLang,
                                     ),
-                                  ),
-                                  Form(
-                                      key: formkey,
-                                      child: Column(
-                                        children: [
-                                          Column(
-                                            children: fields,
-                                          ),
-                                          SizedBox(
+                                    items: languagelist,
+                                    onChanged: (value) => setState(() {
+                                          currentLang = value.toString();
+                                        })),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      body["fields"][body["count_fields"] - 1]
+                                          ["title"],
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(body["fields"]
+                                            [body["count_fields"] - 1]
+                                        ["description"]),
+                                  ],
+                                ),
+                              ),
+                              Form(
+                                key: formkey,
+                                child: AvoidKeyboard(
+                                    child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                    Column(
+                                      children: fields,
+                                    ),
+                                    (brands.isNotEmpty)
+                                        ? SizedBox(
                                             height: 100,
-                                            child: Row(
-                                              children: brands,
+                                            child: Column(
+                                              children: [
+                                                Text(brands[0].title),
+                                                Row(
+                                                  children: brands,
+                                                )
+                                              ],
                                             ),
-                                          ),
-                                        ],
-                                      )),
-                                  Align(
-                                    alignment: Alignment.centerRight,
-                                    child: ElevatedButton(
-                                      onPressed: () async {
-                                        Routemaster.of(context).push("/logged");
-                                        authHelper.connecting();
-                                        authHelper.postData(
-                                            currentLang, dataToApi, forms);
-                                      },
-                                      child: const Text("Submit"),
-                                    ),
-                                  ),
-                                ],
-                              ))),
-                    ],
-                  )
-                ]),
-              ),
+                                          )
+                                        : const SizedBox(),
+                                  ],
+                                )),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    if (formkey.currentState!.validate()) {
+                                      Routemaster.of(context).push("/logged");
+                                      authHelper.connecting();
+                                      authHelper.postData(
+                                          currentLang, dataToApi, forms);
+                                    }
+                                  },
+                                  child: const Text("Submit"),
+                                ),
+                              ),
+                            ],
+                          ))),
+                ],
+              )
             ]),
           );
         } else {
@@ -205,16 +212,19 @@ class AuthPageState extends State<AuthPage> {
                                         children: fields,
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 100,
-                                      child: ListView(
-                                          scrollDirection: Axis.vertical,
-                                          children: [
-                                            Row(
-                                              children: brands,
-                                            )
-                                          ]),
-                                    ),
+                                    (brands.isNotEmpty)
+                                        ? SizedBox(
+                                            height: 100,
+                                            child: Column(
+                                              children: [
+                                                Text(brands[0].title),
+                                                Row(
+                                                  children: brands,
+                                                )
+                                              ],
+                                            ),
+                                          )
+                                        : const SizedBox(),
                                   ],
                                 )),
                             Align(

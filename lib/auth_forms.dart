@@ -92,6 +92,12 @@ class TextFieldState extends State<TextField> {
             ),
           ),
           TextFormField(
+            validator: (value) {
+              if (value == null) {
+                return "This field can not be empty";
+              }
+              return null;
+            },
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             controller: widget.controller,
@@ -143,6 +149,14 @@ class EmailState extends State<Email> {
             ),
           ),
           TextFormField(
+            validator: (value) {
+              if (value == null) {
+                return "Please enter your email";
+              } else if (!value.contains(regExp)) {
+                return "Example: example@mail.com";
+              }
+              return null;
+            },
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             controller: widget.controller,
@@ -176,7 +190,8 @@ class Number extends AuthForm {
 }
 
 class NumberState extends State<Number> {
-  RegExp regExp = RegExp("[1-9]{11}");
+  RegExp regExp =
+      RegExp("^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}\$");
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -190,6 +205,14 @@ class NumberState extends State<Number> {
             ),
           ),
           TextFormField(
+            validator: (value) {
+              if (value == null) {
+                return "Please enter your email";
+              } else if (!value.contains(regExp)) {
+                return "Example: 8 777 777 7777";
+              }
+              return null;
+            },
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             controller: widget.controller,
