@@ -11,6 +11,7 @@ class AuthPage extends StatefulWidget {
 }
 
 class AuthPageState extends State<AuthPage> {
+  GlobalKey formkey = GlobalKey<FormState>();
   String currentLang = "rus";
   AuthHelper authHelper = AuthHelper();
   List<AuthForm> fields = [];
@@ -21,6 +22,7 @@ class AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: LayoutBuilder(builder: (context, constraints) {
         if (constraints.maxWidth < 800) {
           return webMobile();
@@ -38,93 +40,89 @@ class AuthPageState extends State<AuthPage> {
             snapshot.connectionState == ConnectionState.done) {
           dynamic body = snapshot.data!;
           generateForms(body);
-          return Container(
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
-                    fit: BoxFit.fill)),
-            child: ListView(shrinkWrap: true, children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Image(
+          return SingleChildScrollView(
+            child: Stack(children: [
+              Container(
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
                         image: NetworkImage(
-                            "http://185.125.88.30/img/imageLogo.jpg"),
-                        height: 100,
-                        width: 100,
-                      )),
-                  Container(
-                      width: 400,
-                      height: 600,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
-                          color: Colors.white),
-                      child: Container(
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: DropdownButton(
-                                    hint: Text(
-                                      currentLang,
+                            "http://185.125.88.30/img/imageBG.jpg"),
+                        fit: BoxFit.fill)),
+                child: ListView(shrinkWrap: true, children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.white),
+                          child: Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Column(
+                                children: [
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: DropdownButton(
+                                        hint: Text(
+                                          currentLang,
+                                        ),
+                                        items: languagelist,
+                                        onChanged: (value) => setState(() {
+                                              currentLang = value.toString();
+                                            })),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 20),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          body["fields"]
+                                                  [body["count_fields"] - 1]
+                                              ["title"],
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(body["fields"]
+                                                [body["count_fields"] - 1]
+                                            ["description"]),
+                                      ],
                                     ),
-                                    items: languagelist,
-                                    onChanged: (value) => setState(() {
-                                          currentLang = value.toString();
-                                        })),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      body["fields"][body["count_fields"] - 1]
-                                          ["title"],
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                  ),
+                                  Form(
+                                      key: formkey,
+                                      child: Column(
+                                        children: [
+                                          Column(
+                                            children: fields,
+                                          ),
+                                          SizedBox(
+                                            height: 100,
+                                            child: Row(
+                                              children: brands,
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                  Align(
+                                    alignment: Alignment.centerRight,
+                                    child: ElevatedButton(
+                                      onPressed: () async {
+                                        Routemaster.of(context).push("/logged");
+                                        authHelper.connecting();
+                                        authHelper.postData(
+                                            currentLang, dataToApi, forms);
+                                      },
+                                      child: const Text("Submit"),
                                     ),
-                                    Text(body["fields"]
-                                            [body["count_fields"] - 1]
-                                        ["description"]),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 320,
-                                child: ListView(
-                                  children: fields,
-                                ),
-                              ),
-                              SizedBox(
-                                height: 100,
-                                child: ListView(
-                                    scrollDirection: Axis.vertical,
-                                    children: [
-                                      Row(
-                                        children: brands,
-                                      )
-                                    ]),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    //authHelper.connecting();
-                                    authHelper.postData(
-                                        currentLang, dataToApi, forms);
-                                  },
-                                  child: const Text("Submit"),
-                                ),
-                              ),
-                            ],
-                          ))),
-                ],
-              )
+                                  ),
+                                ],
+                              ))),
+                    ],
+                  )
+                ]),
+              ),
             ]),
           );
         } else {
@@ -197,22 +195,28 @@ class AuthPageState extends State<AuthPage> {
                                 ],
                               ),
                             ),
-                            SizedBox(
-                              height: 320,
-                              child: ListView(
-                                children: fields,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 100,
-                              child: ListView(
-                                  scrollDirection: Axis.vertical,
+                            Form(
+                                key: formkey,
+                                child: Column(
                                   children: [
-                                    Row(
-                                      children: brands,
-                                    )
-                                  ]),
-                            ),
+                                    SizedBox(
+                                      height: 320,
+                                      child: ListView(
+                                        children: fields,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 100,
+                                      child: ListView(
+                                          scrollDirection: Axis.vertical,
+                                          children: [
+                                            Row(
+                                              children: brands,
+                                            )
+                                          ]),
+                                    ),
+                                  ],
+                                )),
                             Align(
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(

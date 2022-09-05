@@ -11,7 +11,6 @@ abstract class AuthForm extends StatefulWidget {
   String type;
   String title;
   String? description;
-  //final formkey = GlobalKey<FormState>();
 
   AuthForm({
     super.key,
@@ -93,6 +92,8 @@ class TextFieldState extends State<TextField> {
             ),
           ),
           TextFormField(
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             controller: widget.controller,
             keyboardType: TextInputType.text,
             decoration: InputDecoration(
@@ -142,6 +143,8 @@ class EmailState extends State<Email> {
             ),
           ),
           TextFormField(
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             controller: widget.controller,
             keyboardType: TextInputType.emailAddress,
           ),
@@ -187,6 +190,8 @@ class NumberState extends State<Number> {
             ),
           ),
           TextFormField(
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             controller: widget.controller,
             keyboardType: TextInputType.number,
           ),
