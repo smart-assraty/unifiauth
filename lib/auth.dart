@@ -42,6 +42,8 @@ class AuthPageState extends State<AuthPage> {
           dynamic body = snapshot.data!;
           generateForms(body);
           return Container(
+            height: double.infinity,
+            alignment: Alignment.center,
             decoration: const BoxDecoration(
                 image: DecorationImage(
                     image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
@@ -51,8 +53,9 @@ class AuthPageState extends State<AuthPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
+                      width: 450,
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(5),
+                          borderRadius: BorderRadius.circular(20),
                           color: Colors.white),
                       child: Container(
                           padding: const EdgeInsets.all(20),
@@ -112,18 +115,21 @@ class AuthPageState extends State<AuthPage> {
                                   ],
                                 )),
                               ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: ElevatedButton(
-                                  onPressed: () async {
-                                    if (formkey.currentState!.validate()) {
-                                      Routemaster.of(context).push("/logged");
-                                      authHelper.connecting();
-                                      authHelper.postData(
-                                          currentLang, dataToApi, forms);
-                                    }
-                                  },
-                                  child: const Text("Submit"),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: ElevatedButton(
+                                    onPressed: () async {
+                                      if (formkey.currentState!.validate()) {
+                                        Routemaster.of(context).push("/logged");
+                                        authHelper.connecting();
+                                        authHelper.postData(
+                                            currentLang, dataToApi, forms);
+                                      }
+                                    },
+                                    child: const Text("Submit"),
+                                  ),
                                 ),
                               ),
                             ],
@@ -204,13 +210,11 @@ class AuthPageState extends State<AuthPage> {
                             ),
                             Form(
                                 key: formkey,
-                                child: Column(
+                                child: ListView(
+                                  shrinkWrap: true,
                                   children: [
-                                    SizedBox(
-                                      height: 320,
-                                      child: ListView(
-                                        children: fields,
-                                      ),
+                                    Column(
+                                      children: fields,
                                     ),
                                     (brands.isNotEmpty)
                                         ? SizedBox(
@@ -231,10 +235,12 @@ class AuthPageState extends State<AuthPage> {
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Routemaster.of(context).push("/logged");
-                                  authHelper.connecting();
-                                  authHelper.postData(
-                                      currentLang, dataToApi, forms);
+                                  if (formkey.currentState!.validate()) {
+                                    Routemaster.of(context).push("/logged");
+                                    authHelper.connecting();
+                                    authHelper.postData(
+                                        currentLang, dataToApi, forms);
+                                  }
                                 },
                                 child: const Text("Submit"),
                               ),

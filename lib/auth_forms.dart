@@ -81,33 +81,19 @@ class TextField extends AuthForm {
 class TextFieldState extends State<TextField> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              widget.title,
-            ),
-          ),
-          TextFormField(
-            validator: (value) {
-              if (value == null) {
-                return "This field can not be empty";
-              }
-              return null;
-            },
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            controller: widget.controller,
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              hintText: widget.description,
-            ),
-          ),
-        ],
-      ),
+    return TextFormField(
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "This field can not be empty";
+        }
+        return null;
+      },
+      textInputAction: TextInputAction.next,
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
+      controller: widget.controller,
+      keyboardType: TextInputType.text,
+      decoration: InputDecoration(
+          hintText: widget.description, labelText: widget.title),
     );
   }
 }
@@ -138,32 +124,20 @@ class EmailState extends State<Email> {
       "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*\$");
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              widget.title,
-            ),
-          ),
-          TextFormField(
-            validator: (value) {
-              if (value == null) {
-                return "Please enter your email";
-              } else if (!value.contains(regExp)) {
-                return "Example: example@mail.com";
-              }
-              return null;
-            },
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            controller: widget.controller,
-            keyboardType: TextInputType.emailAddress,
-          ),
-        ],
-      ),
+    return TextFormField(
+      validator: (value) {
+        if (value == null) {
+          return "Please enter your email";
+        } else if (!value.contains(regExp)) {
+          return "Example: example@mail.com";
+        }
+        return null;
+      },
+      decoration: InputDecoration(labelText: widget.title),
+      textInputAction: TextInputAction.next,
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
+      controller: widget.controller,
+      keyboardType: TextInputType.emailAddress,
     );
   }
 }
@@ -194,32 +168,20 @@ class NumberState extends State<Number> {
       RegExp("^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}\$");
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 80,
-      child: Column(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              widget.title,
-            ),
-          ),
-          TextFormField(
-            validator: (value) {
-              if (value == null) {
-                return "Please enter your email";
-              } else if (!value.contains(regExp)) {
-                return "Example: 8 777 777 7777";
-              }
-              return null;
-            },
-            textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            controller: widget.controller,
-            keyboardType: TextInputType.number,
-          ),
-        ],
-      ),
+    return TextFormField(
+      validator: (value) {
+        if (value == null) {
+          return "Please enter your email";
+        } else if (!value.contains(regExp)) {
+          return "Example: 8 777 777 7777";
+        }
+        return null;
+      },
+      decoration: InputDecoration(labelText: widget.title),
+      textInputAction: TextInputAction.next,
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
+      controller: widget.controller,
+      keyboardType: TextInputType.number,
     );
   }
 }
