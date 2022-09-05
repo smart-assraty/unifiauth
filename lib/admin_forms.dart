@@ -142,19 +142,7 @@ abstract class AdminField extends StatefulWidget {
 
     return object;
   }
-
-  //@override
-  //State<AdminField> createState() => AdminFieldState();
 }
-
-/*class AdminFieldState extends State<AdminField> {
-  AdminFieldState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text("Something got wrong");
-  }
-}*/
 
 // ignore: must_be_immutable
 class Front extends AdminField {
@@ -230,30 +218,29 @@ class FrontState extends State<Front> {
                     child: Text(languagelist[index]));
               }),
         ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            TextFormField(
-              controller: super.widget.controllerTitle,
-              onChanged: (value) => setState(() {
-                super.widget.title.addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerTitle.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Title"),
+            controller: super.widget.controllerTitle,
+          ),
         ),
-        Column(
-          children: [
-            const Text("Podzagolovok"),
-            TextFormField(
-              controller: super.widget.controllerDesc,
-              onChanged: (value) => setState(() {
-                super
-                    .widget
-                    .description
-                    .addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerDesc.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Description"),
+            controller: super.widget.controllerDesc,
+          ),
         ),
       ]),
     );
@@ -353,30 +340,29 @@ class TextFieldState extends State<TextField> {
                     child: Text(languagelist[index]));
               }),
         ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            TextFormField(
-              controller: super.widget.controllerTitle,
-              onChanged: (value) => setState(() {
-                super.widget.title.addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerTitle.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Title"),
+            controller: super.widget.controllerTitle,
+          ),
         ),
-        Column(
-          children: [
-            const Text("Podzagolovok"),
-            TextFormField(
-              controller: super.widget.controllerDesc,
-              onChanged: (value) => setState(() {
-                super
-                    .widget
-                    .description
-                    .addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerDesc.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Description"),
+            controller: super.widget.controllerDesc,
+          ),
         ),
       ]),
     );
@@ -462,16 +448,17 @@ class EmailState extends State<Email> {
                     child: Text(languagelist[index]));
               }),
         ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            TextFormField(
-              controller: super.widget.controllerTitle,
-              onChanged: (value) => setState(() {
-                super.widget.title.addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerTitle.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Title"),
+            controller: super.widget.controllerTitle,
+          ),
         ),
       ]),
     );
@@ -557,16 +544,17 @@ class NumberState extends State<Number> {
                     child: Text(languagelist[index]));
               }),
         ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            TextFormField(
-              controller: super.widget.controllerTitle,
-              onChanged: (value) => setState(() {
-                super.widget.title.addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerTitle.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Title"),
+            controller: super.widget.controllerTitle,
+          ),
         ),
       ]),
     );

@@ -108,6 +108,7 @@ class AdminPageState extends State<AdminPage> {
                           child: Text("Password"),
                         ),
                         TextFormField(
+                          obscureText: true,
                           controller: password,
                         ),
                       ],
@@ -248,7 +249,6 @@ class AdminPageState extends State<AdminPage> {
                   onPressed: () {
                     setState(() {
                       languagelist.add(languages[languagelist.length].value!);
-                      debugPrint(languagelist.length.toString());
                       frontAdminField = Front();
                     });
                   },
@@ -421,15 +421,23 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
+//Test
   Widget contentPageFour() {
     return ListView(
       shrinkWrap: true,
       children: [
         ListView.builder(
             shrinkWrap: true,
-            itemCount: theJson.split(',').length,
+            itemCount: forms.length,
             itemBuilder: (context, index) {
-              return Text(theJson.split(',')[index]);
+              return Column(
+                children: [
+                  Text(forms[index].getChild().type),
+                  Text(forms[index].getChild().controllerApi.text),
+                  Text(forms[index].getChild().title.toString()),
+                  Text(forms[index].getChild().description.toString()),
+                ],
+              );
             }),
         const Spacer(),
         ElevatedButton(
@@ -440,14 +448,13 @@ class AdminPageState extends State<AdminPage> {
                   sendTo.text = "";
                 }),
             child: const Text("Back")),
-        //TEST
         ElevatedButton(
             onPressed: () => Routemaster.of(context).push("/guest/s/default"),
             child: const Text("Auth")),
-        //TEST
       ],
     );
   }
+  //Test
 
   Future<List<AdminForm>> generateForms() async {
     var body = await adminHelper.getForms(token!);
@@ -467,9 +474,8 @@ class AdminPageState extends State<AdminPage> {
       for (int i = 0; i < body["settings"]["count_langs"]; i++) {
         languagelist.add(languages.elementAt(i).value!);
       }
-      debugPrint(languagelist.toString());
       List<AdminForm> formsFromServer = [];
-
+      sendTo.text = body["settings"]["api_url"];
       for (int i = 0; i < body["settings"]["count_fields"]; ++i) {
         String type = "";
         Map<String, dynamic> title;
@@ -479,7 +485,7 @@ class AdminPageState extends State<AdminPage> {
         type = body["fields"][i]["type"];
         title = Map.from(body["fields"][i]["title"]);
         description = Map.from(body["fields"][i]["description"]);
-        apiName = body["fields"][i]["api_url"];
+        apiName = body["fields"][i]["api_name"];
         brand = body["fields"][i]["brand_icon"];
         apiName ??= "";
 
