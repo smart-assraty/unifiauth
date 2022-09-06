@@ -251,7 +251,7 @@ class FrontState extends State<Front> {
           onFocusChange: (value) {
             (value)
                 ? null
-                : widget.title
+                : widget.description
                     .addAll({widget.currentLang: widget.controllerDesc.text});
           },
           child: TextFormField(
@@ -374,7 +374,7 @@ class TextFieldState extends State<TextField> {
           onFocusChange: (value) {
             (value)
                 ? null
-                : widget.title
+                : widget.description
                     .addAll({widget.currentLang: widget.controllerDesc.text});
           },
           child: TextFormField(
@@ -780,16 +780,19 @@ class BrandState extends State<Brand> {
                       response, "UploadBrandImage", token!, widget.id);
                 },
                 icon: const Icon(Icons.abc)),
-            Focus(
-              onFocusChange: (value) {
-                (value)
-                    ? null
-                    : widget.title.addAll(
-                        {widget.currentLang: widget.controllerIcon.text});
-              },
-              child: TextFormField(
-                decoration: const InputDecoration(labelText: "API Value"),
-                controller: widget.controllerApi,
+            SizedBox(
+              width: 100,
+              child: Focus(
+                onFocusChange: (value) {
+                  (value)
+                      ? null
+                      : widget.title.addAll(
+                          {widget.currentLang: widget.controllerIcon.text});
+                },
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "API Value"),
+                  controller: widget.controllerIcon,
+                ),
               ),
             ),
           ],

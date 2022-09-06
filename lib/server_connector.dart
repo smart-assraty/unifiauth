@@ -2,45 +2,48 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
+import 'package:unifiapp/admin_forms.dart';
 import 'dart:convert';
 
 import 'main.dart';
 
-String api = "$server/api";
+String uvicorn = "http://185.125.88.30:8001";
 
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
-    var response = await get(Uri.parse("$api/GetLoginForm/$language"));
     try {
+      var response = await get(Uri.parse("$uvicorn/GetLoginForm/$language"));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       return "$e";
     }
   }
 
-  Future<void> connecting() async {
-    await get(
+  Future<int> connecting() async {
+    var response = await get(
       Uri.parse("$server/admin/connecting.php/?${Uri.base.query}"),
       headers: {
         "Charset": "utf-8",
       },
     );
+    return response.statusCode;
   }
 
-  Future<void> postData(
+  Future<int> postData(
       String lang, List<Map<String, dynamic>> dataToApi, List forms) async {
     for (int i = 0; i < forms.length; ++i) {
       dataToApi.add(forms.elementAt(i).commit());
     }
     Map<String, dynamic> mapToServer = {"lang": lang, "fields": dataToApi};
-    await post(
-      Uri.parse("$api/GuestAuth/"),
+    var response = await post(
+      Uri.parse("$uvicorn/GuestAuth/"),
       headers: {
         "Content-type": "application/json",
       },
       body: json.encode(mapToServer),
     );
     dataToApi.clear();
+    return response.statusCode;
   }
 }
 
@@ -48,7 +51,7 @@ class AdminHelper {
   Future<StreamedResponse?> login(String username, String password) async {
     try {
       var request =
-          MultipartRequest("POST", Uri.parse("$api/AdministratorSignIn"));
+          MultipartRequest("POST", Uri.parse("$uvicorn/AdministratorSignIn"));
       request.fields.addAll({"username": username, "password": password});
       request.headers.addAll({"Content-type": "multipart/form-data"});
       return await request.send();
@@ -60,7 +63,8 @@ class AdminHelper {
 
   Future<dynamic> getForms(String token) async {
     try {
-      var response = await get(Uri.parse("$api/GetAdminLoginForm/"), headers: {
+      var response =
+          await get(Uri.parse("$uvicorn/GetAdminLoginForm/"), headers: {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
@@ -73,7 +77,7 @@ class AdminHelper {
 
   Future<List<dynamic>> getLangs() async {
     try {
-      var request = await get(Uri.parse("$api/GetAllLangsList/"));
+      var request = await get(Uri.parse("$uvicorn/GetAllLangsList/"));
       return json.decode(request.body);
     } catch (e) {
       debugPrint("$e");
@@ -82,7 +86,7 @@ class AdminHelper {
   }
 
   Future<String> postToServer(
-      List forms, List languages, String api, String token) async {
+      List<AdminForm> forms, List languages, String api, String token) async {
     try {
       List<Map<String, dynamic>> list = [];
       for (int i = 0; i < forms.length; i++) {
@@ -101,7 +105,7 @@ class AdminHelper {
         },
         "fields": list,
       });
-      var request = await post(Uri.parse("$api/LoginForm/"),
+      var request = await post(Uri.parse("$uvicorn/LoginForm/"),
           headers: {
             "Content-type": "application/json",
             "Authorization":
@@ -111,7 +115,7 @@ class AdminHelper {
 
       return json.encode(request.body);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("Post To Server Error: $e");
       return "Error: $e";
     }
   }
@@ -135,7 +139,7 @@ class AdminHelper {
       var bytes = image.files.first.bytes!;
       var request = MultipartRequest(
         "POST",
-        Uri.parse("$api/$toDir/"),
+        Uri.parse("$uvicorn/$toDir/"),
       );
       var listImage = List<int>.from(bytes);
       request.headers.addAll({

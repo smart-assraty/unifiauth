@@ -230,6 +230,7 @@ class CheckBoxState extends State<CheckBox> {
 class Brand extends AuthForm {
   String apiValue;
   String brand;
+  bool isPicked = false;
   Brand({
     super.key,
     required super.apiKey,
@@ -245,22 +246,37 @@ class Brand extends AuthForm {
 class BrandState extends State<Brand> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+        height: 70,
+        width: 70,
+        decoration: (widget.isPicked)
+            ? const BoxDecoration(
+                border: Border(
+                bottom: BorderSide(color: Colors.amber, width: 2),
+                top: BorderSide(color: Colors.amber, width: 2),
+                right: BorderSide(color: Colors.amber, width: 2),
+                left: BorderSide(color: Colors.amber, width: 2),
+              ))
+            : null,
         child: Column(
-      children: [
-        Text(
-          widget.title,
-        ),
-        IconButton(
-          iconSize: 50,
-          icon: Image(
-            image: NetworkImage("$server/img/${widget.brand}"),
-          ),
-          onPressed: () async {
-            widget.data = widget.apiValue;
-          },
-        ),
-      ],
-    ));
+          children: [
+            IconButton(
+              iconSize: 50,
+              icon: Image(
+                image: NetworkImage("$server/img/${widget.brand}"),
+              ),
+              onPressed: () async {
+                setState(() {
+                  (widget.isPicked)
+                      ? widget.isPicked = false
+                      : widget.isPicked = true;
+                  (widget.isPicked)
+                      ? widget.data = widget.apiValue
+                      : widget.data = null;
+                });
+              },
+            ),
+          ],
+        ));
   }
 }

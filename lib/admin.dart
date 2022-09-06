@@ -121,7 +121,6 @@ class AdminPageState extends State<AdminPage> {
                               stage = 1;
                             });
                           } else {
-                            debugPrint(send.reasonPhrase);
                             // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -273,7 +272,13 @@ class AdminPageState extends State<AdminPage> {
                         backgroundImage = await adminHelper.pickfile();
                         var result = await adminHelper.sendImage(
                             backgroundImage, "UploadBGImage", token!, null);
-                        debugPrint(result);
+                        if (result.runtimeType == String) {
+                          // ignore: use_build_context_synchronously
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Failed to load file. Please try again")));
+                        }
                       }),
                 ],
               ),
@@ -454,6 +459,7 @@ class AdminPageState extends State<AdminPage> {
     return ListView(
       shrinkWrap: true,
       children: [
+        Text(theJson),
         ListView.builder(
             shrinkWrap: true,
             itemCount: forms.length,
@@ -467,7 +473,6 @@ class AdminPageState extends State<AdminPage> {
                 ],
               );
             }),
-        const Spacer(),
         ElevatedButton(
             onPressed: () => setState(() {
                   forms.clear();
@@ -498,7 +503,6 @@ class AdminPageState extends State<AdminPage> {
                 value: getLangs[index],
                 child: Text(getLangs[index]),
               ));
-
       for (int i = 0; i < body["settings"]["count_langs"]; i++) {
         languagelist.add(languages.elementAt(i).value!);
       }
@@ -523,6 +527,12 @@ class AdminPageState extends State<AdminPage> {
       }
       return formsFromServer;
     } else {
+      languages = List.generate(
+          getLangs.length,
+          (index) => DropdownMenuItem<String>(
+                value: getLangs[index],
+                child: Text(getLangs[index]),
+              ));
       return [AdminForm()..setChild(Front())];
     }
   }

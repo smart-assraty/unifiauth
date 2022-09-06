@@ -234,12 +234,15 @@ class AuthPageState extends State<AuthPage> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (formkey.currentState!.validate()) {
-                                    Routemaster.of(context).push("/logged");
                                     authHelper.connecting();
-                                    authHelper.postData(
+                                    var response = await authHelper.postData(
                                         currentLang, dataToApi, forms);
+                                    if (response == 200) {
+                                      // ignore: use_build_context_synchronously
+                                      Routemaster.of(context).push("/logged");
+                                    }
                                   }
                                 },
                                 child: const Text("Submit"),
@@ -300,7 +303,7 @@ class AuthPageState extends State<AuthPage> {
               body["fields"][i]["title"],
               body["fields"][i]["description"],
               body["fields"][i]["brand_icon"],
-              body["fields"][i]["api_value"],
+              body["fields"][i]["api_value"].toString(),
               controllers[i]));
     }
   }
