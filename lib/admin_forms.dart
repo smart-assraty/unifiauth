@@ -15,7 +15,7 @@ class AdminForm extends StatefulWidget {
   }
 
   factory AdminForm.fromJson(String type, int id, Map<String, dynamic> title,
-      Map<String, dynamic>? description, String apiName, String? brand) {
+      Map<String, dynamic>? description, String apiName, String? apiValue) {
     if (type == "email") {
       return AdminForm()..setChild(Email.fromJson(id, title, apiName));
     } else if (type == "number") {
@@ -23,7 +23,8 @@ class AdminForm extends StatefulWidget {
     } else if (type == "checkbox") {
       return AdminForm()..setChild(Checkbox.fromJson(id, title, apiName));
     } else if (type == "brand") {
-      return AdminForm()..setChild(Brand.fromJson(id, title, apiName, brand));
+      return AdminForm()
+        ..setChild(Brand.fromJson(id, title, apiName, apiValue!));
     } else if (type == "front") {
       return AdminForm()..setChild(Front.fromJson(id, title, description));
     } else {
@@ -318,17 +319,13 @@ class TextFieldState extends State<TextField> {
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Key"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: widget.controllerApi,
-                ),
-              ),
-            ],
+          child: SizedBox(
+            width: 250,
+            height: 40,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "Key"),
+              controller: widget.controllerApi,
+            ),
           ),
         ),
         SizedBox(
@@ -431,17 +428,13 @@ class EmailState extends State<Email> {
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Key"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: widget.controllerApi,
-                ),
-              ),
-            ],
+          child: SizedBox(
+            width: 250,
+            height: 40,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "Key"),
+              controller: widget.controllerApi,
+            ),
           ),
         ),
         SizedBox(
@@ -536,17 +529,13 @@ class NumberState extends State<Number> {
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Key"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: widget.controllerApi,
-                ),
-              ),
-            ],
+          child: SizedBox(
+            width: 250,
+            height: 40,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "Key"),
+              controller: widget.controllerApi,
+            ),
           ),
         ),
         SizedBox(
@@ -633,17 +622,13 @@ class CheckboxState extends State<Checkbox> {
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Key"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: widget.controllerApi,
-                ),
-              ),
-            ],
+          child: SizedBox(
+            width: 250,
+            height: 40,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "Key"),
+              controller: widget.controllerApi,
+            ),
           ),
         ),
         SizedBox(
@@ -672,16 +657,17 @@ class CheckboxState extends State<Checkbox> {
                     ));
               }),
         ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            TextFormField(
-              controller: super.widget.controllerTitle,
-              onChanged: (value) => setState(() {
-                super.widget.title.addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerTitle.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Title"),
+            controller: super.widget.controllerTitle,
+          ),
         ),
       ]),
     );
@@ -696,13 +682,13 @@ class Brand extends AdminField {
     super.id = 0,
   });
 
-  Brand.fromJson(int id, dynamic title, String apiName, String? brand,
+  Brand.fromJson(int id, dynamic title, String apiName, String apiValue,
       {Key? key})
       : super(key: key, type: "brand", id: id) {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = title[currentLang];
     super.title = title;
-    super.brand = brand;
+    super.controllerIcon.text = apiValue;
   }
 
   @override
@@ -720,6 +706,7 @@ class Brand extends AdminField {
       "api_name": controllerApi.text,
       "brand_icon": brand,
       "field_title": fieldTitle,
+      "api_value": controllerIcon.text
     };
     return object;
   }
@@ -737,17 +724,13 @@ class BrandState extends State<Brand> {
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: Row(
-            children: [
-              const Text("Key"),
-              SizedBox(
-                width: 250,
-                height: 40,
-                child: TextFormField(
-                  controller: widget.controllerApi,
-                ),
-              ),
-            ],
+          child: SizedBox(
+            width: 250,
+            height: 40,
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "Key"),
+              controller: widget.controllerApi,
+            ),
           ),
         ),
         SizedBox(
@@ -776,16 +759,17 @@ class BrandState extends State<Brand> {
                     ));
               }),
         ),
-        Column(
-          children: [
-            const Text("Zagolovok"),
-            TextFormField(
-              controller: super.widget.controllerTitle,
-              onChanged: (value) => setState(() {
-                super.widget.title.addAll({super.widget.currentLang: value});
-              }),
-            ),
-          ],
+        Focus(
+          onFocusChange: (value) {
+            (value)
+                ? null
+                : widget.title
+                    .addAll({widget.currentLang: widget.controllerTitle.text});
+          },
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Title"),
+            controller: widget.controllerTitle,
+          ),
         ),
         Row(
           children: [
@@ -796,6 +780,18 @@ class BrandState extends State<Brand> {
                       response, "UploadBrandImage", token!, widget.id);
                 },
                 icon: const Icon(Icons.abc)),
+            Focus(
+              onFocusChange: (value) {
+                (value)
+                    ? null
+                    : widget.title.addAll(
+                        {widget.currentLang: widget.controllerIcon.text});
+              },
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "API Value"),
+                controller: widget.controllerApi,
+              ),
+            ),
           ],
         )
       ]),

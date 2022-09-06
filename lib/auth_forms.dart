@@ -1,6 +1,4 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' show MultipartFile, MultipartRequest;
 
 import 'main.dart';
 
@@ -24,8 +22,14 @@ abstract class AuthForm extends StatefulWidget {
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
 
-  factory AuthForm.createForm(String type, String apiKey, String title,
-      String? description, String? brand, TextEditingController? controller) {
+  factory AuthForm.createForm(
+      String type,
+      String apiKey,
+      String title,
+      String? description,
+      String? brand,
+      String? apiValue,
+      TextEditingController? controller) {
     if (type == "email") {
       return Email(
         title: title,
@@ -45,6 +49,7 @@ abstract class AuthForm extends StatefulWidget {
         title: title,
         apiKey: apiKey,
         brand: brand!,
+        apiValue: apiValue!,
       );
     } else {
       return TextField(
@@ -223,12 +228,14 @@ class CheckBoxState extends State<CheckBox> {
 
 //ignore: must_be_immutable
 class Brand extends AuthForm {
+  String apiValue;
   String brand;
   Brand({
     super.key,
     required super.apiKey,
     required super.title,
     required this.brand,
+    required this.apiValue,
   }) : super(type: "brand");
 
   @override
@@ -247,47 +254,13 @@ class BrandState extends State<Brand> {
         IconButton(
           iconSize: 50,
           icon: Image(
-            image: NetworkImage("http://185.125.88.30/img/${widget.brand}"),
+            image: NetworkImage("$server/img/${widget.brand}"),
           ),
           onPressed: () async {
-            String imageUrl = await sendImage(await pickfile(), "Brands");
-            setState(() {
-              widget.data = imageUrl;
-            });
+            widget.data = widget.apiValue;
           },
         ),
       ],
     ));
-  }
-
-  Future<dynamic> pickfile() async {
-    try {
-      FilePickerResult? file = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowCompression: false,
-      );
-      return file;
-    } catch (e) {
-      return "$e";
-    }
-  }
-
-  Future<String> sendImage(FilePickerResult image, String toDir) async {
-    try {
-      var bytes = image.files.first.bytes!;
-      var request = MultipartRequest(
-        "POST",
-        Uri.parse("$server:8000/$toDir/"),
-      );
-      var listImage = List<int>.from(bytes);
-      request.headers["content-type"] = "multipart/form-data";
-      var file =
-          MultipartFile.fromBytes("file", listImage, filename: 'myImage.png');
-      request.files.add(file);
-      var response = await request.send();
-      return response.stream.bytesToString();
-    } catch (e) {
-      return "$e";
-    }
   }
 }

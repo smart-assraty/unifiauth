@@ -283,6 +283,7 @@ class AuthPageState extends State<AuthPage> {
           body["fields"][i]["title"],
           body["fields"][i]["description"],
           body["fields"][i]["brand_icon"],
+          body["fields"][i]["api_value"],
           controllers[i]));
       (body["fields"][i]["type"] != "brand")
           ? fields.add(AuthForm.createForm(
@@ -291,6 +292,7 @@ class AuthPageState extends State<AuthPage> {
               body["fields"][i]["title"],
               body["fields"][i]["description"],
               body["fields"][i]["brand_icon"],
+              body["fields"][i]["api_value"],
               controllers[i]))
           : brands.add(AuthForm.createForm(
               body["fields"][i]["type"],
@@ -298,6 +300,7 @@ class AuthPageState extends State<AuthPage> {
               body["fields"][i]["title"],
               body["fields"][i]["description"],
               body["fields"][i]["brand_icon"],
+              body["fields"][i]["api_value"],
               controllers[i]));
     }
   }

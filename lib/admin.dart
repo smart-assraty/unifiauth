@@ -509,16 +509,16 @@ class AdminPageState extends State<AdminPage> {
         Map<String, dynamic> title;
         Map<String, dynamic> description;
         String? apiName = "";
-        String? brand = "";
+        String? apiValue = "";
         type = body["fields"][i]["type"];
         title = Map.from(body["fields"][i]["title"]);
         description = Map.from(body["fields"][i]["description"]);
         apiName = body["fields"][i]["api_name"];
-        brand = body["fields"][i]["brand_icon"];
+        apiValue = body["fields"][i]["api_value"];
         apiName ??= "";
 
         formsFromServer.add(AdminForm.fromJson(
-            type, numerator, title, description, apiName, brand));
+            type, numerator, title, description, apiName, apiValue));
         numerator++;
       }
       return formsFromServer;

@@ -6,7 +6,7 @@ import 'dart:convert';
 
 import 'main.dart';
 
-String api = "https://freewifi.ws-group.kz/api";
+String api = "$server/api";
 
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
@@ -96,7 +96,6 @@ class AdminHelper {
           "count_langs": languages.length,
           "logo_img": "string",
           "bg_image": "string",
-          "bg_color": null,
           "count_fields": forms.length,
           "api_url": api
         },

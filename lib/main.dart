@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'admin.dart';
 import 'auth.dart';
 
-String server = "https://185.125.88.30"; // To Config file
+String server = "https://freewifi.ws-group.kz"; // To Config file
 
 void main() {
   setPathUrlStrategy();
