@@ -1,6 +1,7 @@
 import 'package:avoid_keyboard/avoid_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
+import 'package:unifiapp/main.dart';
 import 'server_connector.dart' show AuthHelper;
 import 'auth_forms.dart';
 
@@ -44,9 +45,9 @@ class AuthPageState extends State<AuthPage> {
           return Container(
             height: double.infinity,
             alignment: Alignment.center,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
+                    image: NetworkImage("$server/img/imageBG.jpg"),
                     fit: BoxFit.fill)),
             child: ListView(shrinkWrap: true, children: [
               Column(
@@ -154,19 +155,18 @@ class AuthPageState extends State<AuthPage> {
           dynamic body = snapshot.data!;
           generateForms(body);
           return Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 image: DecorationImage(
-                    image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
+                    image: NetworkImage("$server/img/imageBG.jpg"),
                     fit: BoxFit.fill)),
             child: Center(
                 child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                const Padding(
-                    padding: EdgeInsets.all(20),
+                Padding(
+                    padding: const EdgeInsets.all(20),
                     child: Image(
-                      image: NetworkImage(
-                          "http://185.125.88.30/img/imageLogo.jpg"),
+                      image: NetworkImage("$server/img/imageLogo.jpg"),
                       height: 300,
                       width: 300,
                     )),

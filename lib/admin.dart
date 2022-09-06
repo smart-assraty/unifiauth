@@ -121,6 +121,8 @@ class AdminPageState extends State<AdminPage> {
                               stage = 1;
                             });
                           } else {
+                            debugPrint(send.reasonPhrase);
+                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                     content:
@@ -270,7 +272,7 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () async {
                         backgroundImage = await adminHelper.pickfile();
                         var result = await adminHelper.sendImage(
-                            backgroundImage, "UploadBGImage", token!);
+                            backgroundImage, "UploadBGImage", token!, null);
                         debugPrint(result);
                       }),
                 ],
@@ -286,7 +288,7 @@ class AdminPageState extends State<AdminPage> {
                       onPressed: () async {
                         logo = await adminHelper.pickfile();
                         await adminHelper.sendImage(
-                            logo, "UploadLogoImage", token!);
+                            logo, "UploadLogoImage", token!, null);
                       }),
                 ],
               ),
@@ -314,9 +316,9 @@ class AdminPageState extends State<AdminPage> {
       child: Column(
         children: [
           contentHeader(),
-          SizedBox(
-            height: 500,
+          Expanded(
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: forms.length,
               itemBuilder: (context, index) {
                 return Column(

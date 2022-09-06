@@ -1,13 +1,16 @@
 import 'package:file_picker/file_picker.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'main.dart';
 
+String api = "https://freewifi.ws-group.kz/api";
+
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
-    var response = await get(Uri.parse("$server:8000/GetLoginForm/$language"));
+    var response = await get(Uri.parse("$api/GetLoginForm/$language"));
     try {
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
@@ -31,7 +34,7 @@ class AuthHelper {
     }
     Map<String, dynamic> mapToServer = {"lang": lang, "fields": dataToApi};
     await post(
-      Uri.parse("$server:8000/GuestAuth/"),
+      Uri.parse("$api/GuestAuth/"),
       headers: {
         "Content-type": "application/json",
       },
@@ -44,8 +47,8 @@ class AuthHelper {
 class AdminHelper {
   Future<StreamedResponse?> login(String username, String password) async {
     try {
-      var request = MultipartRequest(
-          "POST", Uri.parse("$server:8000/AdministratorSignIn"));
+      var request =
+          MultipartRequest("POST", Uri.parse("$api/AdministratorSignIn"));
       request.fields.addAll({"username": username, "password": password});
       request.headers.addAll({"Content-type": "multipart/form-data"});
       return await request.send();
@@ -57,8 +60,7 @@ class AdminHelper {
 
   Future<dynamic> getForms(String token) async {
     try {
-      var response =
-          await get(Uri.parse("$server:8000/GetAdminLoginForm/"), headers: {
+      var response = await get(Uri.parse("$api/GetAdminLoginForm/"), headers: {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
@@ -71,7 +73,7 @@ class AdminHelper {
 
   Future<List<dynamic>> getLangs() async {
     try {
-      var request = await get(Uri.parse("$server:8000/GetAllLangsList/"));
+      var request = await get(Uri.parse("$api/GetAllLangsList/"));
       return json.decode(request.body);
     } catch (e) {
       debugPrint("$e");
@@ -100,7 +102,7 @@ class AdminHelper {
         },
         "fields": list,
       });
-      var request = await post(Uri.parse("$server:8000/LoginForm/"),
+      var request = await post(Uri.parse("$api/LoginForm/"),
           headers: {
             "Content-type": "application/json",
             "Authorization":
@@ -129,12 +131,12 @@ class AdminHelper {
   }
 
   Future<String> sendImage(
-      FilePickerResult image, String toDir, String token) async {
+      FilePickerResult image, String toDir, String token, int? number) async {
     try {
       var bytes = image.files.first.bytes!;
       var request = MultipartRequest(
         "POST",
-        Uri.parse("$server:8000/$toDir/"),
+        Uri.parse("$api/$toDir/"),
       );
       var listImage = List<int>.from(bytes);
       request.headers.addAll({
@@ -143,38 +145,15 @@ class AdminHelper {
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
       });
 
-      var file = MultipartFile.fromBytes("file", listImage);
+      var file = MultipartFile.fromBytes("file", listImage,
+          contentType: MediaType("application", "octet-stream"),
+          filename: image.files.first.name);
       request.fields.addAll({"img_type": "${image.files.first.extension}"});
+      if (number != null) {
+        request.fields.addAll({"number": "$number"});
+      }
       request.files.add(file);
 
-      var response = await request.send();
-      return response.stream.bytesToString();
-    } catch (e) {
-      debugPrint("$e");
-      return "$e";
-    }
-  }
-
-  Future<String> sendIcon(
-      FilePickerResult image, String toDir, String token, int number) async {
-    try {
-      var bytes = image.files.first.bytes!;
-      var request = MultipartRequest(
-        "POST",
-        Uri.parse("$server:8000/$toDir/"),
-      );
-      var listImage = List<int>.from(bytes);
-      request.headers.addAll({
-        "Content-type": "multipart/form-data",
-        "Authorization":
-            "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
-      });
-      var file = MultipartFile.fromBytes("file", listImage);
-      request.fields.addAll({
-        "number": number.toString(),
-        "img_type": "${image.files.first.extension}"
-      });
-      request.files.add(file);
       var response = await request.send();
       return response.stream.bytesToString();
     } catch (e) {

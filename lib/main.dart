@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'admin.dart';
 import 'auth.dart';
 
-String server = "http://185.125.88.30"; // To Config file
+String server = "https://185.125.88.30"; // To Config file
 
 void main() {
   setPathUrlStrategy();
@@ -21,9 +21,9 @@ final routes = RouteMap(routes: {
   "/logged": (_) => MaterialPage(
           child: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
               image: DecorationImage(
-                  image: NetworkImage("http://185.125.88.30/img/imageBG.jpg"),
+                  image: NetworkImage("$server/img/imageBG.jpg"),
                   fit: BoxFit.fill)),
           child: const Center(
               child: Text("Welcome! Please wait until you are authorized.",

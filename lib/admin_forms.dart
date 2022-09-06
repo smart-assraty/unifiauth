@@ -792,7 +792,7 @@ class BrandState extends State<Brand> {
             IconButton(
                 onPressed: () async {
                   var response = await adminHelper.pickfile();
-                  widget.brand = await adminHelper.sendIcon(
+                  widget.brand = await adminHelper.sendImage(
                       response, "UploadBrandImage", token!, widget.id);
                 },
                 icon: const Icon(Icons.abc)),
