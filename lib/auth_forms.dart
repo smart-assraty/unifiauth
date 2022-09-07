@@ -209,18 +209,18 @@ class CheckBoxState extends State<CheckBox> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 50,
-      child: Column(
+      child: Row(
         children: [
-          Text(
-            widget.title,
-          ),
           Checkbox(
               value: accept,
               onChanged: (value) => setState(() {
                     FocusScope.of(context).requestFocus(FocusNode());
                     accept = value!;
                     widget.data = accept;
-                  }))
+                  })),
+          Text(
+            widget.title,
+          ),
         ],
       ),
     );
@@ -248,8 +248,8 @@ class BrandState extends State<Brand> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 70,
-        width: 70,
+        height: 120,
+        width: 120,
         decoration: (widget.isPicked)
             ? const BoxDecoration(
                 border: Border(
@@ -259,26 +259,22 @@ class BrandState extends State<Brand> {
                 left: BorderSide(color: Colors.amber, width: 2),
               ))
             : null,
-        child: Column(
-          children: [
-            IconButton(
-              iconSize: 50,
-              icon: Image(
-                image: NetworkImage("$server/img/${widget.brand}"),
-              ),
-              onPressed: () async {
-                setState(() {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  (widget.isPicked)
-                      ? widget.isPicked = false
-                      : widget.isPicked = true;
-                  (widget.isPicked)
-                      ? widget.data = widget.apiValue
-                      : widget.data = null;
-                });
-              },
-            ),
-          ],
+        child: IconButton(
+          iconSize: 120,
+          icon: Image(
+            image: NetworkImage("$server/img/${widget.brand}"),
+          ),
+          onPressed: () async {
+            setState(() {
+              FocusScope.of(context).requestFocus(FocusNode());
+              (widget.isPicked)
+                  ? widget.isPicked = false
+                  : widget.isPicked = true;
+              (widget.isPicked)
+                  ? widget.data = widget.apiValue
+                  : widget.data = null;
+            });
+          },
         ));
   }
 }

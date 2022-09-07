@@ -13,7 +13,7 @@ class AuthPage extends StatefulWidget {
   AuthPage({super.key});
 
   String currentLang = "rus";
-  late String currentFlag;
+  String? currentFlag;
   AuthHelper authHelper = AuthHelper();
   List<DropdownMenuItem<String>> languagelist = [];
   List<Map<String, dynamic>> dataToApi = [];
@@ -35,7 +35,9 @@ class AuthPageState extends State<AuthPage> {
                 snapshot.connectionState == ConnectionState.done) {
               dynamic body = snapshot.data!;
               widget.languagelist = setLanguages(body);
-              widget.currentFlag = widget.languagelist[0].value!;
+              (widget.currentFlag == null)
+                  ? widget.currentFlag = widget.languagelist[0].value!
+                  : null;
               return Container(
                   height: double.infinity,
                   alignment: Alignment.center,
@@ -48,12 +50,15 @@ class AuthPageState extends State<AuthPage> {
                       alignment: Alignment.center,
                       child: DropdownButton(
                         hint: Text(
-                          widget.currentFlag,
+                          widget.currentFlag!,
+                          style: const TextStyle(color: Colors.white),
                         ),
                         items: widget.languagelist,
                         onChanged: (value) => setState(() {
+                          debugPrint(widget.currentFlag);
                           widget.currentLang = value.toString().split(" ")[1];
                           widget.currentFlag = value.toString();
+                          debugPrint(widget.currentFlag);
                         }),
                       ),
                     ),
@@ -68,7 +73,7 @@ class AuthPageState extends State<AuthPage> {
                         submit: body["submit_lang"]),
                   ]));
             } else {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             }
           },
         ),
@@ -149,48 +154,64 @@ class AuthFieldsState extends State<AuthFields> {
   }
 
   Widget webMobile() {
-    return ListView(shrinkWrap: true, children: [
-      Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          Container(
-              width: 450,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20), color: Colors.white),
-              child: Container(
+    return ListView(
+      shrinkWrap: true,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(right: 5, left: 5),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.white, borderRadius: BorderRadius.circular(25)),
+            child: Column(
+              children: [
+                Padding(
                   padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
+                  child: Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        children: [
+                          Text(
+                            widget.title,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(widget.description),
+                        ],
+                      ),
+                    ),
+                    Form(
+                      key: widget.formkey,
+                      child: AvoidKeyboard(
                         child: Column(
                           children: [
-                            Text(
-                              widget.title,
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            Text(widget.description),
-                          ],
-                        ),
-                      ),
-                      Form(
-                        key: widget.formkey,
-                        child: AvoidKeyboard(
-                            child: ListView(
-                          shrinkWrap: true,
-                          children: [
-                            Column(
-                              children: widget.fields,
+                            ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: widget.fields.length,
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    widget.fields[index],
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                  ],
+                                );
+                              },
                             ),
                             (widget.brands.isNotEmpty)
                                 ? SizedBox(
-                                    height: 100,
+                                    height: 150,
                                     child: Column(
                                       children: [
-                                        Text(widget.brands[0].title),
+                                        Text(
+                                          widget.brands[0].title,
+                                          style: const TextStyle(
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.bold),
+                                        ),
                                         Row(
                                           children: widget.brands,
                                         )
@@ -199,36 +220,41 @@ class AuthFieldsState extends State<AuthFields> {
                                   )
                                 : const SizedBox(),
                           ],
-                        )),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton(
-                            style: buttonStyle,
-                            onPressed: () async {
-                              if (widget.formkey.currentState!.validate()) {
-                                widget.authHelper.connecting();
-                                var response = await widget.authHelper.postData(
-                                    widget.currentLang,
-                                    widget.dataToApi,
-                                    widget.forms);
-                                if (response == 200) {
-                                  // ignore: use_build_context_synchronously
-                                  Routemaster.of(context).push("/logged");
-                                }
-                              }
-                            },
-                            child: Text(widget.submit),
-                          ),
                         ),
                       ),
-                    ],
-                  ))),
-        ],
-      )
-    ]);
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          style: buttonStyle,
+                          onPressed: () async {
+                            if (widget.formkey.currentState!.validate()) {
+                              widget.authHelper.connecting();
+                              var response = await widget.authHelper.postData(
+                                  widget.currentLang,
+                                  widget.dataToApi,
+                                  widget.forms);
+                              if (response == 200) {
+                                // ignore: use_build_context_synchronously
+                                Routemaster.of(context).push("/logged");
+                              }
+                            }
+                          },
+                          child: Text(widget.submit,
+                              style: const TextStyle(color: Colors.black)),
+                        ),
+                      ),
+                    ),
+                  ]),
+                ),
+              ],
+            ),
+          ),
+        )
+      ],
+    );
   }
 
   Widget webDesktop() {
@@ -269,18 +295,33 @@ class AuthFieldsState extends State<AuthFields> {
                     ),
                     Form(
                       key: widget.formkey,
-                      child: ListView(
-                        shrinkWrap: true,
+                      child: Column(
                         children: [
-                          Column(
-                            children: widget.fields,
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: widget.fields.length,
+                            itemBuilder: (context, index) {
+                              return Column(
+                                children: [
+                                  widget.fields[index],
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                           (widget.brands.isNotEmpty)
                               ? SizedBox(
-                                  height: 100,
+                                  height: 150,
                                   child: Column(
                                     children: [
-                                      Text(widget.brands[0].title),
+                                      Text(
+                                        widget.brands[0].title,
+                                        style: const TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold),
+                                      ),
                                       Row(
                                         children: widget.brands,
                                       )
@@ -308,7 +349,10 @@ class AuthFieldsState extends State<AuthFields> {
                             }
                           }
                         },
-                        child: Text(widget.submit),
+                        child: Text(
+                          widget.submit,
+                          style: const TextStyle(color: Colors.black),
+                        ),
                       ),
                     ),
                   ],

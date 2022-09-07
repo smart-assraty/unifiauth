@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:layout/layout.dart';
 import 'package:routemaster/routemaster.dart';
 
 import 'server_connector.dart' show AdminHelper;
@@ -31,15 +32,15 @@ class AdminPageState extends State<AdminPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Layout(
+        child: Scaffold(
       appBar: AppBar(
-        //foregroundColor: Colors.black,
         backgroundColor: Colors.black,
       ),
       body: Center(
         child: getContent(),
       ),
-    );
+    ));
   }
 
   Widget getContent() {
