@@ -20,7 +20,7 @@ void main() {
 
 final routes = RouteMap(routes: {
   "/": (_) => const MaterialPage(child: AdminPage()),
-  "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
+  "/guest/s/default": (_) => MaterialPage(child: AuthPage()),
   "/logged": (_) => MaterialPage(
           child: Scaffold(
         body: Container(

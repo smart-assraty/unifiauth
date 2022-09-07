@@ -217,6 +217,7 @@ class CheckBoxState extends State<CheckBox> {
           Checkbox(
               value: accept,
               onChanged: (value) => setState(() {
+                    FocusScope.of(context).requestFocus(FocusNode());
                     accept = value!;
                     widget.data = accept;
                   }))
@@ -267,6 +268,7 @@ class BrandState extends State<Brand> {
               ),
               onPressed: () async {
                 setState(() {
+                  FocusScope.of(context).requestFocus(FocusNode());
                   (widget.isPicked)
                       ? widget.isPicked = false
                       : widget.isPicked = true;
