@@ -86,7 +86,7 @@ class AdminHelper {
     }
   }
 
-  Future<String> postToServer(
+  Future<String> postToServer(String bgImage, String logoImage,
       List<AdminForm> forms, List languages, String api, String token) async {
     try {
       List<Map<String, dynamic>> list = [];
@@ -99,8 +99,8 @@ class AdminHelper {
         "settings": {
           "langs": languages,
           "count_langs": languages.length,
-          "logo_img": "string",
-          "bg_image": "string",
+          "logo_image": logoImage,
+          "bg_image": bgImage,
           "count_fields": forms.length,
           "api_url": api
         },

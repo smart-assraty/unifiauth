@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
 import 'package:routemaster/routemaster.dart';
+import 'package:file_picker/file_picker.dart';
 
 import 'server_connector.dart' show AdminHelper;
 import 'main.dart';
@@ -20,6 +21,8 @@ String? token;
 class AdminPageState extends State<AdminPage> {
   AdminHelper adminHelper = AdminHelper();
 
+  late String bgImage;
+  late String logoImage;
   int numerator = 0;
   late String theJson;
   int stage = 0;
@@ -280,9 +283,11 @@ class AdminPageState extends State<AdminPage> {
                       ),
                       onPressed: () async {
                         backgroundImage = await adminHelper.pickfile();
-                        var result = await adminHelper.sendImage(
-                            backgroundImage, "UploadBGImage", token!, null);
-                        if (result.runtimeType == String) {
+                        if (backgroundImage.runtimeType == FilePickerResult) {
+                          bgImage = await adminHelper.sendImage(
+                              backgroundImage, "UploadBGImage", token!, null);
+                        }
+                        if (backgroundImage.runtimeType == String) {
                           // ignore: use_build_context_synchronously
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -302,8 +307,17 @@ class AdminPageState extends State<AdminPage> {
                       ),
                       onPressed: () async {
                         logo = await adminHelper.pickfile();
-                        await adminHelper.sendImage(
-                            logo, "UploadLogoImage", token!, null);
+                        if (logo.runtimeType == FilePickerResult) {
+                          logoImage = await adminHelper.sendImage(
+                              logo, "UploadLogoImage", token!, null);
+                        }
+                        if (logo.runtimeType == String) {
+                          // ignore: use_build_context_synchronously
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text(
+                                      "Failed to load file. Please try again")));
+                        }
                       }),
                 ],
               ),
@@ -453,7 +467,7 @@ class AdminPageState extends State<AdminPage> {
                 var formForAdminField = AdminForm();
                 formForAdminField.setChild(frontAdminField);
                 forms.add(formForAdminField);
-                theJson = await adminHelper.postToServer(
+                theJson = await adminHelper.postToServer(bgImage, logoImage,
                     forms, languagelist, sendTo.text, token!);
                 setState(() {
                   stage = 4;
@@ -475,7 +489,8 @@ class AdminPageState extends State<AdminPage> {
     return ListView(
       shrinkWrap: true,
       children: [
-        Text(theJson),
+        Text(bgImage),
+        Text(logoImage),
         ListView.builder(
             shrinkWrap: true,
             itemCount: forms.length,

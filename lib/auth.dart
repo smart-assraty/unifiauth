@@ -43,7 +43,8 @@ class AuthPageState extends State<AuthPage> {
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
                       image: DecorationImage(
-                          image: NetworkImage("$server/img/imageBG.jpg"),
+                          image:
+                              NetworkImage("$server/img/${body['bg_image']}"),
                           fit: BoxFit.fill)),
                   child: Column(children: [
                     Align(
@@ -63,14 +64,15 @@ class AuthPageState extends State<AuthPage> {
                       ),
                     ),
                     AuthFields(
-                        forms: generateForms(body),
-                        languagelist: widget.languagelist,
-                        currentLang: widget.currentLang,
-                        title: body["fields"][body["count_fields"] - 1]
-                            ["title"],
-                        description: body["fields"][body["count_fields"] - 1]
-                            ["description"],
-                        submit: body["submit_lang"]),
+                      forms: generateForms(body),
+                      languagelist: widget.languagelist,
+                      currentLang: widget.currentLang,
+                      title: body["fields"][body["count_fields"] - 1]["title"],
+                      description: body["fields"][body["count_fields"] - 1]
+                          ["description"],
+                      submit: body["submit_lang"],
+                      logo: body["logo_image"],
+                    ),
                   ]));
             } else {
               return const Center(child: CircularProgressIndicator());
@@ -117,10 +119,11 @@ class AuthFields extends StatefulWidget {
   late List<AuthForm> forms;
   late List<DropdownMenuItem<String>> languagelist;
   AuthHelper authHelper = AuthHelper();
-  late String currentLang;
-  late String title;
-  late String description;
-  late String submit;
+  String currentLang;
+  String title;
+  String description;
+  String submit;
+  String logo;
   AuthFields(
       {super.key,
       required this.forms,
@@ -128,7 +131,8 @@ class AuthFields extends StatefulWidget {
       required this.currentLang,
       required this.title,
       required this.description,
-      required this.submit}) {
+      required this.submit,
+      required this.logo}) {
     for (var element in forms) {
       (element.type == "brand") ? brands.add(element) : fields.add(element);
     }
@@ -148,8 +152,9 @@ class AuthFieldsState extends State<AuthFields> {
   Widget build(BuildContext context) {
     final breakpoint = Breakpoint.fromMediaQuery(context);
     return Layout(
-      child:
-          (breakpoint.window > WindowSize.small) ? webDesktop() : webMobile(),
+      child: (breakpoint.window > WindowSize.small)
+          ? webDesktop(widget.logo)
+          : webMobile(),
     );
   }
 
@@ -257,7 +262,7 @@ class AuthFieldsState extends State<AuthFields> {
     );
   }
 
-  Widget webDesktop() {
+  Widget webDesktop(String logo) {
     return Center(
         child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -265,7 +270,7 @@ class AuthFieldsState extends State<AuthFields> {
         Padding(
             padding: const EdgeInsets.all(20),
             child: Image(
-              image: NetworkImage("$server/img/imageLogo.jpg"),
+              image: NetworkImage("$server/img/$logo"),
               height: 300,
               width: 300,
             )),
