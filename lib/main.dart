@@ -9,6 +9,10 @@ import 'admin.dart';
 import 'auth.dart';
 
 String server = "https://freewifi.ws-group.kz"; // To Config file
+ButtonStyle buttonStyle = ButtonStyle(
+    fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
+    backgroundColor: MaterialStateProperty.all<Color>(Colors.amber));
+TextStyle buttonText = const TextStyle(color: Colors.black);
 
 void main() {
   setPathUrlStrategy();

@@ -14,8 +14,14 @@ class AdminForm extends StatefulWidget {
     adminField = newAdminField;
   }
 
-  factory AdminForm.fromJson(String type, int id, Map<String, dynamic> title,
-      Map<String, dynamic>? description, String apiName, String? apiValue) {
+  factory AdminForm.fromJson(
+      String type,
+      int id,
+      Map<String, dynamic> title,
+      Map<String, dynamic>? description,
+      String apiName,
+      String? brandIcon,
+      String? apiValue) {
     if (type == "email") {
       return AdminForm()..setChild(Email.fromJson(id, title, apiName));
     } else if (type == "number") {
@@ -24,7 +30,7 @@ class AdminForm extends StatefulWidget {
       return AdminForm()..setChild(Checkbox.fromJson(id, title, apiName));
     } else if (type == "brand") {
       return AdminForm()
-        ..setChild(Brand.fromJson(id, title, apiName, apiValue!));
+        ..setChild(Brand.fromJson(id, title, apiName, brandIcon, apiValue!));
     } else if (type == "front") {
       return AdminForm()..setChild(Front.fromJson(id, title, description));
     } else {
@@ -122,7 +128,7 @@ abstract class AdminField extends StatefulWidget {
   Map<String, dynamic> title = {};
   Map<String, dynamic> description = {};
 
-  String? brand;
+  String? brandIcon;
 
   TextEditingController controllerTitle = TextEditingController();
   TextEditingController controllerDesc = TextEditingController();
@@ -146,7 +152,7 @@ abstract class AdminField extends StatefulWidget {
       "number": id,
       "field_type": type,
       "api_name": controllerApi.text,
-      "brand_icon": brand,
+      "brand_icon": brandIcon,
       "field_title": fieldTitle,
       "description": fieldDesc
     };
@@ -682,12 +688,14 @@ class Brand extends AdminField {
     super.id = 0,
   });
 
-  Brand.fromJson(int id, dynamic title, String apiName, String apiValue,
+  Brand.fromJson(
+      int id, dynamic title, String apiName, String? brandIcon, String apiValue,
       {Key? key})
       : super(key: key, type: "brand", id: id) {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = title[currentLang];
     super.title = title;
+    super.brandIcon = brandIcon;
     super.controllerIcon.text = apiValue;
   }
 
@@ -704,7 +712,7 @@ class Brand extends AdminField {
       "number": id,
       "field_type": type,
       "api_name": controllerApi.text,
-      "brand_icon": brand,
+      "brand_icon": brandIcon,
       "field_title": fieldTitle,
       "api_value": controllerIcon.text
     };
@@ -776,7 +784,7 @@ class BrandState extends State<Brand> {
             IconButton(
                 onPressed: () async {
                   var response = await adminHelper.pickfile();
-                  widget.brand = await adminHelper.sendImage(
+                  widget.brandIcon = await adminHelper.sendImage(
                       response, "UploadBrandImage", token!, widget.id);
                 },
                 icon: const Icon(Icons.abc)),

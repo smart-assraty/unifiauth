@@ -7,12 +7,13 @@ import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8001";
+String uvicorn = "http://185.125.88.30:8000";
 
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
     try {
       var response = await get(Uri.parse("$uvicorn/GetLoginForm/$language"));
+      debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       return "$e";
@@ -68,6 +69,7 @@ class AdminHelper {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
+      debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       debugPrint("$e");

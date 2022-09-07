@@ -1,10 +1,11 @@
 import 'package:avoid_keyboard/avoid_keyboard.dart';
 import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
-import 'package:unifiapp/main.dart';
+import 'main.dart';
 import 'server_connector.dart' show AuthHelper;
 import 'auth_forms.dart';
 
+// ignore: must_be_immutable
 class AuthPage extends StatefulWidget {
   AuthPage({super.key});
 
@@ -17,6 +18,7 @@ class AuthPage extends StatefulWidget {
   List<DropdownMenuItem<String>> languagelist = [];
   List<Map<String, dynamic>> dataToApi = [];
   List<TextEditingController> controllers = [];
+  dynamic body;
   @override
   State<AuthPage> createState() => AuthPageState();
 }
@@ -37,14 +39,15 @@ class AuthPageState extends State<AuthPage>
     return GestureDetector(
       onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
       child: Scaffold(
+          backgroundColor: Colors.black,
           resizeToAvoidBottomInset: false,
           body: FutureBuilder(
             future: formsGetter,
             builder: (context, AsyncSnapshot<dynamic> snapshot) {
               if (snapshot.hasData &&
                   snapshot.connectionState == ConnectionState.done) {
-                var body = snapshot.data;
-                generateForms(body);
+                widget.body = snapshot.data;
+                generateForms(widget.body);
                 return LayoutBuilder(builder: (context, constraints) {
                   if (constraints.maxWidth < 600) {
                     return webMobile();
@@ -91,21 +94,24 @@ class AuthPageState extends State<AuthPage>
                                     widget.currentLang = value.toString();
                                   })),
                         ),
-                        /*Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      widget.forms.last.title,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    Text(widget.forms.last.description!),
-                                  ],
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Column(
+                            children: [
+                              Text(
+                                widget.body["fields"]
+                                    [widget.body["count_fields"] - 1]["title"],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ),*/
+                              ),
+                              Text(widget.body["fields"]
+                                      [widget.body["count_fields"] - 1]
+                                  ["description"]),
+                            ],
+                          ),
+                        ),
                         Form(
                           key: widget.formkey,
                           child: AvoidKeyboard(
@@ -136,6 +142,7 @@ class AuthPageState extends State<AuthPage>
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: ElevatedButton(
+                              style: buttonStyle,
                               onPressed: () async {
                                 if (widget.formkey.currentState!.validate()) {
                                   widget.authHelper.connecting();
@@ -197,21 +204,24 @@ class AuthPageState extends State<AuthPage>
                                   widget.currentLang = value.toString();
                                 })),
                       ),
-                      /*Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    widget.forms.last.title,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(widget.forms.last.description!),
-                                ],
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 20),
+                        child: Column(
+                          children: [
+                            Text(
+                              widget.body["fields"]
+                                  [widget.body["count_fields"] - 1]["title"],
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
                               ),
-                            ),*/
+                            ),
+                            Text(widget.body["fields"]
+                                    [widget.body["count_fields"] - 1]
+                                ["description"]),
+                          ],
+                        ),
+                      ),
                       Form(
                         key: widget.formkey,
                         child: ListView(
@@ -239,6 +249,7 @@ class AuthPageState extends State<AuthPage>
                       Align(
                         alignment: Alignment.centerRight,
                         child: ElevatedButton(
+                          style: buttonStyle,
                           onPressed: () async {
                             if (widget.formkey.currentState!.validate()) {
                               widget.authHelper.connecting();

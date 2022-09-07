@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:routemaster/routemaster.dart';
 
 import 'server_connector.dart' show AdminHelper;
+import 'main.dart';
 import 'admin_forms.dart';
 
 class AdminPage extends StatefulWidget {
@@ -31,6 +32,10 @@ class AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        //foregroundColor: Colors.black,
+        backgroundColor: Colors.black,
+      ),
       body: Center(
         child: getContent(),
       ),
@@ -109,6 +114,7 @@ class AdminPageState extends State<AdminPage> {
                       ),
                     ),
                     ElevatedButton(
+                        style: buttonStyle,
                         onPressed: () async {
                           var send = (await adminHelper.login(
                               login.text, password.text))!;
@@ -128,7 +134,10 @@ class AdminPageState extends State<AdminPage> {
                                         Text("Invalid username or password")));
                           }
                         },
-                        child: const Text("Submit")),
+                        child: Text(
+                          "Submit",
+                          style: buttonText,
+                        )),
                   ],
                 ),
               )),
@@ -302,12 +311,16 @@ class AdminPageState extends State<AdminPage> {
           Align(
               alignment: Alignment.bottomRight,
               child: ElevatedButton(
+                style: buttonStyle,
                 onPressed: () {
                   setState(() {
                     stage = 2;
                   });
                 },
-                child: const Text("Next"),
+                child: Text(
+                  "Next",
+                  style: buttonText,
+                ),
               )),
         ],
       ),
@@ -343,24 +356,26 @@ class AdminPageState extends State<AdminPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OutlinedButton(
+                    style: buttonStyle,
                     onPressed: () {
                       setState(() {
                         forms.add(AdminForm());
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       "Add new field",
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                      style: buttonText,
                     )),
                 OutlinedButton(
+                    style: buttonStyle,
                     onPressed: () {
                       setState(() {
                         forms.removeLast();
                       });
                     },
-                    child: const Text(
+                    child: Text(
                       "Remove field",
-                      style: TextStyle(fontSize: 14, color: Colors.black),
+                      style: buttonText,
                     )),
               ],
             ),
@@ -371,11 +386,7 @@ class AdminPageState extends State<AdminPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 OutlinedButton(
-                    style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all<Size>(
-                            const Size(150, 20)),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.amber)),
+                    style: buttonStyle,
                     onPressed: () => setState(() {
                           stage = 1;
                         }),
@@ -384,11 +395,7 @@ class AdminPageState extends State<AdminPage> {
                       style: TextStyle(fontSize: 24, color: Colors.black),
                     )),
                 OutlinedButton(
-                    style: ButtonStyle(
-                        fixedSize: MaterialStateProperty.all<Size>(
-                            const Size(150, 20)),
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.amber)),
+                    style: buttonStyle,
                     onPressed: () {
                       setState(() {
                         stage = 3;
@@ -431,11 +438,16 @@ class AdminPageState extends State<AdminPage> {
           const Spacer(),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             ElevatedButton(
+                style: buttonStyle,
                 onPressed: () => setState(() {
                       stage = 2;
                     }),
-                child: const Text("Back")),
+                child: Text(
+                  "Back",
+                  style: buttonText,
+                )),
             ElevatedButton(
+              style: buttonStyle,
               onPressed: () async {
                 var formForAdminField = AdminForm();
                 formForAdminField.setChild(frontAdminField);
@@ -446,7 +458,10 @@ class AdminPageState extends State<AdminPage> {
                   stage = 4;
                 });
               },
-              child: const Text("Ready"),
+              child: Text(
+                "Ready",
+                style: buttonText,
+              ),
             ),
           ]),
         ],
@@ -470,20 +485,29 @@ class AdminPageState extends State<AdminPage> {
                   Text(forms[index].getChild().controllerApi.text),
                   Text(forms[index].getChild().title.toString()),
                   Text(forms[index].getChild().description.toString()),
+                  Text(forms[index].getChild().brandIcon.toString()),
                 ],
               );
             }),
         ElevatedButton(
+            style: buttonStyle,
             onPressed: () => setState(() {
                   forms.clear();
                   stage = 1;
                   frontAdminField = Front();
                   sendTo.text = "";
                 }),
-            child: const Text("Back")),
+            child: Text(
+              "Back",
+              style: buttonText,
+            )),
         ElevatedButton(
+            style: buttonStyle,
             onPressed: () => Routemaster.of(context).push("/guest/s/default"),
-            child: const Text("Auth")),
+            child: Text(
+              "Auth",
+              style: buttonText,
+            )),
       ],
     );
   }
@@ -512,17 +536,19 @@ class AdminPageState extends State<AdminPage> {
         String type = "";
         Map<String, dynamic> title;
         Map<String, dynamic> description;
-        String? apiName = "";
-        String? apiValue = "";
+        String? apiName;
+        String? brandIcon;
+        String? apiValue;
         type = body["fields"][i]["type"];
         title = Map.from(body["fields"][i]["title"]);
         description = Map.from(body["fields"][i]["description"]);
         apiName = body["fields"][i]["api_name"];
+        brandIcon = body["fields"][i]["brand_icon"];
         apiValue = body["fields"][i]["api_value"];
         apiName ??= "";
 
         formsFromServer.add(AdminForm.fromJson(
-            type, numerator, title, description, apiName, apiValue));
+            type, numerator, title, description, apiName, brandIcon, apiValue));
         numerator++;
       }
       return formsFromServer;
