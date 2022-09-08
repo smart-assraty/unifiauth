@@ -1,0 +1,13 @@
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/unifiapp
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/icudtl.dat
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/lib/libflutter_linux_gtk.so
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/lib/liburl_launcher_linux_plugin.so
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/version.json
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/shaders/ink_sparkle.frag
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/AssetManifest.json
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/assets/bg.jpeg
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
+/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES
