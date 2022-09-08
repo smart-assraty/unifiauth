@@ -53,10 +53,8 @@ class AuthPageState extends State<AuthPage> {
                       ),
                       items: widget.languagelist,
                       onChanged: (value) => setState(() {
-                        debugPrint(widget.currentFlag);
                         widget.currentLang = value.toString().split(" ")[1];
                         widget.currentFlag = value.toString();
-                        debugPrint(widget.currentFlag);
                       }),
                     ),
                   ),

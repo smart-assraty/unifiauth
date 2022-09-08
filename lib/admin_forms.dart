@@ -784,6 +784,11 @@ class BrandState extends State<Brand> {
             IconButton(
                 onPressed: () async {
                   var response = await adminHelper.pickfile();
+                  if (response == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content:
+                            Text("Failed to load file. Please try again")));
+                  }
                   widget.brandIcon = await adminHelper.sendImage(
                       response, "UploadBrandImage", token!, widget.id);
                 },

@@ -68,6 +68,7 @@ class AdminHelper {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
+      //debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       debugPrint("$e");
@@ -112,7 +113,7 @@ class AdminHelper {
                 "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
           },
           body: json.encode(mapToPost));
-
+      debugPrint(mapToPost.toString());
       return json.encode(request.body);
     } catch (e) {
       debugPrint("Post To Server Error: $e");

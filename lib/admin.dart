@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
@@ -22,6 +24,7 @@ String? token;
 class AdminPageState extends State<AdminPage> {
   AdminHelper adminHelper = AdminHelper();
 
+  late Future<List<AdminForm>> generator;
   late Future<dynamic> futureBody;
   late Future<List<dynamic>> futureLangs;
   late String bgImage;
@@ -49,6 +52,7 @@ class AdminPageState extends State<AdminPage> {
         stage = 1;
       }
     }
+    generator = generateForms(futureBody, futureLangs);
   }
 
   @override
@@ -231,13 +235,12 @@ class AdminPageState extends State<AdminPage> {
 
   Widget contentPageOne() {
     return FutureBuilder(
-        future: generateForms(futureBody, futureLangs),
+        future: generator,
         builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
             forms = snapshot.data!;
             frontAdminField = (forms.last.adminField as Front);
-            forms.removeLast();
             return Container(
               padding: const EdgeInsets.only(top: 20),
               width: 350,
@@ -282,18 +285,26 @@ class AdminPageState extends State<AdminPage> {
                             setState(() {
                               languagelist
                                   .add(languages[languagelist.length].value!);
+                              futureBody.then((value) =>
+                                  ++value["settings"]["count_langs"]);
                               frontAdminField = Front();
                             });
                           },
                           child: const Text(
-                            "Добавить язык +",
+                            "Add language +",
                             style: TextStyle(color: Colors.amber),
                           )),
                       TextButton(
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
-                              languagelist.removeLast();
+                              futureBody.then((value) =>
+                                  --value["settings"]["count_langs"]);
                               frontAdminField = Front();
+                              for (var element in forms) {
+                                element.adminField.title
+                                    .remove(languagelist.last.toString());
+                              }
+                              languagelist.removeLast();
                             });
                           },
                           child: const Text(
@@ -393,7 +404,7 @@ class AdminPageState extends State<AdminPage> {
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: forms.length,
+              itemCount: forms.length - 1,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
@@ -512,10 +523,9 @@ class AdminPageState extends State<AdminPage> {
                   theJson = await adminHelper.postToServer(bgImage, logoImage,
                       forms, languagelist, sendTo.text, token!);
                   // ignore: use_build_context_synchronously
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Data loaded successfully!")));
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(theJson)));
                 } catch (e) {
-                  forms.removeLast();
                   // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context)
                       .showSnackBar(SnackBar(content: Text("$e")));
@@ -539,7 +549,6 @@ class AdminPageState extends State<AdminPage> {
     if (body != null) {
       bgImage = body["settings"]["bg_image"];
       logoImage = body["settings"]["logo_image"];
-      languagelist.clear();
       languages.clear();
 
       languages = List.generate(
@@ -549,7 +558,9 @@ class AdminPageState extends State<AdminPage> {
                 child: Text(getLangs[index]),
               ));
       for (int i = 0; i < body["settings"]["count_langs"]; i++) {
-        languagelist.add(languages.elementAt(i).value!);
+        if (!languagelist.contains(languages[i].value!)) {
+          languagelist.add(languages.elementAt(i).value!);
+        }
       }
       List<AdminForm> formsFromServer = [];
       sendTo.text = body["settings"]["api_url"];
