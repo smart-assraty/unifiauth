@@ -62,6 +62,31 @@ class AdminHelper {
     }
   }
 
+  Future<String> postChangePassword(String usename, String oldPassword,
+      String newPassword, String token) async {
+    try {
+      Map<String, dynamic> params = {
+        'username': usename,
+        'old_password': oldPassword,
+        'new_password': newPassword
+      };
+
+      var request = await post(Uri.parse("$uvicorn/SetNewPassword/"),
+          headers: {
+            "Content-type": "application/x-www-form-urlencoded",
+            "Authorization":
+                "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
+            "Charset": "utf-8",
+          },
+          body: json.encode(params));
+
+      return json.encode(request.statusCode);
+    } catch (e) {
+      debugPrint("$e");
+      return "Error: $e";
+    }
+  }
+
   Future<dynamic> getForms(String token) async {
     try {
       var response =

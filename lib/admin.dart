@@ -59,14 +59,49 @@ class AdminPageState extends State<AdminPage> {
   @override
   Widget build(BuildContext context) {
     return Layout(
-        child: Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-      ),
-      body: Center(
-        child: getContent(),
-      ),
-    ));
+        child: (stage == 0)
+            ? Scaffold(
+                body: Center(
+                child: adminLogin(),
+              ))
+            : Scaffold(
+                appBar: AppBar(
+                    backgroundColor: Colors.black,
+                    centerTitle: false,
+                    title: Row(children: <Widget>[
+                      const Padding(
+                        padding: EdgeInsets.only(left: 20.0),
+                        child: Text("Admin"),
+                      ),
+                      TextButton(
+                        style: ButtonStyle(
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            stage = 4;
+                          });
+                        },
+                        child: const Text(
+                          'Change Password',
+                          style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontSize: 18),
+                        ),
+                      ),
+                    ])),
+                backgroundColor: const Color.fromARGB(255, 242, 242, 246),
+                body: Center(
+                  child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(width: 15, color: Colors.white),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: getContent()),
+                ),
+              ));
   }
 
   Widget getContent() {
@@ -78,6 +113,8 @@ class AdminPageState extends State<AdminPage> {
       return contentPageTwo();
     } else if (stage == 3) {
       return contentPageThree();
+    } else if (stage == 4) {
+      return contentPagePasswordChange();
     } else {
       return adminLogin();
     }
@@ -180,7 +217,7 @@ class AdminPageState extends State<AdminPage> {
   Widget contentHeader() {
     return Padding(
         padding: const EdgeInsets.only(
-          bottom: 10,
+          bottom: 20,
         ),
         child: Column(
           children: [
@@ -188,7 +225,13 @@ class AdminPageState extends State<AdminPage> {
               padding: EdgeInsets.only(bottom: 10),
               child: Align(
                 alignment: Alignment.centerRight,
-                child: Text("Настройка формы"),
+                child: Padding(
+                    padding: EdgeInsets.only(bottom: 20.0),
+                    child: Text(
+                      "Настройка формы ",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18), //
+                    )),
               ),
             ),
             Row(
@@ -199,24 +242,38 @@ class AdminPageState extends State<AdminPage> {
                   width: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(1000),
-                    color: Colors.white,
-                    border: Border.all(
-                        width: 2,
-                        color: (stage == 1) ? Colors.amber : Colors.grey),
+                    color: (stage > 1) ? Colors.amber : Colors.white,
+                    border: Border.all(width: 2, color: Colors.amber),
                   ),
-                  child: const Center(child: Text("1")),
+                  child: Center(
+                      child: (stage > 1)
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                            )
+                          : const Text("1")),
                 ),
                 Container(
                   height: 30,
                   width: 30,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(100),
-                    color: Colors.white,
+                    color: (stage > 2) ? Colors.amber : Colors.white,
                     border: Border.all(
                         width: 2,
-                        color: (stage == 2) ? Colors.amber : Colors.grey),
+                        color: (stage == 2)
+                            ? Colors.amber
+                            : (stage > 2)
+                                ? Colors.amber
+                                : Colors.grey),
                   ),
-                  child: const Center(child: Text("2")),
+                  child: Center(
+                      child: (stage > 2)
+                          ? const Icon(
+                              Icons.check,
+                              color: Colors.white,
+                            )
+                          : const Text("2")),
                 ),
                 Container(
                   height: 30,
@@ -258,7 +315,7 @@ class AdminPageState extends State<AdminPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          const Text("Языки"),
+                          const Text("Langs"),
                           ListView.builder(
                             itemCount: languagelist.length,
                             shrinkWrap: true,
@@ -396,7 +453,9 @@ class AdminPageState extends State<AdminPage> {
             );
           } else {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: CircularProgressIndicator(
+                color: Colors.amber,
+              ),
             );
           }
         });
@@ -541,6 +600,129 @@ class AdminPageState extends State<AdminPage> {
               },
               child: Text(
                 "Ready",
+                style: buttonText,
+              ),
+            ),
+          ]),
+        ],
+      ),
+    );
+  }
+
+  final _passwordChangeFormkey = GlobalKey<FormState>();
+  final passwordChangeControllerUsername = TextEditingController();
+  final passwordChangeControllerOldPassword = TextEditingController();
+  final passwordChangeControllerNewPassword = TextEditingController();
+  final passwordChangeControllerRepeatPassword = TextEditingController();
+  bool sendPasswordEnabled = false;
+  Widget contentPagePasswordChange() {
+    return Container(
+      padding: const EdgeInsets.only(top: 20),
+      width: 350,
+      height: 600,
+      child: Column(
+        children: [
+          Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: FocusTraversalGroup(
+                child: Form(
+                  key: _passwordChangeFormkey,
+                  autovalidateMode: AutovalidateMode.always,
+                  child: Wrap(
+                    children: [
+                      const Text("Change Administrator Password"),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              hintText: 'Enter administrator login',
+                              labelText: 'Admin'),
+                          controller: passwordChangeControllerUsername,
+                          validator: (String? value) {
+                            return (value == null) ? 'Empty field!' : null;
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              hintText: 'Enter administrator old password',
+                              labelText: '********'),
+                          controller: passwordChangeControllerOldPassword,
+                          validator: (String? value) {
+                            return (value == null) ? 'Empty field!' : null;
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              hintText: 'Enter administrator new password',
+                              labelText: '*********'),
+                          controller: passwordChangeControllerNewPassword,
+                          validator: (String? value) {
+                            return (value == null) ? 'Empty field!' : null;
+                          },
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          decoration: const InputDecoration(
+                              hintText: 'Repeat new administrator password',
+                              labelText: '*********'),
+                          controller: passwordChangeControllerRepeatPassword,
+                          validator: (String? value) {
+                            if (passwordChangeControllerRepeatPassword.text !=
+                                passwordChangeControllerNewPassword.text) {
+                              return 'Passwords do not match';
+                            }
+
+                            return (value == null) ? 'Empty field!' : null;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+          const Spacer(),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            ElevatedButton(
+                style: buttonStyle,
+                onPressed: () => setState(() {
+                      stage = 1; // Избавиться от присваиваний
+                    }),
+                child: Text(
+                  "Cancel",
+                  style: buttonText,
+                )),
+            ElevatedButton(
+              style: buttonStyle,
+              onPressed: () async {
+                if (_passwordChangeFormkey.currentState!.validate()) {
+                  theJson = await adminHelper.postChangePassword(
+                      passwordChangeControllerUsername.text,
+                      passwordChangeControllerOldPassword.text,
+                      passwordChangeControllerNewPassword.text,
+                      token!);
+                  var errorMsg = (theJson == "200")
+                      ? "Password Changed!"
+                      : "ERROR! Password have not changed!";
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text(errorMsg)));
+
+                  return setState(() {
+                    stage = 1; // Избавиться от присваиваний
+                  });
+                }
+                debugPrint("Passwod change status: $theJson");
+              },
+              child: Text(
+                "Change Password",
                 style: buttonText,
               ),
             ),

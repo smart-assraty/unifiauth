@@ -7,7 +7,6 @@ class AdminForm extends StatefulWidget {
   AdminForm({super.key});
 
   var adminField = AdminField.createAdminField("textfield");
-
   AdminField getChild() => adminField;
 
   void setChild(AdminField newAdminField) {
@@ -27,7 +26,7 @@ class AdminForm extends StatefulWidget {
     } else if (type == "number") {
       return AdminForm()..setChild(Number.fromJson(id, title, apiName));
     } else if (type == "checkbox") {
-      return AdminForm()..setChild(Checkbox.fromJson(id, title, apiName));
+      return AdminForm()..setChild(CheckBox.fromJson(id, title, apiName));
     } else if (type == "brand") {
       return AdminForm()
         ..setChild(Brand.fromJson(id, title, apiName, brandIcon, apiValue!));
@@ -58,7 +57,7 @@ class AdminFormState extends State<AdminForm> {
       child: const Text("number"),
     ),
     DropdownMenuItem(
-      value: Checkbox(),
+      value: CheckBox(),
       child: const Text("checkbox"),
     ),
     DropdownMenuItem(
@@ -92,7 +91,7 @@ class AdminFormState extends State<AdminForm> {
                           setState(() {
                             widget.adminField = value!;
                           });
-                        })
+                        }),
                   ],
                 ),
               ),
@@ -115,7 +114,7 @@ abstract class AdminField extends StatefulWidget {
     } else if (type == "number") {
       return Number();
     } else if (type == "checkbox") {
-      return Checkbox();
+      return CheckBox();
     } else if (type == "brand") {
       return Brand();
     } else {
@@ -125,6 +124,7 @@ abstract class AdminField extends StatefulWidget {
 
   Color onSelected = Colors.amber;
   int id;
+  bool isRequired = false;
   String type;
   String currentLang = languagelist[0];
   Map<String, dynamic> title = {};
@@ -310,7 +310,8 @@ class Textfield extends AdminField {
       "field_type": type,
       "api_name": controllerApi.text,
       "field_title": fieldTitle,
-      "description": fieldDesc
+      "description": fieldDesc,
+      "required_field": isRequired.toString()
     };
     return object;
   }
@@ -325,16 +326,29 @@ class TextFieldState extends State<Textfield> {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SizedBox(
-            width: 250,
-            height: 40,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: "Key"),
-              controller: widget.controllerApi,
+        Row(
+          children: [
+            Checkbox(
+              value: widget.isRequired,
+              onChanged: (value) {
+                setState(() {
+                  widget.isRequired = value!;
+                });
+              },
             ),
-          ),
+            const Text("Required"),
+            Padding(
+              padding: const EdgeInsets.only(left: 10, bottom: 10),
+              child: SizedBox(
+                width: 250,
+                height: 40,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Key"),
+                  controller: widget.controllerApi,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: 50,
@@ -420,6 +434,7 @@ class Email extends AdminField {
       "field_type": type,
       "api_name": controllerApi.text,
       "field_title": fieldTitle,
+      "required_field": isRequired.toString(),
     };
     return object;
   }
@@ -434,16 +449,29 @@ class EmailState extends State<Email> {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SizedBox(
-            width: 250,
-            height: 40,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: "Key"),
-              controller: widget.controllerApi,
+        Row(
+          children: [
+            Checkbox(
+              value: widget.isRequired,
+              onChanged: (value) {
+                setState(() {
+                  widget.isRequired = value!;
+                });
+              },
             ),
-          ),
+            const Text("Required"),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(
+                width: 250,
+                height: 40,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Key"),
+                  controller: widget.controllerApi,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: 50,
@@ -521,6 +549,7 @@ class Number extends AdminField {
       "field_type": type,
       "api_name": controllerApi.text,
       "field_title": fieldTitle,
+      "required_field": isRequired.toString(),
     };
     return object;
   }
@@ -535,16 +564,29 @@ class NumberState extends State<Number> {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SizedBox(
-            width: 250,
-            height: 40,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: "Key"),
-              controller: widget.controllerApi,
+        Row(
+          children: [
+            Checkbox(
+              value: widget.isRequired,
+              onChanged: (value) {
+                setState(() {
+                  widget.isRequired = value!;
+                });
+              },
             ),
-          ),
+            const Text("Required"),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(
+                width: 250,
+                height: 40,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Key"),
+                  controller: widget.controllerApi,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: 50,
@@ -590,10 +632,10 @@ class NumberState extends State<Number> {
 }
 
 // ignore: must_be_immutable
-class Checkbox extends AdminField {
-  Checkbox({super.key, super.type = "checkbox", super.id = 0});
+class CheckBox extends AdminField {
+  CheckBox({super.key, super.type = "checkbox", super.id = 0});
 
-  Checkbox.fromJson(int id, dynamic title, String apiName, {Key? key})
+  CheckBox.fromJson(int id, dynamic title, String apiName, {Key? key})
       : super(key: key, type: "checkbox", id: id) {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = title[currentLang];
@@ -614,30 +656,44 @@ class Checkbox extends AdminField {
       "field_type": type,
       "api_name": controllerApi.text,
       "field_title": fieldTitle,
+      "required_field": isRequired.toString(),
     };
     return object;
   }
 
   @override
-  State<Checkbox> createState() => CheckboxState();
+  State<CheckBox> createState() => CheckBoxState();
 }
 
-class CheckboxState extends State<Checkbox> {
+class CheckBoxState extends State<CheckBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SizedBox(
-            width: 250,
-            height: 40,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: "Key"),
-              controller: widget.controllerApi,
+        Row(
+          children: [
+            Checkbox(
+              value: widget.isRequired,
+              onChanged: (value) {
+                setState(() {
+                  widget.isRequired = value!;
+                });
+              },
             ),
-          ),
+            const Text("Required"),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(
+                width: 250,
+                height: 40,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Key"),
+                  controller: widget.controllerApi,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: 50,
@@ -716,7 +772,8 @@ class Brand extends AdminField {
       "api_name": controllerApi.text,
       "brand_icon": brandIcon,
       "field_title": fieldTitle,
-      "api_value": controllerIcon.text
+      "api_value": controllerIcon.text,
+      "required_field": isRequired.toString(),
     };
     return object;
   }
@@ -732,16 +789,29 @@ class BrandState extends State<Brand> {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
       child: Column(children: [
-        Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: SizedBox(
-            width: 250,
-            height: 40,
-            child: TextFormField(
-              decoration: const InputDecoration(labelText: "Key"),
-              controller: widget.controllerApi,
+        Row(
+          children: [
+            Checkbox(
+              value: widget.isRequired,
+              onChanged: (value) {
+                setState(() {
+                  widget.isRequired = value!;
+                });
+              },
             ),
-          ),
+            const Text("Required"),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: SizedBox(
+                width: 250,
+                height: 40,
+                child: TextFormField(
+                  decoration: const InputDecoration(labelText: "Key"),
+                  controller: widget.controllerApi,
+                ),
+              ),
+            ),
+          ],
         ),
         SizedBox(
           height: 50,

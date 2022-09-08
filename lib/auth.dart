@@ -109,6 +109,7 @@ class AuthPageState extends State<AuthPage> {
           body["fields"][i]["description"],
           body["fields"][i]["brand_icon"],
           body["fields"][i]["api_value"],
+          body["fields"][i]["required_field"],
           widget.controllers[i]));
     }
     return forms;

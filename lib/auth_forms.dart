@@ -9,6 +9,7 @@ abstract class AuthForm extends StatefulWidget {
   String type;
   String title;
   String? description;
+  bool isRequired;
 
   AuthForm({
     super.key,
@@ -16,6 +17,7 @@ abstract class AuthForm extends StatefulWidget {
     required this.type,
     required this.title,
     this.description,
+    required this.isRequired,
   });
 
   Map<String, dynamic> commit() {
@@ -29,21 +31,27 @@ abstract class AuthForm extends StatefulWidget {
       String? description,
       String? brand,
       String? apiValue,
+      bool? isRequired,
       TextEditingController? controller) {
     if (type == "email") {
       return Email(
         title: title,
         apiKey: apiKey,
         controller: controller!,
+        isRequired: isRequired!,
       );
     } else if (type == "number") {
       return Number(
         title: title,
         apiKey: apiKey,
         controller: controller!,
+        isRequired: isRequired!,
       );
     } else if (type == "checkbox") {
-      return CheckBox(title: title, apiKey: apiKey);
+      return CheckBox(
+        title: title,
+        apiKey: apiKey,
+      );
     } else if (type == "brand") {
       return Brand(
         title: title,
@@ -59,6 +67,7 @@ abstract class AuthForm extends StatefulWidget {
         title: title,
         description: description,
         controller: controller!,
+        isRequired: isRequired!,
       );
     }
   }
@@ -71,7 +80,8 @@ class Front extends AuthForm {
       super.apiKey = "",
       super.description = "",
       super.title = "",
-      super.type = ""});
+      super.type = "",
+      super.isRequired = false});
 
   @override
   State<Front> createState() => FrontState();
@@ -91,7 +101,8 @@ class TextField extends AuthForm {
       required super.apiKey,
       required super.title,
       required super.description,
-      required this.controller})
+      required this.controller,
+      required super.isRequired})
       : super(type: "textfield");
 
   TextEditingController controller;
@@ -110,12 +121,14 @@ class TextFieldState extends State<TextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "This field can not be empty";
-        }
-        return null;
-      },
+      validator: (widget.isRequired)
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return "This field can not be empty";
+              }
+              return null;
+            }
+          : null,
       textInputAction: TextInputAction.next,
       onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: widget.controller,
@@ -128,12 +141,13 @@ class TextFieldState extends State<TextField> {
 
 // ignore: must_be_immutable
 class Email extends AuthForm {
-  Email({
-    super.key,
-    required super.apiKey,
-    required super.title,
-    required this.controller,
-  }) : super(type: "email");
+  Email(
+      {super.key,
+      required super.apiKey,
+      required super.title,
+      required this.controller,
+      required super.isRequired})
+      : super(type: "email");
 
   TextEditingController controller;
 
@@ -154,9 +168,10 @@ class EmailState extends State<Email> {
   Widget build(BuildContext context) {
     return TextFormField(
       validator: (value) {
-        if (value == null) {
+        if (widget.isRequired && value == null) {
           return "Please enter your email";
-        } else if (!value.contains(regExp)) {
+        }
+        if (value != null && !value.contains(regExp)) {
           return "Example: example@mail.com";
         }
         return null;
@@ -172,12 +187,13 @@ class EmailState extends State<Email> {
 
 //ignore: must_be_immutable
 class Number extends AuthForm {
-  Number({
-    super.key,
-    required super.apiKey,
-    required super.title,
-    required this.controller,
-  }) : super(type: "number");
+  Number(
+      {super.key,
+      required super.apiKey,
+      required super.title,
+      required this.controller,
+      required super.isRequired})
+      : super(type: "number");
 
   TextEditingController controller;
 
@@ -198,9 +214,10 @@ class NumberState extends State<Number> {
   Widget build(BuildContext context) {
     return TextFormField(
       validator: (value) {
-        if (value == null) {
+        if (widget.isRequired && value == null) {
           return "Please enter your email";
-        } else if (!value.contains(regExp)) {
+        }
+        if (value != null && !value.contains(regExp)) {
           return "Example: 8 777 777 7777";
         }
         return null;
@@ -216,11 +233,12 @@ class NumberState extends State<Number> {
 
 //ignore: must_be_immutable
 class CheckBox extends AuthForm {
-  CheckBox({
-    super.key,
-    required super.apiKey,
-    required super.title,
-  }) : super(type: "checkbox");
+  CheckBox(
+      {super.key,
+      required super.apiKey,
+      required super.title,
+      super.isRequired = false})
+      : super(type: "checkbox");
 
   @override
   State<CheckBox> createState() => CheckBoxState();
@@ -255,13 +273,14 @@ class Brand extends AuthForm {
   String apiValue;
   String brand;
   bool isPicked = false;
-  Brand({
-    super.key,
-    required super.apiKey,
-    required super.title,
-    required this.brand,
-    required this.apiValue,
-  }) : super(type: "brand");
+  Brand(
+      {super.key,
+      required super.apiKey,
+      required super.title,
+      required this.brand,
+      required this.apiValue,
+      super.isRequired = false})
+      : super(type: "brand");
 
   @override
   State<Brand> createState() => BrandState();
