@@ -25,60 +25,56 @@ class AuthPage extends StatefulWidget {
 class AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
-      child: Scaffold(
-        body: FutureBuilder(
-          future: widget.authHelper.getForms(widget.currentLang),
-          builder: (context, snapshot) {
-            if (snapshot.hasData &&
-                snapshot.connectionState == ConnectionState.done) {
-              dynamic body = snapshot.data!;
-              widget.languagelist = setLanguages(body);
-              (widget.currentFlag == null)
-                  ? widget.currentFlag = widget.languagelist[0].value!
-                  : null;
-              return Container(
-                  height: double.infinity,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image:
-                              NetworkImage("$server/img/${body['bg_image']}"),
-                          fit: BoxFit.fill)),
-                  child: Column(children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: DropdownButton(
-                        hint: Text(
-                          widget.currentFlag!,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        items: widget.languagelist,
-                        onChanged: (value) => setState(() {
-                          debugPrint(widget.currentFlag);
-                          widget.currentLang = value.toString().split(" ")[1];
-                          widget.currentFlag = value.toString();
-                          debugPrint(widget.currentFlag);
-                        }),
+    return Scaffold(
+      body: FutureBuilder(
+        future: widget.authHelper.getForms(widget.currentLang),
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.done) {
+            dynamic body = snapshot.data!;
+            widget.languagelist = setLanguages(body);
+            (widget.currentFlag == null)
+                ? widget.currentFlag = widget.languagelist[0].value!
+                : null;
+            return Container(
+                height: double.infinity,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage("$server/img/${body['bg_image']}"),
+                        fit: BoxFit.fill)),
+                child: Column(children: [
+                  Align(
+                    alignment: Alignment.center,
+                    child: DropdownButton(
+                      hint: Text(
+                        widget.currentFlag!,
+                        style: const TextStyle(color: Colors.white),
                       ),
+                      items: widget.languagelist,
+                      onChanged: (value) => setState(() {
+                        debugPrint(widget.currentFlag);
+                        widget.currentLang = value.toString().split(" ")[1];
+                        widget.currentFlag = value.toString();
+                        debugPrint(widget.currentFlag);
+                      }),
                     ),
-                    AuthFields(
-                      forms: generateForms(body),
-                      languagelist: widget.languagelist,
-                      currentLang: widget.currentLang,
-                      title: body["fields"][body["count_fields"] - 1]["title"],
-                      description: body["fields"][body["count_fields"] - 1]
-                          ["description"],
-                      submit: body["submit_lang"],
-                      logo: body["logo_image"],
-                    ),
-                  ]));
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
+                  ),
+                  AuthFields(
+                    forms: generateForms(body),
+                    languagelist: widget.languagelist,
+                    currentLang: widget.currentLang,
+                    title: body["fields"][body["count_fields"] - 1]["title"],
+                    description: body["fields"][body["count_fields"] - 1]
+                        ["description"],
+                    submit: body["submit_lang"],
+                    logo: body["logo_image"],
+                  ),
+                ]));
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
