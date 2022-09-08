@@ -464,14 +464,19 @@ class AdminPageState extends State<AdminPage> {
             ElevatedButton(
               style: buttonStyle,
               onPressed: () async {
-                var formForAdminField = AdminForm();
-                formForAdminField.setChild(frontAdminField);
-                forms.add(formForAdminField);
-                theJson = await adminHelper.postToServer(bgImage, logoImage,
-                    forms, languagelist, sendTo.text, token!);
-                setState(() {
-                  stage = 4;
-                });
+                try {
+                  var formForAdminField = AdminForm();
+                  formForAdminField.setChild(frontAdminField);
+                  forms.add(formForAdminField);
+                  theJson = await adminHelper.postToServer(bgImage, logoImage,
+                      forms, languagelist, sendTo.text, token!);
+                  setState(() {
+                    stage = 4;
+                  });
+                } catch (e) {
+                  forms.removeLast();
+                  debugPrint("$e");
+                }
               },
               child: Text(
                 "Ready",
@@ -519,7 +524,7 @@ class AdminPageState extends State<AdminPage> {
             )),
         ElevatedButton(
             style: buttonStyle,
-            onPressed: () => Routemaster.of(context).push("/guest/s/default"),
+            onPressed: () => Routemaster.of(context).push("/guest/s/default/"),
             child: Text(
               "Auth",
               style: buttonText,
@@ -534,6 +539,8 @@ class AdminPageState extends State<AdminPage> {
     var getLangs = await adminHelper.getLangs();
 
     if (body != null) {
+      bgImage = body["settings"]["bg_image"];
+      logoImage = body["settings"]["logo_image"];
       languagelist.clear();
       languages.clear();
 
@@ -569,6 +576,8 @@ class AdminPageState extends State<AdminPage> {
       }
       return formsFromServer;
     } else {
+      bgImage = body["settings"]["bg_image"];
+      logoImage = body["settings"]["logo_image"];
       languages = List.generate(
           getLangs.length,
           (index) => DropdownMenuItem<String>(

@@ -8,7 +8,7 @@ import 'dart:html';
 import 'admin.dart';
 import 'auth.dart';
 
-String server = "https://freewifi.ws-group.kz"; // To Config file
+String server = "http://185.125.88.30"; // To Config file
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
     backgroundColor: MaterialStateProperty.all<Color>(Colors.amber));
