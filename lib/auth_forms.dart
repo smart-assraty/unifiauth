@@ -51,13 +51,36 @@ abstract class AuthForm extends StatefulWidget {
         brand: brand!,
         apiValue: apiValue!,
       );
+    } else if (type == "front") {
+      return Front();
     } else {
       return TextField(
         apiKey: apiKey,
         title: title,
+        description: description,
         controller: controller!,
       );
     }
+  }
+}
+
+// ignore: must_be_immutable
+class Front extends AuthForm {
+  Front(
+      {super.key,
+      super.apiKey = "",
+      super.description = "",
+      super.title = "",
+      super.type = ""});
+
+  @override
+  State<Front> createState() => FrontState();
+}
+
+class FrontState extends State<Front> {
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox();
   }
 }
 
@@ -67,7 +90,7 @@ class TextField extends AuthForm {
       {super.key,
       required super.apiKey,
       required super.title,
-      super.description,
+      required super.description,
       required this.controller})
       : super(type: "textfield");
 
@@ -248,8 +271,8 @@ class BrandState extends State<Brand> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 120,
-        width: 120,
+        height: 90,
+        width: 90,
         decoration: (widget.isPicked)
             ? const BoxDecoration(
                 border: Border(
@@ -260,7 +283,7 @@ class BrandState extends State<Brand> {
               ))
             : null,
         child: IconButton(
-          iconSize: 120,
+          iconSize: 90,
           icon: Image(
             image: NetworkImage("$server/img/${widget.brand}"),
           ),

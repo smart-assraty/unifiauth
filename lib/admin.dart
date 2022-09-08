@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
@@ -34,7 +32,6 @@ class AdminPageState extends State<AdminPage> {
   int stage = 0;
   late dynamic backgroundImage;
   late dynamic logo;
-  var frontAdminField = Front();
   List<AdminForm> forms = [];
 
   TextEditingController sendTo = TextEditingController();
@@ -42,17 +39,21 @@ class AdminPageState extends State<AdminPage> {
   @override
   void initState() {
     super.initState();
-
-    if (document.cookie!.isNotEmpty) {
-      String expires = json.decode(document.cookie!)["expires"];
-      if (DateTime.parse(expires).isAfter(DateTime.now())) {
-        token = document.cookie;
-        futureBody = adminHelper.getForms(token!);
-        futureLangs = adminHelper.getLangs();
-        stage = 1;
+    try {
+      if (document.cookie!.isNotEmpty) {
+        String expires = json.decode(document.cookie!)["expires"];
+        if (DateTime.parse(expires).isAfter(DateTime.now())) {
+          token = document.cookie;
+          futureBody = adminHelper.getForms(token!);
+          futureLangs = adminHelper.getLangs();
+          stage = 1;
+        }
       }
+      generator = generateForms(futureBody, futureLangs);
+    } catch (e) {
+      debugPrint("$e");
+      stage = 0;
     }
-    generator = generateForms(futureBody, futureLangs);
   }
 
   @override
@@ -150,6 +151,8 @@ class AdminPageState extends State<AdminPage> {
                               document.cookie = token;
                               futureBody = adminHelper.getForms(token!);
                               futureLangs = adminHelper.getLangs();
+                              generator =
+                                  generateForms(futureBody, futureLangs);
                               setState(() {
                                 stage = 1;
                               });
@@ -240,7 +243,6 @@ class AdminPageState extends State<AdminPage> {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
             forms = snapshot.data!;
-            frontAdminField = (forms.last.adminField as Front);
             return Container(
               padding: const EdgeInsets.only(top: 20),
               width: 350,
@@ -269,7 +271,8 @@ class AdminPageState extends State<AdminPage> {
                                       onChanged: (value) {
                                         setState(() {
                                           languagelist[index] = value!;
-                                          frontAdminField = Front();
+                                          forms.last = AdminForm()
+                                            ..setChild(Front());
                                         });
                                       }));
                             },
@@ -287,7 +290,7 @@ class AdminPageState extends State<AdminPage> {
                                   .add(languages[languagelist.length].value!);
                               futureBody.then((value) =>
                                   ++value["settings"]["count_langs"]);
-                              frontAdminField = Front();
+                              forms.last = AdminForm()..setChild(Front());
                             });
                           },
                           child: const Text(
@@ -299,12 +302,12 @@ class AdminPageState extends State<AdminPage> {
                             setState(() {
                               futureBody.then((value) =>
                                   --value["settings"]["count_langs"]);
-                              frontAdminField = Front();
                               for (var element in forms) {
                                 element.adminField.title
                                     .remove(languagelist.last.toString());
                               }
                               languagelist.removeLast();
+                              forms.last = AdminForm()..setChild(Front());
                             });
                           },
                           child: const Text(
@@ -313,7 +316,12 @@ class AdminPageState extends State<AdminPage> {
                           )),
                     ],
                   ),
-                  frontAdminField,
+                  for (var element in forms)
+                    {
+                      (element.adminField.type == "front")
+                          ? element
+                          : const SizedBox(),
+                    }.first,
                   Row(
                     children: [
                       Column(
@@ -404,8 +412,11 @@ class AdminPageState extends State<AdminPage> {
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount: forms.length - 1,
+              itemCount: forms.length,
               itemBuilder: (context, index) {
+                if (forms[index].adminField.type == "front") {
+                  return const SizedBox();
+                }
                 return Column(
                   children: [
                     forms[index],
@@ -517,9 +528,6 @@ class AdminPageState extends State<AdminPage> {
               style: buttonStyle,
               onPressed: () async {
                 try {
-                  var formForAdminField = AdminForm();
-                  formForAdminField.setChild(frontAdminField);
-                  forms.add(formForAdminField);
                   theJson = await adminHelper.postToServer(bgImage, logoImage,
                       forms, languagelist, sendTo.text, token!);
                   // ignore: use_build_context_synchronously

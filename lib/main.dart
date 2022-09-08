@@ -2,7 +2,7 @@ import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
-// ignore: avoid_web_libraries_in_flutter
+
 import 'dart:html';
 
 import 'admin.dart';

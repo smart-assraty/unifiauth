@@ -35,7 +35,7 @@ class AdminForm extends StatefulWidget {
       return AdminForm()..setChild(Front.fromJson(id, title, description));
     } else {
       return AdminForm()
-        ..setChild(TextField.fromJson(id, title, description, apiName));
+        ..setChild(Textfield.fromJson(id, title, description, apiName));
     }
   }
 
@@ -46,7 +46,7 @@ class AdminForm extends StatefulWidget {
 class AdminFormState extends State<AdminForm> {
   List<DropdownMenuItem<AdminField>> fields = [
     DropdownMenuItem(
-      value: TextField(),
+      value: Textfield(),
       child: const Text("textfield"),
     ),
     DropdownMenuItem(
@@ -69,37 +69,39 @@ class AdminFormState extends State<AdminForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: const BoxDecoration(
-            color: Color.fromARGB(255, 240, 240, 240),
-            border: Border(
-              left: BorderSide(width: 5, color: Colors.amber),
-            )),
-        child: Column(children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: Row(
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: Text("Type"),
+    return (widget.adminField.type != "front")
+        ? Container(
+            decoration: const BoxDecoration(
+                color: Color.fromARGB(255, 240, 240, 240),
+                border: Border(
+                  left: BorderSide(width: 5, color: Colors.amber),
+                )),
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: Row(
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: Text("Type"),
+                    ),
+                    DropdownButton<AdminField>(
+                        hint: Text(widget.adminField.type),
+                        items: fields,
+                        onChanged: (value) {
+                          setState(() {
+                            widget.adminField = value!;
+                          });
+                        })
+                  ],
                 ),
-                DropdownButton<AdminField>(
-                    hint: Text(widget.adminField.type),
-                    items: fields,
-                    onChanged: (value) {
-                      setState(() {
-                        widget.adminField = value!;
-                      });
-                    }),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(left: 10),
-            child: widget.adminField,
-          ),
-        ]));
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10),
+                child: widget.adminField,
+              ),
+            ]))
+        : widget.adminField;
   }
 }
 
@@ -117,7 +119,7 @@ abstract class AdminField extends StatefulWidget {
     } else if (type == "brand") {
       return Brand();
     } else {
-      return TextField();
+      return Textfield();
     }
   }
 
@@ -195,6 +197,7 @@ class Front extends AdminField {
       "number": id,
       "field_type": type,
       "field_title": fieldTitle,
+      "api_name": "",
       "description": fieldDesc
     };
     return object;
@@ -209,7 +212,6 @@ class FrontState extends State<Front> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(bottom: 10),
-      decoration: const BoxDecoration(color: Colors.white),
       child: Column(children: [
         SizedBox(
           height: 50,
@@ -271,14 +273,14 @@ class FrontState extends State<Front> {
 }
 
 // ignore: must_be_immutable
-class TextField extends AdminField {
-  TextField({
+class Textfield extends AdminField {
+  Textfield({
     super.key,
     super.type = "textfield",
     super.id = 0,
   });
 
-  TextField.fromJson(
+  Textfield.fromJson(
       int id, Map<String, dynamic> title, dynamic descripion, String apiName,
       {Key? key})
       : super(key: key, type: "textfield", id: id) {
@@ -314,10 +316,10 @@ class TextField extends AdminField {
   }
 
   @override
-  State<TextField> createState() => TextFieldState();
+  State<Textfield> createState() => TextFieldState();
 }
 
-class TextFieldState extends State<TextField> {
+class TextFieldState extends State<Textfield> {
   @override
   Widget build(BuildContext context) {
     return Container(

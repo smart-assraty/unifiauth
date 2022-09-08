@@ -13,6 +13,7 @@ class AuthHelper {
   Future<dynamic> getForms(String language) async {
     try {
       var response = await get(Uri.parse("$uvicorn/GetLoginForm/$language"));
+      //debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       return "$e";

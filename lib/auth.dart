@@ -12,6 +12,8 @@ import 'auth_forms.dart';
 class AuthPage extends StatefulWidget {
   AuthPage({super.key});
 
+  String frontTitle = "";
+  String frontDescription = "";
   String currentLang = "rus";
   String? currentFlag;
   AuthHelper authHelper = AuthHelper();
@@ -36,6 +38,12 @@ class AuthPageState extends State<AuthPage> {
             (widget.currentFlag == null)
                 ? widget.currentFlag = widget.languagelist[0].value!
                 : null;
+            for (int i = 0; i < body["count_fields"]; ++i) {
+              if (body["fields"][i]["type"] == "front") {
+                widget.frontTitle = body["fields"][i]["title"];
+                widget.frontDescription = body["fields"][i]["description"];
+              }
+            }
             return Container(
                 height: double.infinity,
                 alignment: Alignment.center,
@@ -62,9 +70,8 @@ class AuthPageState extends State<AuthPage> {
                     forms: generateForms(body),
                     languagelist: widget.languagelist,
                     currentLang: widget.currentLang,
-                    title: body["fields"][body["count_fields"] - 1]["title"],
-                    description: body["fields"][body["count_fields"] - 1]
-                        ["description"],
+                    title: widget.frontTitle,
+                    description: widget.frontDescription,
                     submit: body["submit_lang"],
                     logo: body["logo_image"],
                   ),
