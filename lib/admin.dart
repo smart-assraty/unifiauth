@@ -1,7 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
-import 'package:routemaster/routemaster.dart';
-import 'package:file_picker/file_picker.dart';
+import 'dart:convert';
+import 'dart:html';
 
 import 'server_connector.dart' show AdminHelper;
 import 'main.dart';
@@ -21,6 +22,8 @@ String? token;
 class AdminPageState extends State<AdminPage> {
   AdminHelper adminHelper = AdminHelper();
 
+  late Future<dynamic> futureBody;
+  late Future<List<dynamic>> futureLangs;
   late String bgImage;
   late String logoImage;
   int numerator = 0;
@@ -32,6 +35,21 @@ class AdminPageState extends State<AdminPage> {
   List<AdminForm> forms = [];
 
   TextEditingController sendTo = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (document.cookie!.isNotEmpty) {
+      String expires = json.decode(document.cookie!)["expires"];
+      if (DateTime.parse(expires).isAfter(DateTime.now())) {
+        token = document.cookie;
+        futureBody = adminHelper.getForms(token!);
+        futureLangs = adminHelper.getLangs();
+        stage = 1;
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +74,7 @@ class AdminPageState extends State<AdminPage> {
     } else if (stage == 3) {
       return contentPageThree();
     } else {
-      return contentPageFour();
+      return adminLogin();
     }
   }
 
@@ -120,22 +138,26 @@ class AdminPageState extends State<AdminPage> {
                     ElevatedButton(
                         style: buttonStyle,
                         onPressed: () async {
-                          var send = (await adminHelper.login(
-                              login.text, password.text))!;
-                          token = await send.stream.bytesToString();
-                          if (send.statusCode == 200) {
-                            forms = await generateForms();
-                            frontAdminField = (forms.last.getChild() as Front);
-                            forms.removeLast();
-                            setState(() {
-                              stage = 1;
-                            });
-                          } else {
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content:
-                                        Text("Invalid username or password")));
+                          try {
+                            var send = (await adminHelper.login(
+                                login.text, password.text))!;
+                            token = await send.stream.bytesToString();
+                            if (send.statusCode == 200) {
+                              document.cookie = token;
+                              futureBody = adminHelper.getForms(token!);
+                              futureLangs = adminHelper.getLangs();
+                              setState(() {
+                                stage = 1;
+                              });
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          "Invalid username or password")));
+                            }
+                          } catch (e) {
+                            debugPrint("$e");
                           }
                         },
                         child: Text(
@@ -208,138 +230,157 @@ class AdminPageState extends State<AdminPage> {
   }
 
   Widget contentPageOne() {
-    return Container(
-      padding: const EdgeInsets.only(top: 20),
-      width: 350,
-      height: 610,
-      child: ListView(
-        shrinkWrap: true,
-        children: [
-          contentHeader(),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: SizedBox(
-              width: 70,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+    return FutureBuilder(
+        future: generateForms(futureBody, futureLangs),
+        builder: (context, AsyncSnapshot<List<AdminForm>> snapshot) {
+          if (snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.done) {
+            forms = snapshot.data!;
+            frontAdminField = (forms.last.adminField as Front);
+            forms.removeLast();
+            return Container(
+              padding: const EdgeInsets.only(top: 20),
+              width: 350,
+              height: 610,
+              child: ListView(
+                shrinkWrap: true,
                 children: [
-                  const Text("Языки"),
-                  ListView.builder(
-                    itemCount: languagelist.length,
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return SizedBox(
-                          height: 35,
-                          child: DropdownButton<dynamic>(
-                              hint: Text(languagelist[index]),
-                              items: languages,
-                              onChanged: (value) {
-                                setState(() {
-                                  languagelist[index] = value!;
-                                  frontAdminField = Front();
-                                });
-                              }));
-                    },
+                  contentHeader(),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: SizedBox(
+                      width: 70,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          const Text("Языки"),
+                          ListView.builder(
+                            itemCount: languagelist.length,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return SizedBox(
+                                  height: 35,
+                                  child: DropdownButton<dynamic>(
+                                      hint: Text(languagelist[index]),
+                                      items: languages,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          languagelist[index] = value!;
+                                          frontAdminField = Front();
+                                        });
+                                      }));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
-          Row(
-            children: [
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      languagelist.add(languages[languagelist.length].value!);
-                      frontAdminField = Front();
-                    });
-                  },
-                  child: const Text(
-                    "Добавить язык +",
-                    style: TextStyle(color: Colors.amber),
-                  )),
-              TextButton(
-                  onPressed: () {
-                    setState(() {
-                      languagelist.removeLast();
-                      frontAdminField = Front();
-                    });
-                  },
-                  child: const Text(
-                    "Remove language",
-                    style: TextStyle(color: Colors.amber),
-                  )),
-            ],
-          ),
-          frontAdminField,
-          Row(
-            children: [
-              Column(
-                children: [
-                  const Text("Background Image"),
-                  IconButton(
-                      icon: const Icon(
-                        Icons.abc,
+                  Row(
+                    children: [
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              languagelist
+                                  .add(languages[languagelist.length].value!);
+                              frontAdminField = Front();
+                            });
+                          },
+                          child: const Text(
+                            "Добавить язык +",
+                            style: TextStyle(color: Colors.amber),
+                          )),
+                      TextButton(
+                          onPressed: () {
+                            setState(() {
+                              languagelist.removeLast();
+                              frontAdminField = Front();
+                            });
+                          },
+                          child: const Text(
+                            "Remove language",
+                            style: TextStyle(color: Colors.amber),
+                          )),
+                    ],
+                  ),
+                  frontAdminField,
+                  Row(
+                    children: [
+                      Column(
+                        children: [
+                          const Text("Background Image"),
+                          IconButton(
+                              icon: const Icon(
+                                Icons.abc,
+                              ),
+                              onPressed: () async {
+                                backgroundImage = await adminHelper.pickfile();
+                                if (backgroundImage.runtimeType ==
+                                    FilePickerResult) {
+                                  bgImage = await adminHelper.sendImage(
+                                      backgroundImage,
+                                      "UploadBGImage",
+                                      token!,
+                                      null);
+                                }
+                                if (backgroundImage.runtimeType == String) {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Failed to load file. Please try again")));
+                                }
+                              }),
+                        ],
                       ),
-                      onPressed: () async {
-                        backgroundImage = await adminHelper.pickfile();
-                        if (backgroundImage.runtimeType == FilePickerResult) {
-                          bgImage = await adminHelper.sendImage(
-                              backgroundImage, "UploadBGImage", token!, null);
-                        }
-                        if (backgroundImage.runtimeType == String) {
-                          // ignore: use_build_context_synchronously
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      "Failed to load file. Please try again")));
-                        }
-                      }),
-                ],
-              ),
-              const VerticalDivider(),
-              Column(
-                children: [
-                  const Text("Icon"),
-                  IconButton(
-                      icon: const Icon(
-                        Icons.abc,
+                      const VerticalDivider(),
+                      Column(
+                        children: [
+                          const Text("Icon"),
+                          IconButton(
+                              icon: const Icon(
+                                Icons.abc,
+                              ),
+                              onPressed: () async {
+                                logo = await adminHelper.pickfile();
+                                if (logo.runtimeType == FilePickerResult) {
+                                  logoImage = await adminHelper.sendImage(
+                                      logo, "UploadLogoImage", token!, null);
+                                }
+                                if (logo.runtimeType == String) {
+                                  // ignore: use_build_context_synchronously
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                          content: Text(
+                                              "Failed to load file. Please try again")));
+                                }
+                              }),
+                        ],
                       ),
-                      onPressed: () async {
-                        logo = await adminHelper.pickfile();
-                        if (logo.runtimeType == FilePickerResult) {
-                          logoImage = await adminHelper.sendImage(
-                              logo, "UploadLogoImage", token!, null);
-                        }
-                        if (logo.runtimeType == String) {
-                          // ignore: use_build_context_synchronously
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text(
-                                      "Failed to load file. Please try again")));
-                        }
-                      }),
+                    ],
+                  ),
+                  Align(
+                      alignment: Alignment.bottomRight,
+                      child: ElevatedButton(
+                        style: buttonStyle,
+                        onPressed: () {
+                          setState(() {
+                            stage = 2;
+                          });
+                        },
+                        child: Text(
+                          "Next",
+                          style: buttonText,
+                        ),
+                      )),
                 ],
               ),
-            ],
-          ),
-          Align(
-              alignment: Alignment.bottomRight,
-              child: ElevatedButton(
-                style: buttonStyle,
-                onPressed: () {
-                  setState(() {
-                    stage = 2;
-                  });
-                },
-                child: Text(
-                  "Next",
-                  style: buttonText,
-                ),
-              )),
-        ],
-      ),
-    );
+            );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        });
   }
 
   Widget contentPageTwo() {
@@ -470,12 +511,14 @@ class AdminPageState extends State<AdminPage> {
                   forms.add(formForAdminField);
                   theJson = await adminHelper.postToServer(bgImage, logoImage,
                       forms, languagelist, sendTo.text, token!);
-                  setState(() {
-                    stage = 4;
-                  });
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Data loaded successfully!")));
                 } catch (e) {
                   forms.removeLast();
-                  debugPrint("$e");
+                  // ignore: use_build_context_synchronously
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(SnackBar(content: Text("$e")));
                 }
               },
               child: Text(
@@ -489,55 +532,10 @@ class AdminPageState extends State<AdminPage> {
     );
   }
 
-//Test
-  Widget contentPageFour() {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Text(bgImage),
-        Text(logoImage),
-        ListView.builder(
-            shrinkWrap: true,
-            itemCount: forms.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: [
-                  Text(forms[index].getChild().type),
-                  Text(forms[index].getChild().controllerApi.text),
-                  Text(forms[index].getChild().title.toString()),
-                  Text(forms[index].getChild().description.toString()),
-                  Text(forms[index].getChild().brandIcon.toString()),
-                ],
-              );
-            }),
-        ElevatedButton(
-            style: buttonStyle,
-            onPressed: () => setState(() {
-                  forms.clear();
-                  stage = 1;
-                  frontAdminField = Front();
-                  sendTo.text = "";
-                }),
-            child: Text(
-              "Back",
-              style: buttonText,
-            )),
-        ElevatedButton(
-            style: buttonStyle,
-            onPressed: () => Routemaster.of(context).push("/guest/s/default/"),
-            child: Text(
-              "Auth",
-              style: buttonText,
-            )),
-      ],
-    );
-  }
-  //Test
-
-  Future<List<AdminForm>> generateForms() async {
-    var body = await adminHelper.getForms(token!);
-    var getLangs = await adminHelper.getLangs();
-
+  Future<List<AdminForm>> generateForms(
+      Future<dynamic> futureBody, Future<List<dynamic>> futureLangs) async {
+    var body = await futureBody;
+    var getLangs = await futureLangs;
     if (body != null) {
       bgImage = body["settings"]["bg_image"];
       logoImage = body["settings"]["logo_image"];
