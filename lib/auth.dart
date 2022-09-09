@@ -159,11 +159,11 @@ class AuthFieldsState extends State<AuthFields> {
     return Layout(
       child: (breakpoint.window > WindowSize.small)
           ? webDesktop(widget.logo)
-          : webMobile(),
+          : webMobile(widget.logo),
     );
   }
 
-  Widget webMobile() {
+  Widget webMobile(String logo) {
     return ListView(
       shrinkWrap: true,
       children: [
@@ -174,11 +174,16 @@ class AuthFieldsState extends State<AuthFields> {
                 color: Colors.white, borderRadius: BorderRadius.circular(25)),
             child: Column(
               children: [
+                Image(
+                  image: NetworkImage("$server/img/$logo"),
+                  height: 120,
+                  width: 250,
+                ),
                 Padding(
-                  padding: const EdgeInsets.all(20),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                   child: Column(children: [
                     Padding(
-                      padding: const EdgeInsets.all(20),
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                       child: Column(
                         children: [
                           Text(
