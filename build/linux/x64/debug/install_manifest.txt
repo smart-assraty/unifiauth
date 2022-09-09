@@ -10,4 +10,3 @@
 /home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/assets/bg.jpeg
 /home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
 /home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/fonts/MaterialIcons-Regular.otf
-/home/smartassraty/unifiauth/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES

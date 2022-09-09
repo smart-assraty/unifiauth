@@ -51,7 +51,7 @@ class AuthPageState extends State<AuthPage> {
                     image: DecorationImage(
                         image: NetworkImage("$server/img/${body['bg_image']}"),
                         fit: BoxFit.fill)),
-                child: Column(children: [
+                child: ListView(shrinkWrap: true, children: [
                   Align(
                     alignment: Alignment.center,
                     child: DropdownButton(
@@ -230,9 +230,14 @@ class AuthFieldsState extends State<AuthFields> {
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold),
                                         ),
-                                        Row(
-                                          children: widget.brands,
-                                        )
+                                        Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 20),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: widget.brands,
+                                            ))
                                       ],
                                     ),
                                   )
@@ -343,9 +348,14 @@ class AuthFieldsState extends State<AuthFields> {
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold),
                                       ),
-                                      Row(
-                                        children: widget.brands,
-                                      )
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 20),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: widget.brands,
+                                          ))
                                     ],
                                   ),
                                 )
