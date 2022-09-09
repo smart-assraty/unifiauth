@@ -56,7 +56,7 @@ class AuthPageState extends State<AuthPage> {
                     alignment: Alignment.center,
                     child: DropdownButton(
                       hint: Text(
-                        widget.currentFlag!,
+                        widget.currentLang,
                         style: const TextStyle(color: Colors.white),
                       ),
                       items: widget.languagelist,
@@ -89,8 +89,7 @@ class AuthPageState extends State<AuthPage> {
         body["count_langs"],
         (index) => DropdownMenuItem<String>(
               value: "${body["langs_flags"][index]} ${body["langs"][index]}",
-              child:
-                  Text("${body["langs_flags"][index]} ${body["langs"][index]}"),
+              child: Text("${body["langs"][index]}"),
             ));
     return languagelist;
   }
@@ -111,6 +110,10 @@ class AuthPageState extends State<AuthPage> {
           body["fields"][i]["api_value"],
           body["fields"][i]["required_field"],
           widget.controllers[i]));
+      if (forms[i].type == "front") {
+        widget.frontTitle = forms[i].title;
+        widget.frontDescription = forms[i].description!;
+      }
     }
     return forms;
   }
@@ -198,6 +201,9 @@ class AuthFieldsState extends State<AuthFields> {
                               shrinkWrap: true,
                               itemCount: widget.fields.length,
                               itemBuilder: (context, index) {
+                                if (widget.fields[index].type == "front") {
+                                  return const SizedBox();
+                                }
                                 return Column(
                                   children: [
                                     widget.fields[index],
@@ -286,7 +292,7 @@ class AuthFieldsState extends State<AuthFields> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
                           Text(
@@ -308,6 +314,9 @@ class AuthFieldsState extends State<AuthFields> {
                             shrinkWrap: true,
                             itemCount: widget.fields.length,
                             itemBuilder: (context, index) {
+                              if (widget.fields[index].type == "front") {
+                                return const SizedBox();
+                              }
                               return Column(
                                 children: [
                                   widget.fields[index],

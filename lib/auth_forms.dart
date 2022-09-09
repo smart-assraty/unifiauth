@@ -60,7 +60,10 @@ abstract class AuthForm extends StatefulWidget {
         apiValue: apiValue!,
       );
     } else if (type == "front") {
-      return Front();
+      return Front(
+        title: title,
+        description: description,
+      );
     } else {
       return TextField(
         apiKey: apiKey,
@@ -78,9 +81,9 @@ class Front extends AuthForm {
   Front(
       {super.key,
       super.apiKey = "",
-      super.description = "",
-      super.title = "",
-      super.type = "",
+      required super.description,
+      required super.title,
+      super.type = "front",
       super.isRequired = false});
 
   @override
@@ -90,7 +93,21 @@ class Front extends AuthForm {
 class FrontState extends State<Front> {
   @override
   Widget build(BuildContext context) {
-    return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Text(
+            widget.title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(widget.description!),
+        ],
+      ),
+    );
   }
 }
 

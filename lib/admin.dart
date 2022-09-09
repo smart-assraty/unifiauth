@@ -27,12 +27,12 @@ class AdminPageState extends State<AdminPage> {
   late Future<List<dynamic>> futureLangs;
   late String bgImage;
   late String logoImage;
-  int numerator = 0;
   late String theJson;
   int stage = 0;
   late dynamic backgroundImage;
   late dynamic logo;
   List<AdminForm> forms = [];
+  AdminForm frontForm = AdminForm()..setChild(Front());
 
   TextEditingController sendTo = TextEditingController();
 
@@ -40,18 +40,25 @@ class AdminPageState extends State<AdminPage> {
   void initState() {
     super.initState();
     try {
-      if (document.cookie!.isNotEmpty) {
+      if (document.cookie!.isNotEmpty &&
+          document.cookie!.contains("expires") &&
+          document.cookie!.contains("token_type") &&
+          document.cookie!.contains("access_token")) {
         String expires = json.decode(document.cookie!)["expires"];
         if (DateTime.parse(expires).isAfter(DateTime.now())) {
-          token = document.cookie;
-          futureBody = adminHelper.getForms(token!);
-          futureLangs = adminHelper.getLangs();
+          try {
+            token = document.cookie;
+            futureBody = adminHelper.getForms(token!);
+            futureLangs = adminHelper.getLangs();
+          } catch (e) {
+            debugPrint("on InitState: $e");
+          }
           stage = 1;
         }
       }
       generator = generateForms(futureBody, futureLangs);
     } catch (e) {
-      debugPrint("$e");
+      debugPrint("on Generator fail: $e");
       stage = 0;
     }
   }
@@ -185,11 +192,15 @@ class AdminPageState extends State<AdminPage> {
                                 login.text, password.text))!;
                             token = await send.stream.bytesToString();
                             if (send.statusCode == 200) {
-                              document.cookie = token;
-                              futureBody = adminHelper.getForms(token!);
-                              futureLangs = adminHelper.getLangs();
-                              generator =
-                                  generateForms(futureBody, futureLangs);
+                              try {
+                                //document.cookie = token;
+                                futureBody = adminHelper.getForms(token!);
+                                futureLangs = adminHelper.getLangs();
+                                generator =
+                                    generateForms(futureBody, futureLangs);
+                              } catch (e) {
+                                debugPrint("on adminLogin: $e");
+                              }
                               setState(() {
                                 stage = 1;
                               });
@@ -300,6 +311,13 @@ class AdminPageState extends State<AdminPage> {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
             forms = snapshot.data!;
+            for (int i = 0; i < forms.length; i++) {
+              if (forms[i].adminField.type == "front") {
+                frontForm = forms[i];
+                forms.remove(forms[i]);
+              }
+            }
+
             return Container(
               padding: const EdgeInsets.only(top: 20),
               width: 350,
@@ -328,7 +346,7 @@ class AdminPageState extends State<AdminPage> {
                                       onChanged: (value) {
                                         setState(() {
                                           languagelist[index] = value!;
-                                          forms.last = AdminForm()
+                                          frontForm = AdminForm()
                                             ..setChild(Front());
                                         });
                                       }));
@@ -347,7 +365,7 @@ class AdminPageState extends State<AdminPage> {
                                   .add(languages[languagelist.length].value!);
                               futureBody.then((value) =>
                                   ++value["settings"]["count_langs"]);
-                              forms.last = AdminForm()..setChild(Front());
+                              frontForm = AdminForm()..setChild(Front());
                             });
                           },
                           child: const Text(
@@ -364,7 +382,7 @@ class AdminPageState extends State<AdminPage> {
                                     .remove(languagelist.last.toString());
                               }
                               languagelist.removeLast();
-                              forms.last = AdminForm()..setChild(Front());
+                              frontForm = AdminForm()..setChild(Front());
                             });
                           },
                           child: const Text(
@@ -373,12 +391,7 @@ class AdminPageState extends State<AdminPage> {
                           )),
                     ],
                   ),
-                  for (var element in forms)
-                    {
-                      (element.adminField.type == "front")
-                          ? element
-                          : const SizedBox(),
-                    }.first,
+                  frontForm,
                   Row(
                     children: [
                       Column(
@@ -496,7 +509,8 @@ class AdminPageState extends State<AdminPage> {
                     style: buttonStyle,
                     onPressed: () {
                       setState(() {
-                        forms.add(AdminForm());
+                        forms.add(AdminForm()
+                          ..adminField.id = forms.last.adminField.id + 1);
                       });
                     },
                     child: Text(
@@ -577,6 +591,9 @@ class AdminPageState extends State<AdminPage> {
             ElevatedButton(
                 style: buttonStyle,
                 onPressed: () => setState(() {
+                      if (forms.contains(frontForm)) {
+                        forms.remove(frontForm);
+                      }
                       stage = 2;
                     }),
                 child: Text(
@@ -587,6 +604,7 @@ class AdminPageState extends State<AdminPage> {
               style: buttonStyle,
               onPressed: () async {
                 try {
+                  forms.add(frontForm);
                   theJson = await adminHelper.postToServer(bgImage, logoImage,
                       forms, languagelist, sendTo.text, token!);
                   // ignore: use_build_context_synchronously
@@ -761,17 +779,18 @@ class AdminPageState extends State<AdminPage> {
         String? apiName;
         String? brandIcon;
         String? apiValue;
+        bool? isRequired;
         type = body["fields"][i]["type"];
         title = Map.from(body["fields"][i]["title"]);
         description = Map.from(body["fields"][i]["description"]);
         apiName = body["fields"][i]["api_name"];
         brandIcon = body["fields"][i]["brand_icon"];
         apiValue = body["fields"][i]["api_value"];
+        isRequired = body["fields"][i]["required_field"];
         apiName ??= "";
 
-        formsFromServer.add(AdminForm.fromJson(
-            type, numerator, title, description, apiName, brandIcon, apiValue));
-        numerator++;
+        formsFromServer.add(AdminForm.fromJson(type, i, title, description,
+            apiName, brandIcon, apiValue, isRequired));
       }
       return formsFromServer;
     } else {

@@ -20,11 +20,14 @@ class AdminForm extends StatefulWidget {
       Map<String, dynamic>? description,
       String apiName,
       String? brandIcon,
-      String? apiValue) {
+      String? apiValue,
+      bool? isRequired) {
     if (type == "email") {
-      return AdminForm()..setChild(Email.fromJson(id, title, apiName));
+      return AdminForm()
+        ..setChild(Email.fromJson(id, title, apiName, isRequired!));
     } else if (type == "number") {
-      return AdminForm()..setChild(Number.fromJson(id, title, apiName));
+      return AdminForm()
+        ..setChild(Number.fromJson(id, title, apiName, isRequired!));
     } else if (type == "checkbox") {
       return AdminForm()..setChild(CheckBox.fromJson(id, title, apiName));
     } else if (type == "brand") {
@@ -34,7 +37,8 @@ class AdminForm extends StatefulWidget {
       return AdminForm()..setChild(Front.fromJson(id, title, description));
     } else {
       return AdminForm()
-        ..setChild(Textfield.fromJson(id, title, description, apiName));
+        ..setChild(
+            Textfield.fromJson(id, title, description, apiName, isRequired!));
     }
   }
 
@@ -280,8 +284,8 @@ class Textfield extends AdminField {
     super.id = 0,
   });
 
-  Textfield.fromJson(
-      int id, Map<String, dynamic> title, dynamic descripion, String apiName,
+  Textfield.fromJson(int id, Map<String, dynamic> title, dynamic descripion,
+      String apiName, bool isRequired,
       {Key? key})
       : super(key: key, type: "textfield", id: id) {
     super.title = title;
@@ -289,6 +293,7 @@ class Textfield extends AdminField {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = super.title[currentLang]!;
     super.controllerDesc.text = super.description[currentLang]!;
+    super.isRequired = isRequired;
   }
 
   @override
@@ -413,11 +418,13 @@ class TextFieldState extends State<Textfield> {
 class Email extends AdminField {
   Email({super.key, super.type = "email", super.id = 0});
 
-  Email.fromJson(int id, dynamic title, String apiName, {Key? key})
+  Email.fromJson(int id, dynamic title, String apiName, bool isRequired,
+      {Key? key})
       : super(key: key, type: "email", id: id) {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = title[currentLang];
     super.title = title;
+    super.isRequired = isRequired;
   }
 
   @override
@@ -528,11 +535,13 @@ class Number extends AdminField {
     super.id = 0,
   });
 
-  Number.fromJson(int id, dynamic title, String apiName, {Key? key})
+  Number.fromJson(int id, dynamic title, String apiName, bool isRequired,
+      {Key? key})
       : super(key: key, type: "number", id: id) {
     super.controllerApi.text = apiName;
     super.controllerTitle.text = title[currentLang];
     super.title = title;
+    super.isRequired = isRequired;
   }
 
   @override
@@ -868,12 +877,6 @@ class BrandState extends State<Brand> {
             SizedBox(
               width: 100,
               child: Focus(
-                onFocusChange: (value) {
-                  (value)
-                      ? null
-                      : widget.title.addAll(
-                          {widget.currentLang: widget.controllerIcon.text});
-                },
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "API Value"),
                   controller: widget.controllerIcon,
