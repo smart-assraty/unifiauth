@@ -51,31 +51,36 @@ class AuthPageState extends State<AuthPage> {
                     image: DecorationImage(
                         image: NetworkImage("$server/img/${body['bg_image']}"),
                         fit: BoxFit.fill)),
-                child: ListView(shrinkWrap: true, children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: DropdownButton(
-                      hint: Text(
-                        widget.currentLang,
-                        style: const TextStyle(color: Colors.white),
+                child: Column(
+                  children: [
+                    Align(
+                      alignment: Alignment.center,
+                      child: DropdownButton(
+                        hint: Text(
+                          widget.currentLang,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        items: widget.languagelist,
+                        onChanged: (value) => setState(() {
+                          widget.currentLang = value.toString().split(" ")[1];
+                          widget.currentFlag = value.toString();
+                        }),
                       ),
-                      items: widget.languagelist,
-                      onChanged: (value) => setState(() {
-                        widget.currentLang = value.toString().split(" ")[1];
-                        widget.currentFlag = value.toString();
-                      }),
                     ),
-                  ),
-                  AuthFields(
-                    forms: generateForms(body),
-                    languagelist: widget.languagelist,
-                    currentLang: widget.currentLang,
-                    title: widget.frontTitle,
-                    description: widget.frontDescription,
-                    submit: body["submit_lang"],
-                    logo: body["logo_image"],
-                  ),
-                ]));
+                    Expanded(
+                        child: ListView(shrinkWrap: true, children: [
+                      AuthFields(
+                        forms: generateForms(body),
+                        languagelist: widget.languagelist,
+                        currentLang: widget.currentLang,
+                        title: widget.frontTitle,
+                        description: widget.frontDescription,
+                        submit: body["submit_lang"],
+                        logo: body["logo_image"],
+                      ),
+                    ])),
+                  ],
+                ));
           } else {
             return const Center(child: CircularProgressIndicator());
           }
