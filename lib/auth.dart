@@ -100,7 +100,7 @@ class AuthPageState extends State<AuthPage> {
     widget.controllers =
         List.generate(body["count_fields"], (index) => TextEditingController());
 
-    for (int i = 0; i < body["count_fields"] - 1; ++i) {
+    for (int i = 0; i < body["count_fields"]; ++i) {
       forms.add(AuthForm.createForm(
           body["fields"][i]["type"],
           body["fields"][i]["api_name"],
@@ -369,14 +369,23 @@ class AuthFieldsState extends State<AuthFields> {
                         style: buttonStyle,
                         onPressed: () async {
                           if (widget.formkey.currentState!.validate()) {
-                            widget.authHelper.connecting();
-                            var response = await widget.authHelper.postData(
-                                widget.currentLang,
-                                widget.dataToApi,
-                                widget.forms);
-                            if (response == 200) {
+                            if (widget.authHelper
+                                .checkBrandRequired(widget.brands)) {
+                              widget.authHelper.connecting();
+                              var response = await widget.authHelper.postData(
+                                  widget.currentLang,
+                                  widget.dataToApi,
+                                  widget.forms);
+                              if (response == 200) {
+                                // ignore: use_build_context_synchronously
+                                Routemaster.of(context).push("/logged");
+                              }
+                            } else {
                               // ignore: use_build_context_synchronously
-                              Routemaster.of(context).push("/logged");
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content:
+                                          Text("You have to choose a brand")));
                             }
                           }
                         },

@@ -3,11 +3,12 @@ import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
 import 'package:unifiapp/admin_forms.dart';
+import 'package:unifiapp/auth_forms.dart';
 import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8000";
+String uvicorn = "http://185.125.88.30:8001";
 
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
@@ -30,8 +31,21 @@ class AuthHelper {
     return response.statusCode;
   }
 
-  Future<int> postData(
-      String lang, List<Map<String, dynamic>> dataToApi, List forms) async {
+  bool checkBrandRequired(List<AuthForm> brands) {
+    for (int i = 0; i < brands.length; i++) {
+      if (brands[i].isRequired) {
+        for (int j = 0; j < brands.length; j++) {
+          if (brands[j].data != null) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  Future<int> postData(String lang, List<Map<String, dynamic>> dataToApi,
+      List<AuthForm> forms) async {
     for (int i = 0; i < forms.length; ++i) {
       dataToApi.add(forms.elementAt(i).commit());
     }
@@ -139,7 +153,7 @@ class AdminHelper {
                 "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
           },
           body: json.encode(mapToPost));
-      debugPrint(mapToPost.toString());
+      //debugPrint(mapToPost.toString());
       return json.encode(request.body);
     } catch (e) {
       debugPrint("Post To Server Error: $e");

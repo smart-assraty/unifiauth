@@ -58,6 +58,7 @@ abstract class AuthForm extends StatefulWidget {
         apiKey: apiKey,
         brand: brand!,
         apiValue: apiValue!,
+        isRequired: isRequired!,
       );
     } else if (type == "front") {
       return Front(
@@ -296,7 +297,7 @@ class Brand extends AuthForm {
       required super.title,
       required this.brand,
       required this.apiValue,
-      super.isRequired = false})
+      required super.isRequired})
       : super(type: "brand");
 
   @override
