@@ -8,7 +8,7 @@ import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8001";
+String uvicorn = "http://185.125.88.30:8000";
 
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
@@ -79,21 +79,22 @@ class AdminHelper {
   Future<String> postChangePassword(String usename, String oldPassword,
       String newPassword, String token) async {
     try {
+      debugPrint("functioning");
       Map<String, dynamic> params = {
         'username': usename,
         'old_password': oldPassword,
         'new_password': newPassword
       };
-
+      debugPrint("posting");
       var request = await post(Uri.parse("$uvicorn/SetNewPassword/"),
           headers: {
             "Content-type": "application/x-www-form-urlencoded",
             "Authorization":
                 "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
-            "Charset": "utf-8",
           },
-          body: json.encode(params));
-
+          body: params);
+      debugPrint(params.toString());
+      debugPrint(request.body);
       return json.encode(request.statusCode);
     } catch (e) {
       debugPrint("$e");
