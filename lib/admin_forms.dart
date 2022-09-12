@@ -866,6 +866,7 @@ class BrandState extends State<Brand> {
                 onPressed: () async {
                   var response = await adminHelper.pickfile();
                   if (response == null) {
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                         content:
                             Text("Failed to load file. Please try again")));

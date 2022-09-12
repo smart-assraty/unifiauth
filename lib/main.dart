@@ -2,7 +2,7 @@ import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
-import 'dart:html';
+// import 'dart:html';
 
 import 'admin.dart';
 import 'auth.dart';
@@ -11,7 +11,7 @@ String server = "http://185.125.88.30"; // To Config file
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
     backgroundColor: MaterialStateProperty.all<Color>(
-        const Color.fromARGB(255, 244, 226, 22)));
+        const Color.fromARGB(255, 251, 225, 30)));
 TextStyle buttonText = const TextStyle(color: Colors.black);
 
 void main() {
@@ -24,7 +24,7 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => const MaterialPage(child: AdminPage()),
+  "/": (_) => MaterialPage(child: AuthPage()),
   "/guest/s/default": (_) => MaterialPage(child: AuthPage()),
   "/logged": (_) => MaterialPage(
           child: Scaffold(
@@ -64,7 +64,7 @@ class OpenerState extends State<Opener> {
   @override
   void initState() {
     super.initState();
-    window.open("https://www.technogym.kz/", "_self");
+    // window.open("https://www.technogym.kz/", "_self");
   }
 
   @override

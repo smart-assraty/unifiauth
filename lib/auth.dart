@@ -55,7 +55,6 @@ class AuthPageState extends State<AuthPage> {
                     image: DecorationImage(
                         image: NetworkImage("$server/img/${body['bg_image']}"),
                         fit: BoxFit.fill)),
-                //child: Expanded(
                 child: ListView(
                   children: [
                     Align(
@@ -83,9 +82,7 @@ class AuthPageState extends State<AuthPage> {
                       logo: body["logo_image"],
                     ),
                   ],
-                )
-                //),
-                );
+                ));
           } else {
             return const Center(child: CircularProgressIndicator());
           }
@@ -152,13 +149,20 @@ class AuthFields extends StatefulWidget {
       required this.submit,
       required this.logo}) {
     for (var element in forms) {
-      (element.type == "brand") ? brands.add(element) : fields.add(element);
+      if (element.type == "brand") {
+        brands.add(element);
+      } else if (element.type == "checkbox") {
+        checkboxes.add(element);
+      } else {
+        fields.add(element);
+      }
     }
   }
 
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   List<AuthForm> fields = [];
   List<AuthForm> brands = [];
+  List<AuthForm> checkboxes = [];
   List<Map<String, dynamic>> dataToApi = [];
   List<TextEditingController> controllers = [];
   @override
@@ -182,6 +186,7 @@ class AuthFieldsState extends State<AuthFields> {
     return Padding(
       padding: const EdgeInsets.only(right: 5, left: 5),
       child: Container(
+        //height: double.maxFinite,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(25)),
         child: Column(
@@ -249,12 +254,17 @@ class AuthFieldsState extends State<AuthFields> {
                                 ],
                               )
                             : const SizedBox(),
+                        (widget.checkboxes.isNotEmpty)
+                            ? Column(
+                                children: widget.checkboxes,
+                              )
+                            : const SizedBox(),
                       ],
                     ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 250),
+                  padding: const EdgeInsets.only(top: 20, bottom: 20),
                   child: Center(
                     child: ElevatedButton(
                       style: buttonStyle,
@@ -358,6 +368,11 @@ class AuthFieldsState extends State<AuthFields> {
                                           )),
                                     )
                                   ],
+                                )
+                              : const SizedBox(),
+                          (widget.checkboxes.isNotEmpty)
+                              ? Column(
+                                  children: widget.checkboxes,
                                 )
                               : const SizedBox(),
                         ],

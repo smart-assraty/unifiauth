@@ -256,24 +256,39 @@ class CheckBoxState extends State<CheckBox> {
   bool accept = false;
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
-      child: Row(
-        children: [
-          Checkbox(
-              value: accept,
-              onChanged: (value) => setState(() {
-                    FocusScope.of(context).requestFocus(FocusNode());
-                    accept = value!;
-                    widget.data = accept;
-                  })),
-          Text(
-            widget.title,
-            style: textStyle,
-          ),
-        ],
-      ),
-    );
+    return FormField<bool>(builder: (state) {
+      return SizedBox(
+          height: 50,
+          child: Column(
+            children: [
+              Text(
+                state.errorText ?? "",
+                style: TextStyle(color: Theme.of(context).errorColor),
+              ),
+              Row(
+                children: [
+                  Checkbox(
+                      value: accept,
+                      onChanged: (value) => setState(() {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            accept = value!;
+                            widget.data = accept;
+                            state.didChange(value);
+                          })),
+                  Text(
+                    widget.title,
+                    style: textStyle,
+                  ),
+                ],
+              ),
+            ],
+          ));
+    }, validator: (value) {
+      if (widget.isRequired && !accept) {
+        return "You need to accept terms";
+      }
+      return null;
+    });
   }
 }
 
