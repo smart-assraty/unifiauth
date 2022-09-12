@@ -8,6 +8,10 @@ import 'main.dart';
 import 'server_connector.dart' show AuthHelper;
 import 'auth_forms.dart';
 
+TextStyle textStyle = const TextStyle(
+  fontFamily: "Arial",
+);
+
 // ignore: must_be_immutable
 class AuthPage extends StatefulWidget {
   AuthPage({super.key});
@@ -45,20 +49,22 @@ class AuthPageState extends State<AuthPage> {
               }
             }
             return Container(
-                height: double.infinity,
+                height: double.maxFinite,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                     image: DecorationImage(
                         image: NetworkImage("$server/img/${body['bg_image']}"),
                         fit: BoxFit.fill)),
-                child: Column(
+                //child: Expanded(
+                child: ListView(
                   children: [
                     Align(
                       alignment: Alignment.center,
                       child: DropdownButton(
                         hint: Text(
                           widget.currentLang,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(
+                              color: Colors.white, fontFamily: "Arial"),
                         ),
                         items: widget.languagelist,
                         onChanged: (value) => setState(() {
@@ -67,20 +73,19 @@ class AuthPageState extends State<AuthPage> {
                         }),
                       ),
                     ),
-                    Expanded(
-                        child: ListView(shrinkWrap: true, children: [
-                      AuthFields(
-                        forms: generateForms(body),
-                        languagelist: widget.languagelist,
-                        currentLang: widget.currentLang,
-                        title: widget.frontTitle,
-                        description: widget.frontDescription,
-                        submit: body["submit_lang"],
-                        logo: body["logo_image"],
-                      ),
-                    ])),
+                    AuthFields(
+                      forms: generateForms(body),
+                      languagelist: widget.languagelist,
+                      currentLang: widget.currentLang,
+                      title: widget.frontTitle,
+                      description: widget.frontDescription,
+                      submit: body["submit_lang"],
+                      logo: body["logo_image"],
+                    ),
                   ],
-                ));
+                )
+                //),
+                );
           } else {
             return const Center(child: CircularProgressIndicator());
           }
@@ -94,7 +99,10 @@ class AuthPageState extends State<AuthPage> {
         body["count_langs"],
         (index) => DropdownMenuItem<String>(
               value: "${body["langs_flags"][index]} ${body["langs"][index]}",
-              child: Text("${body["langs"][index]}"),
+              child: Text(
+                "${body["langs"][index]}",
+                style: textStyle,
+              ),
             ));
     return languagelist;
   }
@@ -169,119 +177,110 @@ class AuthFieldsState extends State<AuthFields> {
   }
 
   Widget webMobile(String logo) {
-    return ListView(
-      shrinkWrap: true,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(right: 5, left: 5),
-          child: Container(
-            decoration: BoxDecoration(
-                color: Colors.white, borderRadius: BorderRadius.circular(25)),
-            child: Column(
-              children: [
-                Image(
-                  image: NetworkImage("$server/img/$logo"),
-                  height: 120,
-                  width: 250,
+    return Padding(
+      padding: const EdgeInsets.only(right: 5, left: 5),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(25)),
+        child: Column(
+          children: [
+            Image(
+              image: NetworkImage("$server/img/$logo"),
+              height: 100,
+              width: 250,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: Column(
+                    children: [
+                      Text(
+                        widget.title,
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: "Arial"),
+                      ),
+                      Text(
+                        widget.description,
+                        style: textStyle,
+                      ),
+                    ],
+                  ),
+                ),
+                Form(
+                  key: widget.formkey,
+                  child: AvoidKeyboard(
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: widget.fields.length,
+                          itemBuilder: (context, index) {
+                            if (widget.fields[index].type == "front") {
+                              return const SizedBox();
+                            }
+                            return widget.fields[index];
+                          },
+                        ),
+                        (widget.brands.isNotEmpty)
+                            ? SizedBox(
+                                height: 150,
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      widget.brands[0].title,
+                                      style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "Arial"),
+                                    ),
+                                    Container(
+                                        padding: const EdgeInsets.only(top: 20),
+                                        height: 120,
+                                        child: ListView(
+                                          scrollDirection: Axis.horizontal,
+                                          children: widget.brands,
+                                        ))
+                                  ],
+                                ),
+                              )
+                            : const SizedBox(),
+                      ],
+                    ),
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  child: Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                      child: Column(
-                        children: [
-                          Text(
-                            widget.title,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(widget.description),
-                        ],
-                      ),
+                  padding: const EdgeInsets.only(top: 20, bottom: 250),
+                  child: Center(
+                    child: ElevatedButton(
+                      style: buttonStyle,
+                      onPressed: () async {
+                        if (widget.formkey.currentState!.validate()) {
+                          widget.authHelper.connecting();
+                          var response = await widget.authHelper.postData(
+                              widget.currentLang,
+                              widget.dataToApi,
+                              widget.forms);
+                          if (response == 200) {
+                            // ignore: use_build_context_synchronously
+                            Routemaster.of(context).push("/logged");
+                          }
+                        }
+                      },
+                      child: Text(widget.submit,
+                          style: const TextStyle(
+                              color: Colors.black, fontFamily: "Arial")),
                     ),
-                    Form(
-                      key: widget.formkey,
-                      child: AvoidKeyboard(
-                        child: Column(
-                          children: [
-                            ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: widget.fields.length,
-                              itemBuilder: (context, index) {
-                                if (widget.fields[index].type == "front") {
-                                  return const SizedBox();
-                                }
-                                return Column(
-                                  children: [
-                                    widget.fields[index],
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                            (widget.brands.isNotEmpty)
-                                ? SizedBox(
-                                    height: 150,
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          widget.brands[0].title,
-                                          style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Padding(
-                                            padding:
-                                                const EdgeInsets.only(top: 20),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: widget.brands,
-                                            ))
-                                      ],
-                                    ),
-                                  )
-                                : const SizedBox(),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20),
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton(
-                          style: buttonStyle,
-                          onPressed: () async {
-                            if (widget.formkey.currentState!.validate()) {
-                              widget.authHelper.connecting();
-                              var response = await widget.authHelper.postData(
-                                  widget.currentLang,
-                                  widget.dataToApi,
-                                  widget.forms);
-                              if (response == 200) {
-                                // ignore: use_build_context_synchronously
-                                Routemaster.of(context).push("/logged");
-                              }
-                            }
-                          },
-                          child: Text(widget.submit,
-                              style: const TextStyle(color: Colors.black)),
-                        ),
-                      ),
-                    ),
-                  ]),
+                  ),
                 ),
-              ],
+              ]),
             ),
-          ),
-        )
-      ],
+          ],
+        ),
+      ),
     );
   }
 
@@ -313,11 +312,14 @@ class AuthFieldsState extends State<AuthFields> {
                           Text(
                             widget.title,
                             style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: "Arial"),
                           ),
-                          Text(widget.description),
+                          Text(
+                            widget.description,
+                            style: textStyle,
+                          ),
                         ],
                       ),
                     ),
@@ -351,14 +353,15 @@ class AuthFieldsState extends State<AuthFields> {
                                         widget.brands[0].title,
                                         style: const TextStyle(
                                             fontSize: 14,
-                                            fontWeight: FontWeight.bold),
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: "Arial"),
                                       ),
-                                      Padding(
+                                      Container(
                                           padding:
                                               const EdgeInsets.only(top: 20),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
+                                          height: 120,
+                                          child: ListView(
+                                            scrollDirection: Axis.horizontal,
                                             children: widget.brands,
                                           ))
                                     ],
@@ -368,8 +371,7 @@ class AuthFieldsState extends State<AuthFields> {
                         ],
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.centerRight,
+                    Center(
                       child: ElevatedButton(
                         style: buttonStyle,
                         onPressed: () async {
@@ -387,16 +389,19 @@ class AuthFieldsState extends State<AuthFields> {
                               }
                             } else {
                               // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text("You have to choose a brand")));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      content: Text(
+                                "You have to choose a brand",
+                                style: textStyle,
+                              )));
                             }
                           }
                         },
                         child: Text(
                           widget.submit,
-                          style: const TextStyle(color: Colors.black),
+                          style: const TextStyle(
+                              color: Colors.black, fontFamily: "Arial"),
                         ),
                       ),
                     ),

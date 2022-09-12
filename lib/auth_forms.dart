@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unifiapp/auth.dart';
 
 import 'main.dart';
 
@@ -101,11 +102,12 @@ class FrontState extends State<Front> {
           Text(
             widget.title,
             style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
+                fontSize: 16, fontWeight: FontWeight.bold, fontFamily: "Arial"),
           ),
-          Text(widget.description!),
+          Text(
+            widget.description!,
+            style: textStyle,
+          ),
         ],
       ),
     );
@@ -152,7 +154,10 @@ class TextFieldState extends State<TextField> {
       controller: widget.controller,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
-          hintText: widget.description, labelText: widget.title),
+          labelStyle: textStyle,
+          hintStyle: textStyle,
+          hintText: widget.description,
+          labelText: widget.title),
     );
   }
 }
@@ -279,6 +284,7 @@ class CheckBoxState extends State<CheckBox> {
                   })),
           Text(
             widget.title,
+            style: textStyle,
           ),
         ],
       ),
