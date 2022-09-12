@@ -176,6 +176,8 @@ class AuthFieldsState extends State<AuthFields> {
     );
   }
 
+  ScrollController scrollController = ScrollController();
+
   Widget webMobile(String logo) {
     return Padding(
       padding: const EdgeInsets.only(right: 5, left: 5),
@@ -215,37 +217,36 @@ class AuthFieldsState extends State<AuthFields> {
                   child: AvoidKeyboard(
                     child: Column(
                       children: [
-                        ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: widget.fields.length,
-                          itemBuilder: (context, index) {
-                            if (widget.fields[index].type == "front") {
-                              return const SizedBox();
-                            }
-                            return widget.fields[index];
-                          },
+                        Column(
+                          children: widget.fields,
                         ),
                         (widget.brands.isNotEmpty)
-                            ? SizedBox(
-                                height: 150,
-                                child: Column(
-                                  children: [
-                                    Text(
+                            ? Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20),
+                                    child: Text(
                                       widget.brands[0].title,
                                       style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
                                           fontFamily: "Arial"),
                                     ),
-                                    Container(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        height: 120,
+                                  ),
+                                  SizedBox(
+                                    height: 120,
+                                    child: Scrollbar(
+                                        controller: scrollController,
+                                        trackVisibility: true,
+                                        thumbVisibility: true,
+                                        thickness: 2,
                                         child: ListView(
+                                          controller: scrollController,
                                           scrollDirection: Axis.horizontal,
                                           children: widget.brands,
-                                        ))
-                                  ],
-                                ),
+                                        )),
+                                  )
+                                ],
                               )
                             : const SizedBox(),
                       ],
@@ -327,45 +328,36 @@ class AuthFieldsState extends State<AuthFields> {
                       key: widget.formkey,
                       child: Column(
                         children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: widget.fields.length,
-                            itemBuilder: (context, index) {
-                              if (widget.fields[index].type == "front") {
-                                return const SizedBox();
-                              }
-                              return Column(
-                                children: [
-                                  widget.fields[index],
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                ],
-                              );
-                            },
+                          Column(
+                            children: widget.fields,
                           ),
                           (widget.brands.isNotEmpty)
-                              ? SizedBox(
-                                  height: 150,
-                                  child: Column(
-                                    children: [
-                                      Text(
+                              ? Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 20),
+                                      child: Text(
                                         widget.brands[0].title,
                                         style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             fontFamily: "Arial"),
                                       ),
-                                      Container(
-                                          padding:
-                                              const EdgeInsets.only(top: 20),
-                                          height: 120,
+                                    ),
+                                    SizedBox(
+                                      height: 120,
+                                      child: Scrollbar(
+                                          controller: scrollController,
+                                          trackVisibility: true,
+                                          thumbVisibility: true,
+                                          thickness: 2,
                                           child: ListView(
+                                            controller: scrollController,
                                             scrollDirection: Axis.horizontal,
                                             children: widget.brands,
-                                          ))
-                                    ],
-                                  ),
+                                          )),
+                                    )
+                                  ],
                                 )
                               : const SizedBox(),
                         ],

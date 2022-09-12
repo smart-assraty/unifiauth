@@ -10,7 +10,8 @@ import 'auth.dart';
 String server = "http://185.125.88.30"; // To Config file
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
-    backgroundColor: MaterialStateProperty.all<Color>(Colors.amber));
+    backgroundColor: MaterialStateProperty.all<Color>(
+        const Color.fromARGB(255, 244, 226, 22)));
 TextStyle buttonText = const TextStyle(color: Colors.black);
 
 void main() {
@@ -23,7 +24,7 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => MaterialPage(child: AuthPage()),
+  "/": (_) => const MaterialPage(child: AdminPage()),
   "/guest/s/default": (_) => MaterialPage(child: AuthPage()),
   "/logged": (_) => MaterialPage(
           child: Scaffold(

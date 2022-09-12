@@ -95,22 +95,7 @@ class Front extends AuthForm {
 class FrontState extends State<Front> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Text(
-            widget.title,
-            style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, fontFamily: "Arial"),
-          ),
-          Text(
-            widget.description!,
-            style: textStyle,
-          ),
-        ],
-      ),
-    );
+    return const SizedBox();
   }
 }
 
