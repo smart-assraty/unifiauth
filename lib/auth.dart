@@ -62,8 +62,7 @@ class AuthPageState extends State<AuthPage> {
                       child: DropdownButton(
                         hint: Text(
                           widget.currentLang,
-                          style: const TextStyle(
-                              color: Colors.white, fontFamily: "Arial"),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         items: widget.languagelist,
                         onChanged: (value) => setState(() {
@@ -72,15 +71,23 @@ class AuthPageState extends State<AuthPage> {
                         }),
                       ),
                     ),
-                    AuthFields(
-                      forms: generateForms(body),
-                      languagelist: widget.languagelist,
-                      currentLang: widget.currentLang,
-                      title: widget.frontTitle,
-                      description: widget.frontDescription,
-                      submit: body["submit_lang"],
-                      logo: body["logo_image"],
-                    ),
+                    Container(
+                        height: MediaQuery.of(context).size.height / 1.2,
+                        alignment: Alignment.bottomCenter,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AuthFields(
+                              forms: generateForms(body),
+                              languagelist: widget.languagelist,
+                              currentLang: widget.currentLang,
+                              title: widget.frontTitle,
+                              description: widget.frontDescription,
+                              submit: body["submit_lang"],
+                              logo: body["logo_image"],
+                            ),
+                          ],
+                        )),
                   ],
                 ));
           } else {
@@ -172,12 +179,11 @@ class AuthFields extends StatefulWidget {
 class AuthFieldsState extends State<AuthFields> {
   @override
   Widget build(BuildContext context) {
-    final breakpoint = Breakpoint.fromMediaQuery(context);
     return Layout(
-      child: (breakpoint.window > WindowSize.small)
-          ? webDesktop(widget.logo)
-          : webMobile(widget.logo),
-    );
+        child: AdaptiveBuilder(
+      xs: (context) => webMobile(widget.logo),
+      md: (context) => webDesktop(widget.logo),
+    ));
   }
 
   ScrollController scrollController = ScrollController();
@@ -186,7 +192,6 @@ class AuthFieldsState extends State<AuthFields> {
     return Padding(
       padding: const EdgeInsets.only(right: 5, left: 5),
       child: Container(
-        //height: double.maxFinite,
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(25)),
         child: Column(
@@ -206,9 +211,7 @@ class AuthFieldsState extends State<AuthFields> {
                       Text(
                         widget.title,
                         style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Arial"),
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         widget.description,
@@ -234,22 +237,38 @@ class AuthFieldsState extends State<AuthFields> {
                                       widget.brands[0].title,
                                       style: const TextStyle(
                                           fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: "Arial"),
+                                          fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   SizedBox(
                                     height: 120,
-                                    child: Scrollbar(
-                                        controller: scrollController,
-                                        trackVisibility: true,
-                                        thumbVisibility: true,
-                                        thickness: 2,
-                                        child: ListView(
-                                          controller: scrollController,
-                                          scrollDirection: Axis.horizontal,
-                                          children: widget.brands,
-                                        )),
+                                    child: (widget.brands.length >
+                                            3) // Доп логика, грязь но пох
+                                        ? Scrollbar(
+                                            controller: scrollController,
+                                            trackVisibility: true,
+                                            thumbVisibility: true,
+                                            thickness: 2,
+                                            child: ListView.builder(
+                                              itemCount: widget.brands.length,
+                                              controller: scrollController,
+                                              scrollDirection: Axis.horizontal,
+                                              itemBuilder: (context, index) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(15),
+                                                  child: widget.brands[index],
+                                                );
+                                              },
+                                            ))
+                                        : Center(
+                                            // И вот так
+                                            widthFactor: 100,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: widget.brands,
+                                            )),
                                   )
                                 ],
                               )
@@ -308,8 +327,7 @@ class AuthFieldsState extends State<AuthFields> {
               width: 300,
             )),
         Container(
-            width: 400,
-            height: 550,
+            width: 400, // Убрал Height дало гибкости в размерах
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5), color: Colors.white),
             child: Container(
@@ -323,9 +341,7 @@ class AuthFieldsState extends State<AuthFields> {
                           Text(
                             widget.title,
                             style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: "Arial"),
+                                fontSize: 16, fontWeight: FontWeight.bold),
                           ),
                           Text(
                             widget.description,
@@ -345,27 +361,39 @@ class AuthFieldsState extends State<AuthFields> {
                               ? Column(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 20),
+                                      padding: const EdgeInsets.all(20),
                                       child: Text(
                                         widget.brands[0].title,
                                         style: const TextStyle(
                                             fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: "Arial"),
+                                            fontWeight: FontWeight.bold),
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 120,
-                                      child: Scrollbar(
-                                          controller: scrollController,
-                                          trackVisibility: true,
-                                          thumbVisibility: true,
-                                          thickness: 2,
-                                          child: ListView(
-                                            controller: scrollController,
-                                            scrollDirection: Axis.horizontal,
-                                            children: widget.brands,
-                                          )),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      height: 90,
+                                      child: (widget.brands.length >
+                                              3) // Доп логика, грязь но пох
+                                          ? Scrollbar(
+                                              controller: scrollController,
+                                              trackVisibility: true,
+                                              thumbVisibility: true,
+                                              thickness: 2,
+                                              child: ListView(
+                                                controller: scrollController,
+                                                scrollDirection:
+                                                    Axis.horizontal,
+                                                children: widget.brands,
+                                              ))
+                                          : Center(
+                                              // И вот так
+                                              widthFactor: 100,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: widget.brands,
+                                              )),
                                     )
                                   ],
                                 )
@@ -379,6 +407,8 @@ class AuthFieldsState extends State<AuthFields> {
                       ),
                     ),
                     Center(
+                        child: Padding(
+                      padding: const EdgeInsets.all(20),
                       child: ElevatedButton(
                         style: buttonStyle,
                         onPressed: () async {
@@ -407,11 +437,10 @@ class AuthFieldsState extends State<AuthFields> {
                         },
                         child: Text(
                           widget.submit,
-                          style: const TextStyle(
-                              color: Colors.black, fontFamily: "Arial"),
+                          style: const TextStyle(color: Colors.black),
                         ),
                       ),
-                    ),
+                    )),
                   ],
                 ))),
       ],

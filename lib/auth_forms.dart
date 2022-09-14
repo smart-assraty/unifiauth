@@ -266,6 +266,7 @@ class CheckBoxState extends State<CheckBox> {
                 style: TextStyle(color: Theme.of(context).errorColor),
               ),
               Row(
+                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Checkbox(
                       value: accept,
@@ -275,10 +276,12 @@ class CheckBoxState extends State<CheckBox> {
                             widget.data = accept;
                             state.didChange(value);
                           })),
-                  Text(
-                    widget.title,
-                    style: textStyle,
-                  ),
+                  Flexible(
+                    child: Text(
+                      widget.title,
+                      style: textStyle,
+                    ),
+                  )
                 ],
               ),
             ],
