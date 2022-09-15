@@ -13,6 +13,9 @@ ButtonStyle buttonStyle = ButtonStyle(
     backgroundColor: MaterialStateProperty.all<Color>(
         const Color.fromARGB(255, 251, 225, 30)));
 TextStyle buttonText = const TextStyle(color: Colors.black);
+TextStyle textStyle = const TextStyle(
+  fontFamily: "Arial",
+);
 
 void main() {
   setPathUrlStrategy();

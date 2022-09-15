@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:unifiapp/auth.dart';
 
 import 'main.dart';
 
 // ignore: must_be_immutable
-abstract class AuthForm extends StatefulWidget {
-  dynamic data;
+abstract class AuthField extends StatefulWidget {
   String apiKey;
   String type;
   String title;
   String? description;
   bool isRequired;
 
-  AuthForm({
+  AuthField({
     super.key,
     required this.apiKey,
     required this.type,
@@ -21,11 +19,12 @@ abstract class AuthForm extends StatefulWidget {
     required this.isRequired,
   });
 
+  dynamic data;
   Map<String, dynamic> commit() {
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
 
-  factory AuthForm.createForm(
+  factory AuthField.createForm(
       String type,
       String apiKey,
       String title,
@@ -79,7 +78,7 @@ abstract class AuthForm extends StatefulWidget {
 }
 
 // ignore: must_be_immutable
-class Front extends AuthForm {
+class Front extends AuthField {
   Front(
       {super.key,
       super.apiKey = "",
@@ -100,7 +99,7 @@ class FrontState extends State<Front> {
 }
 
 // ignore: must_be_immutable
-class TextField extends AuthForm {
+class TextField extends AuthField {
   TextField(
       {super.key,
       required super.apiKey,
@@ -148,7 +147,7 @@ class TextFieldState extends State<TextField> {
 }
 
 // ignore: must_be_immutable
-class Email extends AuthForm {
+class Email extends AuthField {
   Email(
       {super.key,
       required super.apiKey,
@@ -194,7 +193,7 @@ class EmailState extends State<Email> {
 }
 
 //ignore: must_be_immutable
-class Number extends AuthForm {
+class Number extends AuthField {
   Number(
       {super.key,
       required super.apiKey,
@@ -240,7 +239,7 @@ class NumberState extends State<Number> {
 }
 
 //ignore: must_be_immutable
-class CheckBox extends AuthForm {
+class CheckBox extends AuthField {
   CheckBox(
       {super.key,
       required super.apiKey,
@@ -296,7 +295,7 @@ class CheckBoxState extends State<CheckBox> {
 }
 
 //ignore: must_be_immutable
-class Brand extends AuthForm {
+class Brand extends AuthField {
   String apiValue;
   String brand;
   bool isPicked = false;

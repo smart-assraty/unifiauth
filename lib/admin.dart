@@ -1,12 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
-import 'dart:convert';
-import 'dart:html';
+// import 'dart:convert';
+// import 'dart:html';
 
 import 'server_connector.dart' show AdminHelper;
-import 'main.dart';
-import 'admin_forms.dart';
+import 'main.dart' show buttonStyle, buttonText;
+import 'admin_form.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({super.key});
@@ -32,35 +32,35 @@ class AdminPageState extends State<AdminPage> {
   late dynamic backgroundImage;
   late dynamic logo;
   List<AdminForm> forms = [];
-  AdminForm frontForm = AdminForm()..setChild(Front());
+  AdminForm frontForm = AdminForm.front();
 
   TextEditingController sendTo = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    try {
-      if (document.cookie!.isNotEmpty &&
-          document.cookie!.contains("expires") &&
-          document.cookie!.contains("token_type") &&
-          document.cookie!.contains("access_token")) {
-        String expires = json.decode(document.cookie!)["expires"];
-        if (DateTime.parse(expires).isAfter(DateTime.now())) {
-          try {
-            token = document.cookie;
-            futureBody = adminHelper.getForms(token!);
-            futureLangs = adminHelper.getLangs();
-          } catch (e) {
-            debugPrint("on InitState: $e");
-          }
-          stage = 1;
-        }
-      }
-      generator = generateForms(futureBody, futureLangs);
-    } catch (e) {
-      debugPrint("on Generator fail: $e");
-      stage = 0;
-    }
+    // try {
+    //   if (document.cookie!.isNotEmpty &&
+    //       document.cookie!.contains("expires") &&
+    //       document.cookie!.contains("token_type") &&
+    //       document.cookie!.contains("access_token")) {
+    //     String expires = json.decode(document.cookie!)["expires"];
+    //     if (DateTime.parse(expires).isAfter(DateTime.now())) {
+    //       try {
+    //         token = document.cookie;
+    //         futureBody = adminHelper.getForms(token!);
+    //         futureLangs = adminHelper.getLangs();
+    //       } catch (e) {
+    //         debugPrint("on InitState: $e");
+    //       }
+    //       stage = 1;
+    //     }
+    //   }
+    //   generator = generateForms(futureBody, futureLangs);
+    // } catch (e) {
+    //   debugPrint("on Generator fail: $e");
+    //   stage = 0;
+    // }
   }
 
   @override
@@ -346,8 +346,7 @@ class AdminPageState extends State<AdminPage> {
                                       onChanged: (value) {
                                         setState(() {
                                           languagelist[index] = value!;
-                                          frontForm = AdminForm()
-                                            ..setChild(Front());
+                                          frontForm = AdminForm.front();
                                         });
                                       }));
                             },
@@ -365,7 +364,7 @@ class AdminPageState extends State<AdminPage> {
                                   .add(languages[languagelist.length].value!);
                               futureBody.then((value) =>
                                   ++value["settings"]["count_langs"]);
-                              frontForm = AdminForm()..setChild(Front());
+                              frontForm = AdminForm.front();
                             });
                           },
                           child: const Text(
@@ -382,7 +381,7 @@ class AdminPageState extends State<AdminPage> {
                                     .remove(languagelist.last.toString());
                               }
                               languagelist.removeLast();
-                              frontForm = AdminForm()..setChild(Front());
+                              frontForm = AdminForm.front();
                             });
                           },
                           child: const Text(
@@ -802,7 +801,7 @@ class AdminPageState extends State<AdminPage> {
                 value: getLangs[index],
                 child: Text(getLangs[index]),
               ));
-      return [AdminForm()..setChild(Front())];
+      return [AdminForm.front()];
     }
   }
 }

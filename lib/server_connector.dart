@@ -2,13 +2,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:unifiapp/admin_forms.dart';
-import 'package:unifiapp/auth_forms.dart';
+import 'package:unifiapp/admin_form.dart';
+import 'package:unifiapp/auth_fields.dart';
 import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8001";
+String uvicorn = "http://185.125.88.30:8000";
 
 class AuthHelper {
   Future<dynamic> getForms(String language) async {
@@ -31,7 +31,7 @@ class AuthHelper {
     return response.statusCode;
   }
 
-  bool checkBrandRequired(List<AuthForm> brands) {
+  bool checkBrandRequired(List<AuthField> brands) {
     for (int i = 0; i < brands.length; i++) {
       if (brands[i].isRequired) {
         for (int j = 0; j < brands.length; j++) {
@@ -44,8 +44,8 @@ class AuthHelper {
     return false;
   }
 
-  Future<int> postData(String lang, List<Map<String, dynamic>> dataToApi,
-      List<AuthForm> forms) async {
+  Future<int> postData(String lang, List<AuthField> forms) async {
+    List<Map<String, dynamic>> dataToApi = [];
     for (int i = 0; i < forms.length; ++i) {
       dataToApi.add(forms.elementAt(i).commit());
     }
