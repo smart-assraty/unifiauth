@@ -49,10 +49,10 @@ class AuthPageState extends State<AuthPage> {
                       ),
                     ),
                     Container(
-                        height: MediaQuery.of(context).size.height / 1.005,
+                        height: MediaQuery.of(context).size.height * 0.92,
                         alignment: Alignment.bottomCenter,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          //mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             AuthForm(
                               languagelist: widget.languagelist,
