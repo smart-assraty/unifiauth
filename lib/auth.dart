@@ -49,7 +49,7 @@ class AuthPageState extends State<AuthPage> {
                       ),
                     ),
                     Container(
-                        height: MediaQuery.of(context).size.height / 1.2,
+                        height: MediaQuery.of(context).size.height / 1.005,
                         alignment: Alignment.bottomCenter,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

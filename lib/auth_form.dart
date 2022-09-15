@@ -139,7 +139,6 @@ class AuthFieldsState extends State<AuthForm> {
                                     ),
                                   ),
                                   SizedBox(
-                                    height: 120,
                                     child: (widget.brands.length >
                                             3) // Доп логика, грязь но пох
                                         ? Scrollbar(
@@ -161,12 +160,11 @@ class AuthFieldsState extends State<AuthForm> {
                                             ))
                                         : Center(
                                             // И вот так
-                                            widthFactor: 100,
                                             child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: widget.brands,
-                                            )),
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: widget.brands,
+                                          )),
                                   )
                                 ],
                               )
