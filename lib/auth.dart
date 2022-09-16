@@ -1,72 +1,76 @@
 import 'package:flutter/material.dart';
+import 'dart:ui' as ui;
 
 import 'server_connector.dart' show AuthHelper;
 import 'auth_form.dart';
 import 'main.dart';
 
-double formHeightFactor = 0.89;
+Locale language = ui.window.locale;
 
-// ignore: must_be_immutable
 class AuthPage extends StatefulWidget {
-  AuthPage({super.key});
+  const AuthPage({super.key});
 
-  String currentLang = "rus";
-  AuthHelper authHelper = AuthHelper();
-  List<DropdownMenuItem<String>> languagelist = [];
+  final authHelper = const AuthHelper();
   @override
   State<AuthPage> createState() => AuthPageState();
 }
 
 class AuthPageState extends State<AuthPage> {
+  List<DropdownMenuItem<String>> languagelist = [];
+  String currentLang = "rus";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: widget.authHelper.getForms(widget.currentLang),
+        future: widget.authHelper.getForms(currentLang),
         builder: (context, snapshot) {
-          if (snapshot.hasData &&
-              snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
             dynamic body = snapshot.data!;
-            widget.languagelist = setLanguages(body);
+            languagelist = setLanguages(body);
             return Container(
               width: MediaQuery.of(context).size.width,
               height: double.maxFinite,
               decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage("$server/img/${body['bg_image']}"),
-                      fit: BoxFit.fill)),
-              child: ListView(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.055,
-                    alignment: Alignment.center,
-                    child: DropdownButton(
-                      hint: Text(
-                        widget.currentLang,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      items: widget.languagelist,
-                      onChanged: (value) => setState(() {
-                        widget.currentLang = value.toString().split(" ")[1];
-                      }),
+                image: DecorationImage(
+                  image: NetworkImage("$server/img/${body['bg_image']}"),
+                  fit: BoxFit.fill)
+                ),
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.055,
+                      alignment: Alignment.topCenter,
+                      child: DropdownButton(
+                        hint: Text(
+                          currentLang,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        items: languagelist,
+                        onChanged: (value) => setState(() {
+                          currentLang = value.toString().split(" ")[1];
+                        }),
                     ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      AuthForm(
-                        languagelist: widget.languagelist,
-                        currentLang: widget.currentLang,
+                  AuthForm(
+                        languagelist: languagelist,
+                        currentLang: currentLang,
                         submit: body["submit_lang"],
                         logo: body["logo_image"],
                         data: body["fields"],
                         fieldsCount: body["count_fields"],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.055),
-                ],
-              ),
+                  
+                      SizedBox(
+
+                    height: MediaQuery.of(context).size.height * 0.055
+                    ),
+              ],)
+              )
+              )
+                
             );
           } else {
             return const Center(child: CircularProgressIndicator());

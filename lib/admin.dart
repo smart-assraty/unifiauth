@@ -1,8 +1,8 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
-import 'dart:convert';
-import 'dart:html';
+// import 'dart:convert';
+// import 'dart:html';
 
 import 'server_connector.dart' show AdminHelper;
 import 'main.dart' show buttonStyle, buttonText;
@@ -39,28 +39,28 @@ class AdminPageState extends State<AdminPage> {
   @override
   void initState() {
     super.initState();
-    try {
-      if (document.cookie!.isNotEmpty &&
-          document.cookie!.contains("expires") &&
-          document.cookie!.contains("token_type") &&
-          document.cookie!.contains("access_token")) {
-        String expires = json.decode(document.cookie!)["expires"];
-        if (DateTime.parse(expires).isAfter(DateTime.now())) {
-          try {
-            token = document.cookie;
-            futureBody = adminHelper.getForms(token!);
-            futureLangs = adminHelper.getLangs();
-          } catch (e) {
-            debugPrint("on InitState: $e");
-          }
-          stage = 1;
-        }
-      }
-      generator = generateForms(futureBody, futureLangs);
-    } catch (e) {
-      debugPrint("on Generator fail: $e");
-      stage = 0;
-    }
+    // try {
+    //   if (document.cookie!.isNotEmpty &&
+    //       document.cookie!.contains("expires") &&
+    //       document.cookie!.contains("token_type") &&
+    //       document.cookie!.contains("access_token")) {
+    //     String expires = json.decode(document.cookie!)["expires"];
+    //     if (DateTime.parse(expires).isAfter(DateTime.now())) {
+    //       try {
+    //         token = document.cookie;
+    //         futureBody = adminHelper.getForms(token!);
+    //         futureLangs = adminHelper.getLangs();
+    //       } catch (e) {
+    //         debugPrint("on InitState: $e");
+    //       }
+    //       stage = 1;
+    //     }
+    //   }
+    //   generator = generateForms(futureBody, futureLangs);
+    // } catch (e) {
+    //   debugPrint("on Generator fail: $e");
+    //   stage = 0;
+    // }
   }
 
   @override

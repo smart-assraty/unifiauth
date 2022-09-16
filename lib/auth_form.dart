@@ -6,39 +6,32 @@ import 'package:flutter/material.dart';
 import 'server_connector.dart';
 import 'auth_fields.dart';
 import 'main.dart';
-import 'auth.dart';
 
-// ignore: must_be_immutable
 class AuthForm extends StatefulWidget {
-  late List<DropdownMenuItem<String>> languagelist;
-  String currentLang;
-  String submit;
-  String logo;
-  int fieldsCount;
-  dynamic data;
+  final List<DropdownMenuItem<String>> languagelist;
+  final String currentLang;
+  final String submit;
+  final String logo;
+  final int fieldsCount;
+  final dynamic data;
 
-  AuthForm(
+  final authHelper = const AuthHelper();
+
+  const AuthForm(
       {super.key,
       required this.languagelist,
       required this.currentLang,
       required this.submit,
       required this.logo,
       required this.data,
-      required this.fieldsCount}) {
-    forms = generateForms(data);
-    for (var element in forms) {
-      if (element.type == "brand") {
-        brands.add(element);
-      } else if (element.type == "checkbox") {
-        checkboxes.add(element);
-      } else {
-        fields.add(element);
-      }
-    }
-  }
+      required this.fieldsCount});
 
+  @override
+  State<AuthForm> createState() => AuthFieldsState();
+}
+
+class AuthFieldsState extends State<AuthForm> {
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
-  AuthHelper authHelper = AuthHelper();
 
   List<AuthField> forms = [];
   List<TextEditingController> controllers = [];
@@ -50,11 +43,11 @@ class AuthForm extends StatefulWidget {
   String frontDescription = "";
 
   List<AuthField> generateForms(dynamic body) {
-    controllers =
-        List.generate(fieldsCount, (index) => TextEditingController());
+    controllers = List.generate(widget.fieldsCount, (index) => TextEditingController());
 
-    for (int i = 0; i < fieldsCount; ++i) {
-      forms.add(AuthField.createForm(
+    for (int i = 0; i < widget.fieldsCount; ++i) {
+      forms.add(
+        AuthField.createForm(
           body[i]["type"],
           body[i]["api_name"],
           body[i]["title"],
@@ -62,7 +55,9 @@ class AuthForm extends StatefulWidget {
           body[i]["brand_icon"],
           body[i]["api_value"],
           body[i]["required_field"],
-          controllers[i]));
+          controllers[i]
+        )
+      );
       if (forms[i].type == "front") {
         frontTitle = forms[i].title;
         frontDescription = forms[i].description!;
@@ -72,10 +67,21 @@ class AuthForm extends StatefulWidget {
   }
 
   @override
-  State<AuthForm> createState() => AuthFieldsState();
-}
+  void initState(){
+    super.initState();
 
-class AuthFieldsState extends State<AuthForm> {
+    forms = generateForms(widget.data);
+    for (var element in forms) {
+      if (element.type == "brand") {
+        brands.add(element);
+      } else if (element.type == "checkbox") {
+        checkboxes.add(element);
+      } else {
+        fields.add(element);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Layout(
@@ -108,32 +114,32 @@ class AuthFieldsState extends State<AuthForm> {
                   child: Column(
                     children: [
                       Text(
-                        widget.frontTitle,
+                        frontTitle,
                         style: const TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        widget.frontDescription,
+                        frontDescription,
                         style: textStyle,
                       ),
                     ],
                   ),
                 ),
                 Form(
-                  key: widget.formkey,
+                  key: formkey,
                   child: AvoidKeyboard(
                     child: Column(
                       children: [
                         Column(
-                          children: widget.fields,
+                          children: fields,
                         ),
-                        (widget.brands.isNotEmpty)
+                        (brands.isNotEmpty)
                             ? Column(
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(top: 20),
                                     child: Text(
-                                      widget.brands[0].title,
+                                      brands[0].title,
                                       style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold),
@@ -141,7 +147,7 @@ class AuthFieldsState extends State<AuthForm> {
                                   ),
                                   SizedBox(
                                     height: 90,
-                                    child: (widget.brands.length >
+                                    child: (brands.length >
                                             3) // Доп логика, грязь но пох
                                         ? Scrollbar(
                                             controller: scrollController,
@@ -149,14 +155,14 @@ class AuthFieldsState extends State<AuthForm> {
                                             thumbVisibility: true,
                                             thickness: 2,
                                             child: ListView.builder(
-                                              itemCount: widget.brands.length,
+                                              itemCount: brands.length,
                                               controller: scrollController,
                                               scrollDirection: Axis.horizontal,
                                               itemBuilder: (context, index) {
                                                 return Padding(
                                                   padding:
                                                       const EdgeInsets.all(1),
-                                                  child: widget.brands[index],
+                                                  child: brands[index],
                                                 );
                                               },
                                             ))
@@ -165,15 +171,15 @@ class AuthFieldsState extends State<AuthForm> {
                                             child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
-                                            children: widget.brands,
+                                            children: brands,
                                           )),
                                   )
                                 ],
                               )
                             : const SizedBox(),
-                        (widget.checkboxes.isNotEmpty)
+                        (checkboxes.isNotEmpty)
                             ? Column(
-                                children: widget.checkboxes,
+                                children: checkboxes,
                               )
                             : const SizedBox(),
                       ],
@@ -186,28 +192,27 @@ class AuthFieldsState extends State<AuthForm> {
                     child: ElevatedButton(
                       style: buttonStyle,
                       onPressed: () async {
-                        if (widget.formkey.currentState!.validate()) {
-                          formHeightFactor = 0.89;
-                          if (widget.authHelper
-                              .checkBrandRequired(widget.brands)) {
-                            widget.authHelper.connecting();
-                            var response = await widget.authHelper
-                                .postData(widget.currentLang, widget.forms);
-                            if (response == 200) {
-                              // ignore: use_build_context_synchronously
-                              Routemaster.of(context).push("/logged");
-                            }
-                          } else {
-                            // ignore: use_build_context_synchronously
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                              "You have to choose a brand",
-                              style: textStyle,
-                            )));
+                        bool isChecked = widget.authHelper
+                                .checkBrandRequired(brands);
+                            if (isChecked) {
+                                if (formkey.currentState!.validate()) {
+                              widget.authHelper.connecting();
+                              var response = await widget.authHelper
+                                  .postData(widget.currentLang, forms);
+                              if (response == 200) {
+                                // ignore: use_build_context_synchronously
+                                Routemaster.of(context).push("/logged");
+                              }
                           }
-                        } else {
-                          formHeightFactor = 1;
-                        }
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      content: Text(
+                                "You have to choose a brand",
+                                style: textStyle,
+                              )));
+                            }
                       },
                       child: Text(widget.submit,
                           style: const TextStyle(
@@ -248,31 +253,34 @@ class AuthFieldsState extends State<AuthForm> {
                       child: Column(
                         children: [
                           Text(
-                            widget.frontTitle,
+                            overflow: TextOverflow.visible,
+                            frontTitle,
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.bold),
                           ),
+                            
                           Text(
-                            widget.frontDescription,
+                            overflow: TextOverflow.visible,
+                            frontDescription,
                             style: textStyle,
                           ),
                         ],
                       ),
                     ),
                     Form(
-                      key: widget.formkey,
+                      key: formkey,
                       child: Column(
                         children: [
                           Column(
-                            children: widget.fields,
+                            children: fields,
                           ),
-                          (widget.brands.isNotEmpty)
+                          (brands.isNotEmpty)
                               ? Column(
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(20),
                                       child: Text(
-                                        widget.brands[0].title,
+                                        brands[0].title,
                                         style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold),
@@ -280,7 +288,7 @@ class AuthFieldsState extends State<AuthForm> {
                                     ),
                                     SizedBox(
                                       height: 90,
-                                      child: (widget.brands.length >
+                                      child: (brands.length >
                                               3) // Доп логика, грязь но пох
                                           ? Scrollbar(
                                               controller: scrollController,
@@ -288,7 +296,7 @@ class AuthFieldsState extends State<AuthForm> {
                                               thumbVisibility: true,
                                               thickness: 2,
                                               child: ListView.builder(
-                                                itemCount: widget.brands.length,
+                                                itemCount: brands.length,
                                                 controller: scrollController,
                                                 scrollDirection:
                                                     Axis.horizontal,
@@ -296,7 +304,7 @@ class AuthFieldsState extends State<AuthForm> {
                                                   return Padding(
                                                     padding:
                                                         const EdgeInsets.all(1),
-                                                    child: widget.brands[index],
+                                                    child: brands[index],
                                                   );
                                                 },
                                               ))
@@ -305,15 +313,15 @@ class AuthFieldsState extends State<AuthForm> {
                                               child: Row(
                                               mainAxisAlignment:
                                                   MainAxisAlignment.spaceEvenly,
-                                              children: widget.brands,
+                                              children: brands,
                                             )),
                                     )
                                   ],
                                 )
                               : const SizedBox(),
-                          (widget.checkboxes.isNotEmpty)
+                          (checkboxes.isNotEmpty)
                               ? Column(
-                                  children: widget.checkboxes,
+                                  children: checkboxes,
                                 )
                               : const SizedBox(),
                         ],
@@ -325,17 +333,18 @@ class AuthFieldsState extends State<AuthForm> {
                       child: ElevatedButton(
                         style: buttonStyle,
                         onPressed: () async {
-                          if (widget.formkey.currentState!.validate()) {
-                            formHeightFactor = 0.89;
-                            if (widget.authHelper
-                                .checkBrandRequired(widget.brands)) {
+                          bool isChecked = widget.authHelper
+                                .checkBrandRequired(brands);
+                            if (isChecked) {
+                                if (formkey.currentState!.validate()) {
                               widget.authHelper.connecting();
                               var response = await widget.authHelper
-                                  .postData(widget.currentLang, widget.forms);
+                                  .postData(widget.currentLang, forms);
                               if (response == 200) {
                                 // ignore: use_build_context_synchronously
                                 Routemaster.of(context).push("/logged");
                               }
+                          }
                             } else {
                               // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context)
@@ -345,9 +354,6 @@ class AuthFieldsState extends State<AuthForm> {
                                 style: textStyle,
                               )));
                             }
-                          } else {
-                            formHeightFactor = 1;
-                          }
                         },
                         child: Text(
                           widget.submit,
