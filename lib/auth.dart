@@ -4,6 +4,8 @@ import 'server_connector.dart' show AuthHelper;
 import 'auth_form.dart';
 import 'main.dart';
 
+double formHeightFactor = 0.89;
+
 // ignore: must_be_immutable
 class AuthPage extends StatefulWidget {
   AuthPage({super.key});
@@ -27,45 +29,48 @@ class AuthPageState extends State<AuthPage> {
             dynamic body = snapshot.data!;
             widget.languagelist = setLanguages(body);
             return Container(
-                height: double.maxFinite,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage("$server/img/${body['bg_image']}"),
-                        fit: BoxFit.fill)),
-                child: ListView(
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: DropdownButton(
-                        hint: Text(
-                          widget.currentLang,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        items: widget.languagelist,
-                        onChanged: (value) => setState(() {
-                          widget.currentLang = value.toString().split(" ")[1];
-                        }),
+              width: MediaQuery.of(context).size.width,
+              height: double.maxFinite,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage("$server/img/${body['bg_image']}"),
+                      fit: BoxFit.fill)),
+              child: ListView(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.055,
+                    alignment: Alignment.center,
+                    child: DropdownButton(
+                      hint: Text(
+                        widget.currentLang,
+                        style: const TextStyle(color: Colors.white),
                       ),
+                      items: widget.languagelist,
+                      onChanged: (value) => setState(() {
+                        widget.currentLang = value.toString().split(" ")[1];
+                      }),
                     ),
-                    Container(
-                        height: MediaQuery.of(context).size.height * 0.92,
-                        alignment: Alignment.bottomCenter,
-                        child: Column(
-                          //mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AuthForm(
-                              languagelist: widget.languagelist,
-                              currentLang: widget.currentLang,
-                              submit: body["submit_lang"],
-                              logo: body["logo_image"],
-                              data: body["fields"],
-                              fieldsCount: body["count_fields"],
-                            ),
-                          ],
-                        )),
-                  ],
-                ));
+                  ),
+                  SizedBox(
+                      height:
+                          MediaQuery.of(context).size.height * formHeightFactor,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AuthForm(
+                            languagelist: widget.languagelist,
+                            currentLang: widget.currentLang,
+                            submit: body["submit_lang"],
+                            logo: body["logo_image"],
+                            data: body["fields"],
+                            fieldsCount: body["count_fields"],
+                          ),
+                        ],
+                      )),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.055),
+                ],
+              ),
+            );
           } else {
             return const Center(child: CircularProgressIndicator());
           }

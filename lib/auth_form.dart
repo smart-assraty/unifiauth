@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'server_connector.dart';
 import 'auth_fields.dart';
 import 'main.dart';
+import 'auth.dart';
 
 // ignore: must_be_immutable
 class AuthForm extends StatefulWidget {
@@ -139,6 +140,7 @@ class AuthFieldsState extends State<AuthForm> {
                                     ),
                                   ),
                                   SizedBox(
+                                    height: 90,
                                     child: (widget.brands.length >
                                             3) // Доп логика, грязь но пох
                                         ? Scrollbar(
@@ -153,7 +155,7 @@ class AuthFieldsState extends State<AuthForm> {
                                               itemBuilder: (context, index) {
                                                 return Padding(
                                                   padding:
-                                                      const EdgeInsets.all(15),
+                                                      const EdgeInsets.all(1),
                                                   child: widget.brands[index],
                                                 );
                                               },
@@ -263,8 +265,7 @@ class AuthFieldsState extends State<AuthForm> {
                                             fontWeight: FontWeight.bold),
                                       ),
                                     ),
-                                    Container(
-                                      alignment: Alignment.center,
+                                    SizedBox(
                                       height: 90,
                                       child: (widget.brands.length >
                                               3) // Доп логика, грязь но пох
@@ -273,21 +274,26 @@ class AuthFieldsState extends State<AuthForm> {
                                               trackVisibility: true,
                                               thumbVisibility: true,
                                               thickness: 2,
-                                              child: ListView(
+                                              child: ListView.builder(
+                                                itemCount: widget.brands.length,
                                                 controller: scrollController,
                                                 scrollDirection:
                                                     Axis.horizontal,
-                                                children: widget.brands,
+                                                itemBuilder: (context, index) {
+                                                  return Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(1),
+                                                    child: widget.brands[index],
+                                                  );
+                                                },
                                               ))
                                           : Center(
                                               // И вот так
-                                              widthFactor: 100,
                                               child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: widget.brands,
-                                              )),
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: widget.brands,
+                                            )),
                                     )
                                   ],
                                 )
@@ -307,6 +313,7 @@ class AuthFieldsState extends State<AuthForm> {
                         style: buttonStyle,
                         onPressed: () async {
                           if (widget.formkey.currentState!.validate()) {
+                            formHeightFactor = 0.89;
                             if (widget.authHelper
                                 .checkBrandRequired(widget.brands)) {
                               widget.authHelper.connecting();
@@ -325,6 +332,8 @@ class AuthFieldsState extends State<AuthForm> {
                                 style: textStyle,
                               )));
                             }
+                          } else {
+                            formHeightFactor = 0.935;
                           }
                         },
                         child: Text(
