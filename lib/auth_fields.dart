@@ -51,6 +51,7 @@ abstract class AuthField extends StatefulWidget {
       return CheckBox(
         title: title,
         apiKey: apiKey,
+        isRequired: isRequired!,
       );
     } else if (type == "brand") {
       return Brand(
@@ -244,7 +245,7 @@ class CheckBox extends AuthField {
       {super.key,
       required super.apiKey,
       required super.title,
-      super.isRequired = false})
+      required super.isRequired})
       : super(type: "checkbox");
 
   @override
@@ -256,35 +257,35 @@ class CheckBoxState extends State<CheckBox> {
   @override
   Widget build(BuildContext context) {
     return FormField<bool>(builder: (state) {
-      return SizedBox(
-          height: 50,
-          child: Column(
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          (state.hasError)
+              ? Text(
+                  state.errorText ?? "",
+                  style: TextStyle(color: Theme.of(context).errorColor),
+                )
+              : const SizedBox(),
+          Row(
             children: [
-              Text(
-                state.errorText ?? "",
-                style: TextStyle(color: Theme.of(context).errorColor),
-              ),
-              Row(
-                //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Checkbox(
-                      value: accept,
-                      onChanged: (value) => setState(() {
-                            FocusScope.of(context).requestFocus(FocusNode());
-                            accept = value!;
-                            widget.data = accept;
-                            state.didChange(value);
-                          })),
-                  Flexible(
-                    child: Text(
-                      widget.title,
-                      style: textStyle,
-                    ),
-                  )
-                ],
-              ),
+              Checkbox(
+                  value: accept,
+                  onChanged: (value) => setState(() {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        accept = value!;
+                        widget.data = accept;
+                        state.didChange(value);
+                      })),
+              Flexible(
+                child: Text(
+                  widget.title,
+                  style: textStyle,
+                ),
+              )
             ],
-          ));
+          ),
+        ],
+      );
     }, validator: (value) {
       if (widget.isRequired && !accept) {
         return "You need to accept terms";

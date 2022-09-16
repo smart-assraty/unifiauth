@@ -181,19 +181,32 @@ class AuthFieldsState extends State<AuthForm> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 20),
                   child: Center(
                     child: ElevatedButton(
                       style: buttonStyle,
                       onPressed: () async {
                         if (widget.formkey.currentState!.validate()) {
-                          widget.authHelper.connecting();
-                          var response = await widget.authHelper
-                              .postData(widget.currentLang, widget.forms);
-                          if (response == 200) {
+                          formHeightFactor = 0.89;
+                          if (widget.authHelper
+                              .checkBrandRequired(widget.brands)) {
+                            widget.authHelper.connecting();
+                            var response = await widget.authHelper
+                                .postData(widget.currentLang, widget.forms);
+                            if (response == 200) {
+                              // ignore: use_build_context_synchronously
+                              Routemaster.of(context).push("/logged");
+                            }
+                          } else {
                             // ignore: use_build_context_synchronously
-                            Routemaster.of(context).push("/logged");
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                              "You have to choose a brand",
+                              style: textStyle,
+                            )));
                           }
+                        } else {
+                          formHeightFactor = 1;
                         }
                       },
                       child: Text(widget.submit,
@@ -333,7 +346,7 @@ class AuthFieldsState extends State<AuthForm> {
                               )));
                             }
                           } else {
-                            formHeightFactor = 0.935;
+                            formHeightFactor = 1;
                           }
                         },
                         child: Text(

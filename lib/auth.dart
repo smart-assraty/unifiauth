@@ -51,22 +51,19 @@ class AuthPageState extends State<AuthPage> {
                       }),
                     ),
                   ),
-                  SizedBox(
-                      height:
-                          MediaQuery.of(context).size.height * formHeightFactor,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AuthForm(
-                            languagelist: widget.languagelist,
-                            currentLang: widget.currentLang,
-                            submit: body["submit_lang"],
-                            logo: body["logo_image"],
-                            data: body["fields"],
-                            fieldsCount: body["count_fields"],
-                          ),
-                        ],
-                      )),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AuthForm(
+                        languagelist: widget.languagelist,
+                        currentLang: widget.currentLang,
+                        submit: body["submit_lang"],
+                        logo: body["logo_image"],
+                        data: body["fields"],
+                        fieldsCount: body["count_fields"],
+                      ),
+                    ],
+                  ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.055),
                 ],
               ),
