@@ -2,13 +2,20 @@ import 'package:flutter/material.dart';
 
 import 'main.dart';
 
+
 // ignore: must_be_immutable
 abstract class AuthField extends StatefulWidget {
-  String apiKey;
-  String type;
-  String title;
-  String? description;
-  bool isRequired;
+  final  String apiKey;
+  final String type;
+  final String title;
+  final String? description;
+  final bool isRequired;
+
+  dynamic data;
+  Map<String, dynamic> commit() {
+    return {"type": type, "title": title, "api_name": apiKey, "value": data};
+  }
+
 
   AuthField({
     super.key,
@@ -18,11 +25,6 @@ abstract class AuthField extends StatefulWidget {
     this.description,
     required this.isRequired,
   });
-
-  dynamic data;
-  Map<String, dynamic> commit() {
-    return {"type": type, "title": title, "api_name": apiKey, "value": data};
-  }
 
   factory AuthField.createForm(
       String type,
@@ -93,6 +95,11 @@ class Front extends AuthField {
 }
 
 class FrontState extends State<Front> {
+  dynamic data;
+  Map<String, dynamic> commit() {
+    return {"type": widget.type, "title": widget.title, "api_name": widget.apiKey, "value": data};
+  }
+
   @override
   Widget build(BuildContext context) {
     return const SizedBox();
@@ -110,14 +117,13 @@ class TextField extends AuthField {
       required super.isRequired})
       : super(type: "textfield");
 
-  TextEditingController controller;
+  final TextEditingController controller;
 
   @override
   Map<String, dynamic> commit() {
     data = controller.text;
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
-
   @override
   State<TextField> createState() => TextFieldState();
 }
@@ -157,7 +163,7 @@ class Email extends AuthField {
       required super.isRequired})
       : super(type: "email");
 
-  TextEditingController controller;
+  final TextEditingController controller;
 
   @override
   Map<String, dynamic> commit() {

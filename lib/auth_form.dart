@@ -98,7 +98,9 @@ class AuthFieldsState extends State<AuthForm> {
       padding: const EdgeInsets.only(right: 5, left: 5),
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(25)),
+          color: Colors.white, 
+          borderRadius: BorderRadius.circular(25)
+        ),
         child: Column(
           children: [
             Image(
@@ -108,32 +110,35 @@ class AuthFieldsState extends State<AuthForm> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-                  child: Column(
-                    children: [
-                      Text(
-                        frontTitle,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      Text(
-                        frontDescription,
-                        style: textStyle,
-                      ),
-                    ],
-                  ),
-                ),
-                Form(
-                  key: formkey,
-                  child: AvoidKeyboard(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Column(
                       children: [
-                        Column(
-                          children: fields,
+                        Text(
+                          frontTitle,
+                          style: const TextStyle(
+                            fontSize: 16, 
+                            fontWeight: FontWeight.bold
+                          ),
                         ),
-                        (brands.isNotEmpty)
+                        Text(
+                          frontDescription,
+                          style: textStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Form(
+                    key: formkey,
+                    child: AvoidKeyboard(
+                      child: Column(
+                        children: [
+                          Column(
+                            children: fields,
+                          ),
+                          (brands.isNotEmpty)
                             ? Column(
                                 children: [
                                   Padding(
@@ -141,14 +146,13 @@ class AuthFieldsState extends State<AuthForm> {
                                     child: Text(
                                       brands[0].title,
                                       style: const TextStyle(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold),
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   SizedBox(
                                     height: 90,
-                                    child: (brands.length >
-                                            3) // Доп логика, грязь но пох
+                                    child: (brands.length > 3) // Доп логика, грязь но пох
                                         ? Scrollbar(
                                             controller: scrollController,
                                             trackVisibility: true,
