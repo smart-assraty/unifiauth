@@ -279,7 +279,7 @@ class CheckBoxState extends State<CheckBox> {
                   onChanged: (value) => setState(() {
                         FocusScope.of(context).requestFocus(FocusNode());
                         accept = value!;
-                        widget.data = accept;
+                        widget.data = (accept) ? widget.title : null;
                         state.didChange(value);
                       })),
               Flexible(

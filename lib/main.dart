@@ -2,7 +2,7 @@ import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
-// import 'dart:html';
+//import 'dart:html';
 
 import 'admin.dart';
 import 'auth.dart';
@@ -27,7 +27,7 @@ void main() {
 }
 
 final routes = RouteMap(routes: {
-  "/": (_) => const MaterialPage(child: AuthPage()),
+  "/": (_) => const MaterialPage(child: AdminPage()),
   "/guest/s/default": (_) => const MaterialPage(child: AuthPage()),
   "/logged": (_) => MaterialPage(
           child: Scaffold(
@@ -67,7 +67,7 @@ class OpenerState extends State<Opener> {
   @override
   void initState() {
     super.initState();
-    // window.open("https://www.technogym.kz/", "_self");
+    //window.open("https://www.technogym.kz/", "_self");
   }
 
   @override

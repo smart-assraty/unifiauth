@@ -8,14 +8,14 @@ import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8000";
+String uvicorn = "http://185.125.88.30:8001";
 
 class AuthHelper {
   const AuthHelper();
   Future<dynamic> getForms(String language) async {
     try {
       var response = await get(Uri.parse("$uvicorn/GetLoginForm/$language"));
-      //debugPrint(utf8.decode(response.body.codeUnits));
+      // debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       return "$e";
@@ -80,13 +80,11 @@ class AdminHelper {
   Future<String> postChangePassword(String usename, String oldPassword,
       String newPassword, String token) async {
     try {
-      debugPrint("functioning");
       Map<String, dynamic> params = {
         'username': usename,
         'old_password': oldPassword,
         'new_password': newPassword
       };
-      debugPrint("posting");
       var request = await post(Uri.parse("$uvicorn/SetNewPassword/"),
           headers: {
             "Content-type": "application/x-www-form-urlencoded",
@@ -94,8 +92,6 @@ class AdminHelper {
                 "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}",
           },
           body: params);
-      debugPrint(params.toString());
-      debugPrint(request.body);
       return json.encode(request.statusCode);
     } catch (e) {
       debugPrint("$e");
@@ -110,7 +106,7 @@ class AdminHelper {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
-      //debugPrint(utf8.decode(response.body.codeUnits));
+      // debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       debugPrint("$e");

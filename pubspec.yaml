@@ -43,7 +43,6 @@ dependencies:
   http_parser: ^4.0.1
   url_launcher: ^6.1.5
   layout: ^1.0.3
-  breakpoint: ^1.2.0
 
 dev_dependencies:
   flutter_test:

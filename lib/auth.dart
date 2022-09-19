@@ -17,12 +17,11 @@ class AuthPage extends StatefulWidget {
 
 class AuthPageState extends State<AuthPage> {
   List<DropdownMenuItem<String>> languagelist = [];
-  String currentLang = "rus";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: widget.authHelper.getForms(currentLang),
+        future: widget.authHelper.getForms(language.toString()),
         builder: (context, snapshot) {
           if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
             dynamic body = snapshot.data!;
@@ -38,35 +37,16 @@ class AuthPageState extends State<AuthPage> {
               child: Center(
                 child: SingleChildScrollView(
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.055,
-                      alignment: Alignment.topCenter,
-                      child: DropdownButton(
-                        hint: Text(
-                          currentLang,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        items: languagelist,
-                        onChanged: (value) => setState(() {
-                          currentLang = value.toString().split(" ")[1];
-                        }),
-                    ),
-                  ),
                   AuthForm(
                         languagelist: languagelist,
-                        currentLang: currentLang,
+                        currentLang: language.toString(),
                         submit: body["submit_lang"],
                         logo: body["logo_image"],
                         data: body["fields"],
                         fieldsCount: body["count_fields"],
                       ),
-                  
-                      SizedBox(
-
-                    height: MediaQuery.of(context).size.height * 0.055
-                    ),
               ],)
               )
               )

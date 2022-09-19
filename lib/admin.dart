@@ -16,7 +16,7 @@ class AdminPage extends StatefulWidget {
 }
 
 List<DropdownMenuItem<dynamic>> languages = [];
-List<dynamic> languagelist = ["rus"];
+List<dynamic> languagelist = ["ru_RU"];
 String? token;
 
 class AdminPageState extends State<AdminPage> {
@@ -329,7 +329,7 @@ class AdminPageState extends State<AdminPage> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: SizedBox(
-                      width: 70,
+                      width: 75,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -346,7 +346,6 @@ class AdminPageState extends State<AdminPage> {
                                       onChanged: (value) {
                                         setState(() {
                                           languagelist[index] = value!;
-                                          frontForm = AdminForm.front();
                                         });
                                       }));
                             },
@@ -360,11 +359,14 @@ class AdminPageState extends State<AdminPage> {
                       TextButton(
                           onPressed: () {
                             setState(() {
-                              languagelist
-                                  .add(languages[languagelist.length].value!);
-                              futureBody.then((value) =>
-                                  ++value["settings"]["count_langs"]);
+                              languagelist.add(languages[languagelist.length].value!);
+                              futureBody.then((value) => ++value["settings"]["count_langs"]);
+                              var tmpFront = frontForm;
                               frontForm = AdminForm.front();
+                              frontForm.adminField.title = tmpFront.adminField.title;
+                              frontForm.adminField.description = tmpFront.adminField.description;
+                              frontForm.adminField.controllerTitle.text = tmpFront.adminField.title[tmpFront.adminField.currentLang];
+                              frontForm.adminField.controllerDesc.text = tmpFront.adminField.description[tmpFront.adminField.currentLang];
                             });
                           },
                           child: const Text(
@@ -374,14 +376,17 @@ class AdminPageState extends State<AdminPage> {
                       TextButton(
                           onPressed: () async {
                             setState(() {
-                              futureBody.then((value) =>
-                                  --value["settings"]["count_langs"]);
+                              futureBody.then((value) => --value["settings"]["count_langs"]);
                               for (var element in forms) {
-                                element.adminField.title
-                                    .remove(languagelist.last.toString());
+                                element.adminField.title.remove(languagelist.last.toString());
                               }
                               languagelist.removeLast();
+                              var tmpFront = frontForm;
                               frontForm = AdminForm.front();
+                              frontForm.adminField.title = tmpFront.adminField.title;
+                              frontForm.adminField.description = tmpFront.adminField.description;
+                              frontForm.adminField.controllerTitle.text = tmpFront.adminField.title[tmpFront.adminField.currentLang];
+                              frontForm.adminField.controllerDesc.text = tmpFront.adminField.description[tmpFront.adminField.currentLang];
                             });
                           },
                           child: const Text(
@@ -793,8 +798,8 @@ class AdminPageState extends State<AdminPage> {
       }
       return formsFromServer;
     } else {
-      bgImage = body["settings"]["bg_image"];
-      logoImage = body["settings"]["logo_image"];
+      bgImage = "http:185.125.88.30/img/imageBG.jpg";
+      logoImage = "http:185.125.88.30/img/imageLogo.jpg";
       languages = List.generate(
           getLangs.length,
           (index) => DropdownMenuItem<String>(
