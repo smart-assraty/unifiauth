@@ -8,7 +8,7 @@ import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8001";
+String uvicorn = "http://185.125.88.30:8000";
 
 class AuthHelper {
   const AuthHelper();
@@ -33,14 +33,18 @@ class AuthHelper {
   }
 
   bool checkBrandRequired(List<AuthField> brands) {
-    for (int i = 0; i < brands.length; i++) {
-      if (brands[i].isRequired) {
-        for (int j = 0; j < brands.length; j++) {
-          if (brands[j].data != null) {
-            return true;
+    if (brands.isNotEmpty) {
+      for (int i = 0; i < brands.length; i++) {
+        if (brands[i].isRequired) {
+          for (int j = 0; j < brands.length; j++) {
+            if (brands[j].data != null) {
+              return true;
+            }
           }
         }
       }
+    } else {
+      return true;
     }
     return false;
   }

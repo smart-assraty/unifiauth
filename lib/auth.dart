@@ -23,35 +23,32 @@ class AuthPageState extends State<AuthPage> {
       body: FutureBuilder(
         future: widget.authHelper.getForms(language.toString()),
         builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData &&
+              snapshot.connectionState == ConnectionState.done) {
             dynamic body = snapshot.data!;
-            languagelist = setLanguages(body);
+            //languagelist = setLanguages(body);
             return Container(
-              width: MediaQuery.of(context).size.width,
-              height: double.maxFinite,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage("$server/img/${body['bg_image']}"),
-                  fit: BoxFit.fill)
-                ),
-              child: Center(
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                  AuthForm(
-                        languagelist: languagelist,
-                        currentLang: language.toString(),
-                        submit: body["submit_lang"],
-                        logo: body["logo_image"],
-                        data: body["fields"],
-                        fieldsCount: body["count_fields"],
-                      ),
-              ],)
-              )
-              )
-                
-            );
+                width: MediaQuery.of(context).size.width,
+                height: double.maxFinite,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage("$server/img/${body['bg_image']}"),
+                        fit: BoxFit.fill)),
+                child: Center(
+                    child: SingleChildScrollView(
+                        child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AuthForm(
+                      languagelist: languagelist,
+                      currentLang: language.toString(),
+                      submit: body["submit_lang"],
+                      logo: body["logo_image"],
+                      data: body["fields"],
+                      fieldsCount: body["count_fields"],
+                    ),
+                  ],
+                ))));
           } else {
             return const Center(child: CircularProgressIndicator());
           }
