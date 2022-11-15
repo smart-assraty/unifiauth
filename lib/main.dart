@@ -8,6 +8,7 @@ import 'dart:html';
 import 'admin.dart';
 import 'auth.dart';
 
+String uvicorn = "";
 String server = "";
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
@@ -21,6 +22,7 @@ TextStyle textStyle = const TextStyle(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   server = await rootBundle.loadString("assets/config.txt");
+  uvicorn = "$server:8000";
   setPathUrlStrategy();
   runApp(MaterialApp.router(
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),

@@ -8,8 +8,6 @@ import 'dart:convert';
 
 import 'main.dart';
 
-String uvicorn = "http://185.125.88.30:8000";
-
 class AuthHelper {
   const AuthHelper();
   Future<dynamic> getForms(String language) async {
