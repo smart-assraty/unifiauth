@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
@@ -7,7 +8,7 @@ import 'dart:html';
 import 'admin.dart';
 import 'auth.dart';
 
-String server = "http://185.125.88.30"; // To Config file
+String server = "";
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
     backgroundColor: MaterialStateProperty.all<Color>(
@@ -17,7 +18,9 @@ TextStyle textStyle = const TextStyle(
   fontFamily: "Arial",
 );
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  server = await rootBundle.loadString("assets/config.txt");
   setPathUrlStrategy();
   runApp(MaterialApp.router(
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
