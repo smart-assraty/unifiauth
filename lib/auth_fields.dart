@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:email_validator/email_validator.dart';
 
 import 'main.dart';
 
@@ -176,8 +177,6 @@ class Email extends AuthField {
 }
 
 class EmailState extends State<Email> {
-  RegExp regExp = RegExp(
-      "^[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*@[a-zA-Z0-9]+(?:\\.[a-zA-Z0-9]+)*\$");
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -185,7 +184,7 @@ class EmailState extends State<Email> {
         if (widget.isRequired && value == null) {
           return "Please enter your email";
         }
-        if (value != null && !value.contains(regExp)) {
+        if (value != null && !EmailValidator.validate(value)) {
           return "Example: example@mail.com";
         }
         return null;

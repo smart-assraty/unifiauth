@@ -23,6 +23,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   server = await rootBundle.loadString("assets/config.txt");
   uvicorn = "$server:8000";
+
   setPathUrlStrategy();
   runApp(MaterialApp.router(
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
