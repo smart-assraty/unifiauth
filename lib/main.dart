@@ -4,9 +4,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
 import 'dart:html';
+import 'dart:convert';
 
 import 'admin.dart';
 import 'auth.dart';
+
 
 String uvicorn = "";
 String server = "";
@@ -14,18 +16,29 @@ ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
     backgroundColor: MaterialStateProperty.all<Color>(
         const Color.fromARGB(255, 251, 225, 30)));
-TextStyle buttonText = const TextStyle(color: Colors.black);
-TextStyle textStyle = const TextStyle(
+const TextStyle buttonText = TextStyle(color: Colors.black);
+const TextStyle textStyleBig = TextStyle(
+  fontSize: 24,
+  fontWeight: FontWeight.bold,
+  fontFamily: "Arial",
+);
+const TextStyle textStyleLittle = TextStyle(
+  fontSize: 16,
   fontFamily: "Arial",
 );
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  server = await rootBundle.loadString("assets/config.txt");
-  uvicorn = "$server:8000";
+  try{
+    server = json.decode(await rootBundle.loadString("assets/config.json"))["url"];
+    uvicorn = "$server:8000";
+  } catch(e){
+    debugPrint("$e");
+  }
 
   setPathUrlStrategy();
   runApp(MaterialApp.router(
+	useInheritedMediaQuery: true,
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
     routeInformationParser: const RoutemasterParser(),
     theme: ThemeData(fontFamily: "Arial"),

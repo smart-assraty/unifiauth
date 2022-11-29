@@ -1,8 +1,8 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:layout/layout.dart';
-// import 'dart:convert';
-// import 'dart:html';
+import 'dart:convert';
+import 'dart:html';
 
 import 'server_connector.dart' show AdminHelper;
 import 'main.dart' show buttonStyle, buttonText;
@@ -39,28 +39,28 @@ class AdminPageState extends State<AdminPage> {
   @override
   void initState() {
     super.initState();
-    // try {
-    //   if (document.cookie!.isNotEmpty &&
-    //       document.cookie!.contains("expires") &&
-    //       document.cookie!.contains("token_type") &&
-    //       document.cookie!.contains("access_token")) {
-    //     String expires = json.decode(document.cookie!)["expires"];
-    //     if (DateTime.parse(expires).isAfter(DateTime.now())) {
-    //       try {
-    //         token = document.cookie;
-    //         futureBody = adminHelper.getForms(token!);
-    //         futureLangs = adminHelper.getLangs();
-    //       } catch (e) {
-    //         debugPrint("on InitState: $e");
-    //       }
-    //       stage = 1;
-    //     }
-    //   }
-    //   generator = generateForms(futureBody, futureLangs);
-    // } catch (e) {
-    //   debugPrint("on Generator fail: $e");
-    //   stage = 0;
-    // }
+    try {
+      if (document.cookie!.isNotEmpty &&
+          document.cookie!.contains("expires") &&
+          document.cookie!.contains("token_type") &&
+          document.cookie!.contains("access_token")) {
+        String expires = json.decode(document.cookie!)["expires"];
+        if (DateTime.parse(expires).isAfter(DateTime.now())) {
+          try {
+            token = document.cookie;
+            futureBody = adminHelper.getForms(token!);
+            futureLangs = adminHelper.getLangs();
+          } catch (e) {
+            debugPrint("on InitState: $e");
+          }
+          stage = 1;
+        }
+      }
+      generator = generateForms(futureBody, futureLangs);
+    } catch (e) {
+      debugPrint("on Generator fail: $e");
+      stage = 0;
+    }
   }
 
   @override
@@ -215,7 +215,7 @@ class AdminPageState extends State<AdminPage> {
                             debugPrint("$e");
                           }
                         },
-                        child: Text(
+                        child: const Text(
                           "Submit",
                           style: buttonText,
                         )),
@@ -460,7 +460,7 @@ class AdminPageState extends State<AdminPage> {
                             stage = 2;
                           });
                         },
-                        child: Text(
+                        child: const Text(
                           "Next",
                           style: buttonText,
                         ),
@@ -517,7 +517,7 @@ class AdminPageState extends State<AdminPage> {
                           ..adminField.id = forms.last.adminField.id + 1);
                       });
                     },
-                    child: Text(
+                    child: const Text(
                       "Add new field",
                       style: buttonText,
                     )),
@@ -528,7 +528,7 @@ class AdminPageState extends State<AdminPage> {
                         forms.removeLast();
                       });
                     },
-                    child: Text(
+                    child: const Text(
                       "Remove field",
                       style: buttonText,
                     )),
@@ -600,7 +600,7 @@ class AdminPageState extends State<AdminPage> {
                       }
                       stage = 2;
                     }),
-                child: Text(
+                child: const Text(
                   "Back",
                   style: buttonText,
                 )),
@@ -620,7 +620,7 @@ class AdminPageState extends State<AdminPage> {
                       .showSnackBar(SnackBar(content: Text("$e")));
                 }
               },
-              child: Text(
+              child: const Text(
                 "Ready",
                 style: buttonText,
               ),
@@ -717,7 +717,7 @@ class AdminPageState extends State<AdminPage> {
                 onPressed: () => setState(() {
                       stage = 1; // Избавиться от присваиваний
                     }),
-                child: Text(
+                child: const Text(
                   "Cancel",
                   style: buttonText,
                 )),
@@ -743,7 +743,7 @@ class AdminPageState extends State<AdminPage> {
                 }
                 debugPrint("Passwod change status: $theJson");
               },
-              child: Text(
+              child: const Text(
                 "Change Password",
                 style: buttonText,
               ),

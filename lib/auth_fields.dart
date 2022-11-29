@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import 'main.dart';
 
@@ -133,6 +134,7 @@ class TextFieldState extends State<TextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: textStyleLittle,
       validator: (widget.isRequired)
           ? (value) {
               if (value == null || value.isEmpty) {
@@ -146,10 +148,15 @@ class TextFieldState extends State<TextField> {
       controller: widget.controller,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
-          labelStyle: textStyle,
-          hintStyle: textStyle,
+          labelStyle: textStyleLittle,
+          hintStyle: textStyleLittle,
           hintText: widget.description,
-          labelText: widget.title),
+          label: AutoSizeText(
+            widget.title,
+            style: textStyleLittle,
+            wrapWords: false,
+          ),
+        ),
     );
   }
 }
@@ -180,21 +187,27 @@ class EmailState extends State<Email> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator: (value) {
-        if (widget.isRequired && value == null) {
-          return "Please enter your email";
-        }
-        if (value != null && !EmailValidator.validate(value)) {
-          return "Example: example@mail.com";
-        }
-        return null;
-      },
-      decoration: InputDecoration(labelText: widget.title),
-      textInputAction: TextInputAction.next,
-      onEditingComplete: () => FocusScope.of(context).nextFocus(),
-      controller: widget.controller,
-      keyboardType: TextInputType.emailAddress,
-    );
+      style: textStyleLittle,
+        validator: (value) {
+          if (widget.isRequired && value == null) {
+            return "Please enter your email";
+          }
+          if (value != null && !EmailValidator.validate(value)) {
+            return "Example: example@mail.com";
+          }
+          return null;
+        },
+        decoration: InputDecoration(
+          label: AutoSizeText(
+            widget.title,
+            style: textStyleLittle,
+            wrapWords: false,
+          ),),
+        textInputAction: TextInputAction.next,
+        onEditingComplete: () => FocusScope.of(context).nextFocus(),
+        controller: widget.controller,
+        keyboardType: TextInputType.emailAddress,
+      );
   }
 }
 
@@ -226,21 +239,29 @@ class NumberState extends State<Number> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: textStyleLittle,
       validator: (value) {
         if (widget.isRequired && value == null) {
-          return "Please enter your email";
+          return "Please enter your number";
         }
         if (value != null && !value.contains(regExp)) {
           return "Example: 8 777 777 7777";
         }
         return null;
       },
-      decoration: InputDecoration(labelText: widget.title),
+      decoration: InputDecoration(
+        label: AutoSizeText(
+          widget.title,
+          style: textStyleLittle,
+          wrapWords: false,
+        ),
+      ),
       textInputAction: TextInputAction.next,
       onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: widget.controller,
       keyboardType: TextInputType.number,
     );
+    
   }
 }
 
@@ -266,7 +287,7 @@ class CheckBoxState extends State<CheckBox> {
         mainAxisSize: MainAxisSize.min,
         children: [
           (state.hasError)
-              ? Text(
+              ? AutoSizeText(
                   state.errorText ?? "",
                   style: TextStyle(color: Theme.of(context).errorColor),
                 )
@@ -274,19 +295,18 @@ class CheckBoxState extends State<CheckBox> {
           Row(
             children: [
               Checkbox(
-                  value: accept,
-                  onChanged: (value) => setState(() {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        accept = value!;
-                        widget.data = (accept) ? widget.title : null;
-                        state.didChange(value);
-                      })),
-              Flexible(
-                child: Text(
-                  widget.title,
-                  style: textStyle,
-                ),
-              )
+                value: accept,
+                onChanged: (value) => setState(() {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  accept = value!;
+                  widget.data = (accept) ? widget.title : null;
+                  state.didChange(value);
+                })),
+              AutoSizeText(
+                widget.title,
+                style: textStyleLittle,
+                wrapWords: false,
+              ),
             ],
           ),
         ],

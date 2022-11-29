@@ -2,6 +2,7 @@ import 'package:layout/layout.dart';
 import 'package:avoid_keyboard/avoid_keyboard.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 
 import 'server_connector.dart';
 import 'auth_fields.dart';
@@ -116,16 +117,15 @@ class AuthFieldsState extends State<AuthForm> {
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Column(
                       children: [
-                        Text(
+                        AutoSizeText(
                           frontTitle,
-                          style: const TextStyle(
-                            fontSize: 16, 
-                            fontWeight: FontWeight.bold
-                          ),
+                          style: textStyleBig,
+                          wrapWords: false,
                         ),
-                        Text(
+                        AutoSizeText(
                           frontDescription,
-                          style: textStyle,
+                          style: textStyleLittle,
+                          wrapWords: false,
                         ),
                       ],
                     ),
@@ -143,7 +143,7 @@ class AuthFieldsState extends State<AuthForm> {
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.only(top: 20),
-                                    child: Text(
+                                    child: AutoSizeText(
                                       brands[0].title,
                                       style: const TextStyle(
                                         fontSize: 15,
@@ -204,21 +204,20 @@ class AuthFieldsState extends State<AuthForm> {
                               var response = await widget.authHelper
                                   .postData(widget.currentLang, forms);
                               if (response == 200) {
-                                // ignore: use_build_context_synchronously
+                                if(!mounted) return;
                                 Routemaster.of(context).push("/logged");
                               }
                           }
                             } else {
-                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      content: Text(
+                                  .showSnackBar(const SnackBar(
+                                      content: AutoSizeText(
                                 "You have to choose a brand",
-                                style: textStyle,
+                                style: textStyleLittle,
                               )));
                             }
                       },
-                      child: Text(widget.submit,
+                      child: AutoSizeText(widget.submit,
                           style: const TextStyle(
                               color: Colors.black, fontFamily: "Arial")),
                     ),
@@ -256,17 +255,17 @@ class AuthFieldsState extends State<AuthForm> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
-                          Text(
-                            overflow: TextOverflow.visible,
+                          AutoSizeText(
                             frontTitle,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
+                            overflow: TextOverflow.fade,
+                            style: textStyleBig,
+                            wrapWords: false,
                           ),
-                            
-                          Text(
-                            overflow: TextOverflow.visible,
+                          AutoSizeText(
                             frontDescription,
-                            style: textStyle,
+                            overflow: TextOverflow.fade,
+                            style: textStyleLittle,
+                            wrapWords: false,
                           ),
                         ],
                       ),
@@ -283,7 +282,7 @@ class AuthFieldsState extends State<AuthForm> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(20),
-                                      child: Text(
+                                      child: AutoSizeText(
                                         brands[0].title,
                                         style: const TextStyle(
                                             fontSize: 14,
@@ -345,21 +344,20 @@ class AuthFieldsState extends State<AuthForm> {
                               var response = await widget.authHelper
                                   .postData(widget.currentLang, forms);
                               if (response == 200) {
-                                // ignore: use_build_context_synchronously
+                                if(!mounted) return;
                                 Routemaster.of(context).push("/logged");
                               }
                           }
                             } else {
-                              // ignore: use_build_context_synchronously
                               ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                      content: Text(
+                                  .showSnackBar(const SnackBar(
+                                      content: AutoSizeText(
                                 "You have to choose a brand",
-                                style: textStyle,
+                                style: textStyleLittle,
                               )));
                             }
                         },
-                        child: Text(
+                        child: AutoSizeText(
                           widget.submit,
                           style: const TextStyle(color: Colors.black),
                         ),

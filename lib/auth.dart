@@ -56,17 +56,4 @@ class AuthPageState extends State<AuthPage> {
       ),
     );
   }
-
-  List<DropdownMenuItem<String>> setLanguages(dynamic body) {
-    List<DropdownMenuItem<String>> languagelist = List.generate(
-        body["count_langs"],
-        (index) => DropdownMenuItem<String>(
-              value: "${body["langs_flags"][index]} ${body["langs"][index]}",
-              child: Text(
-                "${body["langs"][index]}",
-                style: textStyle,
-              ),
-            ));
-    return languagelist;
-  }
 }
