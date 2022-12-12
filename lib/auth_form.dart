@@ -2,7 +2,6 @@ import 'package:layout/layout.dart';
 import 'package:avoid_keyboard/avoid_keyboard.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 
 import 'server_connector.dart';
 import 'auth_fields.dart';
@@ -70,7 +69,6 @@ class AuthFieldsState extends State<AuthForm> {
   @override
   void initState(){
     super.initState();
-
     forms = generateForms(widget.data);
     for (var element in forms) {
       if (element.type == "brand") {
@@ -117,15 +115,13 @@ class AuthFieldsState extends State<AuthForm> {
                     padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
                     child: Column(
                       children: [
-                        AutoSizeText(
+                        Text(
                           frontTitle,
                           style: textStyleBig,
-                          wrapWords: false,
                         ),
-                        AutoSizeText(
+                        Text(
                           frontDescription,
                           style: textStyleLittle,
-                          wrapWords: false,
                         ),
                       ],
                     ),
@@ -141,14 +137,9 @@ class AuthFieldsState extends State<AuthForm> {
                           (brands.isNotEmpty)
                             ? Column(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20),
-                                    child: AutoSizeText(
-                                      brands[0].title,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.bold),
-                                    ),
+                                  Text(
+                                    brands[0].title,
+                                    style: textStyleBig
                                   ),
                                   SizedBox(
                                     height: 90,
@@ -211,13 +202,13 @@ class AuthFieldsState extends State<AuthForm> {
                             } else {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(const SnackBar(
-                                      content: AutoSizeText(
+                                      content: Text(
                                 "You have to choose a brand",
                                 style: textStyleLittle,
                               )));
                             }
                       },
-                      child: AutoSizeText(widget.submit,
+                      child: Text(widget.submit,
                           style: const TextStyle(
                               color: Colors.black, fontFamily: "Arial")),
                     ),
@@ -255,17 +246,15 @@ class AuthFieldsState extends State<AuthForm> {
                       padding: const EdgeInsets.all(20),
                       child: Column(
                         children: [
-                          AutoSizeText(
+                          Text(
                             frontTitle,
                             overflow: TextOverflow.fade,
                             style: textStyleBig,
-                            wrapWords: false,
                           ),
-                          AutoSizeText(
+                          Text(
                             frontDescription,
                             overflow: TextOverflow.fade,
                             style: textStyleLittle,
-                            wrapWords: false,
                           ),
                         ],
                       ),
@@ -282,11 +271,9 @@ class AuthFieldsState extends State<AuthForm> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(20),
-                                      child: AutoSizeText(
+                                      child: Text(
                                         brands[0].title,
-                                        style: const TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold),
+                                        style: textStyleBig
                                       ),
                                     ),
                                     SizedBox(
@@ -351,13 +338,13 @@ class AuthFieldsState extends State<AuthForm> {
                             } else {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(const SnackBar(
-                                      content: AutoSizeText(
+                                      content: Text(
                                 "You have to choose a brand",
                                 style: textStyleLittle,
                               )));
                             }
                         },
-                        child: AutoSizeText(
+                        child: Text(
                           widget.submit,
                           style: const TextStyle(color: Colors.black),
                         ),

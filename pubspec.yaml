@@ -44,7 +44,6 @@ dependencies:
   url_launcher: ^6.1.5
   layout: ^1.0.3
   email_validator: ^2.1.17
-  auto_size_text: ^3.0.0
 
 dev_dependencies:
   flutter_test:

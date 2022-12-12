@@ -26,7 +26,6 @@ class AuthPageState extends State<AuthPage> {
           if (snapshot.hasData &&
               snapshot.connectionState == ConnectionState.done) {
             dynamic body = snapshot.data!;
-            //languagelist = setLanguages(body);
             return Container(
                 width: MediaQuery.of(context).size.width,
                 height: double.maxFinite,

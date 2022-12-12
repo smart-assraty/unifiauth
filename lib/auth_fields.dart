@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 
 import 'main.dart';
-
 
 // ignore: must_be_immutable
 abstract class AuthField extends StatefulWidget {
@@ -151,10 +149,9 @@ class TextFieldState extends State<TextField> {
           labelStyle: textStyleLittle,
           hintStyle: textStyleLittle,
           hintText: widget.description,
-          label: AutoSizeText(
+          label: Text(
             widget.title,
             style: textStyleLittle,
-            wrapWords: false,
           ),
         ),
     );
@@ -198,11 +195,11 @@ class EmailState extends State<Email> {
           return null;
         },
         decoration: InputDecoration(
-          label: AutoSizeText(
+          label: Text(
             widget.title,
             style: textStyleLittle,
-            wrapWords: false,
-          ),),
+          ),    
+        ),
         textInputAction: TextInputAction.next,
         onEditingComplete: () => FocusScope.of(context).nextFocus(),
         controller: widget.controller,
@@ -250,10 +247,9 @@ class NumberState extends State<Number> {
         return null;
       },
       decoration: InputDecoration(
-        label: AutoSizeText(
+        label: Text(
           widget.title,
           style: textStyleLittle,
-          wrapWords: false,
         ),
       ),
       textInputAction: TextInputAction.next,
@@ -287,7 +283,7 @@ class CheckBoxState extends State<CheckBox> {
         mainAxisSize: MainAxisSize.min,
         children: [
           (state.hasError)
-              ? AutoSizeText(
+              ? Text(
                   state.errorText ?? "",
                   style: TextStyle(color: Theme.of(context).errorColor),
                 )
@@ -302,11 +298,17 @@ class CheckBoxState extends State<CheckBox> {
                   widget.data = (accept) ? widget.title : null;
                   state.didChange(value);
                 })),
-              AutoSizeText(
+              SizedBox(
+            height: MediaQuery.of(context).size.height*0.0265,
+            width: widget.title.length * 10,
+            child: FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Text(
                 widget.title,
                 style: textStyleLittle,
-                wrapWords: false,
               ),
+            )
+          )
             ],
           ),
         ],
