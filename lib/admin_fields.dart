@@ -30,11 +30,13 @@ abstract class AdminField extends StatefulWidget {
   Map<String, dynamic> description = {};
 
   String? brandIcon;
+  String? brandUrl;
 
   TextEditingController controllerTitle = TextEditingController();
   TextEditingController controllerDesc = TextEditingController();
   TextEditingController controllerApi = TextEditingController();
   TextEditingController controllerIcon = TextEditingController();
+  TextEditingController controllerBrandUrl = TextEditingController();
 
   Map<String, dynamic> commit() {
     List<Map<String, String>> fieldTitle = [];
@@ -650,8 +652,8 @@ class Brand extends AdminField {
     super.id = 0,
   });
 
-  Brand.fromJson(
-      int id, dynamic title, String apiName, String? brandIcon, String apiValue,
+  Brand.fromJson(int id, dynamic title, String apiName, String? brandIcon,
+      String apiValue, String? brandUrl,
       {Key? key})
       : super(key: key, type: "brand", id: id) {
     super.controllerApi.text = apiName;
@@ -659,6 +661,7 @@ class Brand extends AdminField {
     super.title = title;
     super.brandIcon = brandIcon;
     super.controllerIcon.text = apiValue;
+    super.controllerBrandUrl.text = brandUrl ?? "";
   }
 
   @override
@@ -678,6 +681,7 @@ class Brand extends AdminField {
       "field_title": fieldTitle,
       "api_value": controllerIcon.text,
       "required_field": isRequired.toString(),
+      "brand_url": controllerBrandUrl.text,
     };
     return object;
   }
@@ -780,7 +784,16 @@ class BrandState extends State<Brand> {
               ),
             ),
           ],
-        )
+        ),
+        SizedBox(
+          width: 100,
+          child: Focus(
+            child: TextFormField(
+              decoration: const InputDecoration(labelText: "URL"),
+              controller: widget.controllerBrandUrl,
+            ),
+          ),
+        ),
       ]),
     );
   }

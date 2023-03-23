@@ -9,9 +9,10 @@ import 'dart:convert';
 import 'admin.dart';
 import 'auth.dart';
 
-
 String uvicorn = "";
 String server = "";
+String? selectedBrandUrl;
+
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
     backgroundColor: MaterialStateProperty.all<Color>(
@@ -29,16 +30,17 @@ const TextStyle textStyleLittle = TextStyle(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try{
-    server = json.decode(await rootBundle.loadString("assets/config.json"))["url"];
+  try {
+    server =
+        json.decode(await rootBundle.loadString("assets/config.json"))["url"];
     uvicorn = "$server:8000";
-  } catch(e){
+  } catch (e) {
     debugPrint("$e");
   }
 
   setPathUrlStrategy();
   runApp(MaterialApp.router(
-	useInheritedMediaQuery: true,
+    useInheritedMediaQuery: true,
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
     routeInformationParser: const RoutemasterParser(),
     theme: ThemeData(fontFamily: "Arial"),
@@ -86,7 +88,7 @@ class OpenerState extends State<Opener> {
   @override
   void initState() {
     super.initState();
-    window.open("https://www.technogym.kz/", "_self");
+    window.open(selectedBrandUrl ?? "https://www.technogym.kz/", "_self");
   }
 
   @override

@@ -43,11 +43,11 @@ class AuthFieldsState extends State<AuthForm> {
   String frontDescription = "";
 
   List<AuthField> generateForms(dynamic body) {
-    controllers = List.generate(widget.fieldsCount, (index) => TextEditingController());
+    controllers =
+        List.generate(widget.fieldsCount, (index) => TextEditingController());
 
     for (int i = 0; i < widget.fieldsCount; ++i) {
-      forms.add(
-        AuthField.createForm(
+      forms.add(AuthField.createForm(
           body[i]["type"],
           body[i]["api_name"],
           body[i]["title"],
@@ -55,9 +55,8 @@ class AuthFieldsState extends State<AuthForm> {
           body[i]["brand_icon"],
           body[i]["api_value"],
           body[i]["required_field"],
-          controllers[i]
-        )
-      );
+          body[i]["brand_url"],
+          controllers[i]));
       if (forms[i].type == "front") {
         frontTitle = forms[i].title;
         frontDescription = forms[i].description!;
@@ -67,7 +66,7 @@ class AuthFieldsState extends State<AuthForm> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     forms = generateForms(widget.data);
     for (var element in forms) {
@@ -97,9 +96,7 @@ class AuthFieldsState extends State<AuthForm> {
       padding: const EdgeInsets.only(right: 5, left: 5),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white, 
-          borderRadius: BorderRadius.circular(25)
-        ),
+            color: Colors.white, borderRadius: BorderRadius.circular(25)),
         child: Column(
           children: [
             Image(
@@ -109,41 +106,38 @@ class AuthFieldsState extends State<AuthForm> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+              child: Column(children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+                  child: Column(
+                    children: [
+                      Text(
+                        frontTitle,
+                        style: textStyleBig,
+                      ),
+                      Text(
+                        frontDescription,
+                        style: textStyleLittle,
+                      ),
+                    ],
+                  ),
+                ),
+                Form(
+                  key: formkey,
+                  child: AvoidKeyboard(
                     child: Column(
                       children: [
-                        Text(
-                          frontTitle,
-                          style: textStyleBig,
+                        Column(
+                          children: fields,
                         ),
-                        Text(
-                          frontDescription,
-                          style: textStyleLittle,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Form(
-                    key: formkey,
-                    child: AvoidKeyboard(
-                      child: Column(
-                        children: [
-                          Column(
-                            children: fields,
-                          ),
-                          (brands.isNotEmpty)
+                        (brands.isNotEmpty)
                             ? Column(
                                 children: [
-                                  Text(
-                                    brands[0].title,
-                                    style: textStyleBig
-                                  ),
+                                  Text(brands[0].title, style: textStyleBig),
                                   SizedBox(
                                     height: 90,
-                                    child: (brands.length > 3) // Доп логика, грязь но пох
+                                    child: (brands.length >
+                                            3) // Доп логика, грязь но пох
                                         ? Scrollbar(
                                             controller: scrollController,
                                             trackVisibility: true,
@@ -187,26 +181,26 @@ class AuthFieldsState extends State<AuthForm> {
                     child: ElevatedButton(
                       style: buttonStyle,
                       onPressed: () async {
-                        bool isChecked = widget.authHelper
-                                .checkBrandRequired(brands);
-                            if (isChecked) {
-                                if (formkey.currentState!.validate()) {
-                              widget.authHelper.connecting();
-                              var response = await widget.authHelper
-                                  .postData(widget.currentLang, forms);
-                              if (response == 200) {
-                                if(!mounted) return;
-                                Routemaster.of(context).push("/logged");
-                              }
-                          }
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                "You have to choose a brand",
-                                style: textStyleLittle,
-                              )));
+                        bool isChecked =
+                            widget.authHelper.checkBrandRequired(brands);
+                        if (isChecked) {
+                          if (formkey.currentState!.validate()) {
+                            widget.authHelper.connecting();
+                            var response = await widget.authHelper
+                                .postData(widget.currentLang, forms);
+                            if (response == 200) {
+                              if (!mounted) return;
+                              Routemaster.of(context).push("/logged");
                             }
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                                  content: Text(
+                            "You have to choose a brand",
+                            style: textStyleLittle,
+                          )));
+                        }
                       },
                       child: Text(widget.submit,
                           style: const TextStyle(
@@ -271,10 +265,8 @@ class AuthFieldsState extends State<AuthForm> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(20),
-                                      child: Text(
-                                        brands[0].title,
-                                        style: textStyleBig
-                                      ),
+                                      child: Text(brands[0].title,
+                                          style: textStyleBig),
                                     ),
                                     SizedBox(
                                       height: 90,
@@ -323,26 +315,26 @@ class AuthFieldsState extends State<AuthForm> {
                       child: ElevatedButton(
                         style: buttonStyle,
                         onPressed: () async {
-                          bool isChecked = widget.authHelper
-                                .checkBrandRequired(brands);
-                            if (isChecked) {
-                                if (formkey.currentState!.validate()) {
+                          bool isChecked =
+                              widget.authHelper.checkBrandRequired(brands);
+                          if (isChecked) {
+                            if (formkey.currentState!.validate()) {
                               widget.authHelper.connecting();
                               var response = await widget.authHelper
                                   .postData(widget.currentLang, forms);
                               if (response == 200) {
-                                if(!mounted) return;
+                                if (!mounted) return;
                                 Routemaster.of(context).push("/logged");
                               }
-                          }
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                      content: Text(
-                                "You have to choose a brand",
-                                style: textStyleLittle,
-                              )));
                             }
+                          } else {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                                    content: Text(
+                              "You have to choose a brand",
+                              style: textStyleLittle,
+                            )));
+                          }
                         },
                         child: Text(
                           widget.submit,

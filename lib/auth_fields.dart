@@ -5,17 +5,18 @@ import 'main.dart';
 
 // ignore: must_be_immutable
 abstract class AuthField extends StatefulWidget {
-  final  String apiKey;
+  final String apiKey;
   final String type;
   final String title;
   final String? description;
   final bool isRequired;
+  final String? brandUrl;
 
   dynamic data;
   Map<String, dynamic> commit() {
+    if (type == "brand" && data != Null) selectedBrandUrl = brandUrl;
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
-
 
   AuthField({
     super.key,
@@ -23,6 +24,7 @@ abstract class AuthField extends StatefulWidget {
     required this.type,
     required this.title,
     this.description,
+    this.brandUrl,
     required this.isRequired,
   });
 
@@ -34,6 +36,7 @@ abstract class AuthField extends StatefulWidget {
       String? brand,
       String? apiValue,
       bool? isRequired,
+      String? brandUrlForm,
       TextEditingController? controller) {
     if (type == "email") {
       return Email(
@@ -62,6 +65,7 @@ abstract class AuthField extends StatefulWidget {
         brand: brand!,
         apiValue: apiValue!,
         isRequired: isRequired!,
+        brandUrl: brandUrlForm,
       );
     } else if (type == "front") {
       return Front(
@@ -97,7 +101,12 @@ class Front extends AuthField {
 class FrontState extends State<Front> {
   dynamic data;
   Map<String, dynamic> commit() {
-    return {"type": widget.type, "title": widget.title, "api_name": widget.apiKey, "value": data};
+    return {
+      "type": widget.type,
+      "title": widget.title,
+      "api_name": widget.apiKey,
+      "value": data
+    };
   }
 
   @override
@@ -124,6 +133,7 @@ class TextField extends AuthField {
     data = controller.text;
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
+
   @override
   State<TextField> createState() => TextFieldState();
 }
@@ -146,14 +156,14 @@ class TextFieldState extends State<TextField> {
       controller: widget.controller,
       keyboardType: TextInputType.text,
       decoration: InputDecoration(
-          labelStyle: textStyleLittle,
-          hintStyle: textStyleLittle,
-          hintText: widget.description,
-          label: Text(
-            widget.title,
-            style: textStyleLittle,
-          ),
+        labelStyle: textStyleLittle,
+        hintStyle: textStyleLittle,
+        hintText: widget.description,
+        label: Text(
+          widget.title,
+          style: textStyleLittle,
         ),
+      ),
     );
   }
 }
@@ -185,26 +195,26 @@ class EmailState extends State<Email> {
   Widget build(BuildContext context) {
     return TextFormField(
       style: textStyleLittle,
-        validator: (value) {
-          if (widget.isRequired && value == null) {
-            return "Please enter your email";
-          }
-          if (value != null && !EmailValidator.validate(value)) {
-            return "Example: example@mail.com";
-          }
-          return null;
-        },
-        decoration: InputDecoration(
-          label: Text(
-            widget.title,
-            style: textStyleLittle,
-          ),    
+      validator: (value) {
+        if (widget.isRequired && value == null) {
+          return "Please enter your email";
+        }
+        if (value != null && !EmailValidator.validate(value)) {
+          return "Example: example@mail.com";
+        }
+        return null;
+      },
+      decoration: InputDecoration(
+        label: Text(
+          widget.title,
+          style: textStyleLittle,
         ),
-        textInputAction: TextInputAction.next,
-        onEditingComplete: () => FocusScope.of(context).nextFocus(),
-        controller: widget.controller,
-        keyboardType: TextInputType.emailAddress,
-      );
+      ),
+      textInputAction: TextInputAction.next,
+      onEditingComplete: () => FocusScope.of(context).nextFocus(),
+      controller: widget.controller,
+      keyboardType: TextInputType.emailAddress,
+    );
   }
 }
 
@@ -257,7 +267,6 @@ class NumberState extends State<Number> {
       controller: widget.controller,
       keyboardType: TextInputType.number,
     );
-    
   }
 }
 
@@ -291,24 +300,23 @@ class CheckBoxState extends State<CheckBox> {
           Row(
             children: [
               Checkbox(
-                value: accept,
-                onChanged: (value) => setState(() {
-                  FocusScope.of(context).requestFocus(FocusNode());
-                  accept = value!;
-                  widget.data = (accept) ? widget.title : null;
-                  state.didChange(value);
-                })),
+                  value: accept,
+                  onChanged: (value) => setState(() {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        accept = value!;
+                        widget.data = (accept) ? widget.title : null;
+                        state.didChange(value);
+                      })),
               SizedBox(
-            height: MediaQuery.of(context).size.height*0.0265,
-            width: widget.title.length * 10,
-            child: FittedBox(
-              fit: BoxFit.fitWidth,
-              child: Text(
-                widget.title,
-                style: textStyleLittle,
-              ),
-            )
-          )
+                  height: MediaQuery.of(context).size.height * 0.0265,
+                  width: widget.title.length * 10,
+                  child: FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text(
+                      widget.title,
+                      style: textStyleLittle,
+                    ),
+                  ))
             ],
           ),
         ],
@@ -333,7 +341,8 @@ class Brand extends AuthField {
       required super.title,
       required this.brand,
       required this.apiValue,
-      required super.isRequired})
+      required super.isRequired,
+      super.brandUrl})
       : super(type: "brand");
 
   @override

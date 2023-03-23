@@ -359,14 +359,22 @@ class AdminPageState extends State<AdminPage> {
                       TextButton(
                           onPressed: () {
                             setState(() {
-                              languagelist.add(languages[languagelist.length].value!);
-                              futureBody.then((value) => ++value["settings"]["count_langs"]);
+                              languagelist
+                                  .add(languages[languagelist.length].value!);
+                              futureBody.then((value) =>
+                                  ++value["settings"]["count_langs"]);
                               var tmpFront = frontForm;
                               frontForm = AdminForm.front();
-                              frontForm.adminField.title = tmpFront.adminField.title;
-                              frontForm.adminField.description = tmpFront.adminField.description;
-                              frontForm.adminField.controllerTitle.text = tmpFront.adminField.title[tmpFront.adminField.currentLang];
-                              frontForm.adminField.controllerDesc.text = tmpFront.adminField.description[tmpFront.adminField.currentLang];
+                              frontForm.adminField.title =
+                                  tmpFront.adminField.title;
+                              frontForm.adminField.description =
+                                  tmpFront.adminField.description;
+                              frontForm.adminField.controllerTitle.text =
+                                  tmpFront.adminField
+                                      .title[tmpFront.adminField.currentLang];
+                              frontForm.adminField.controllerDesc.text =
+                                  tmpFront.adminField.description[
+                                      tmpFront.adminField.currentLang];
                             });
                           },
                           child: const Text(
@@ -376,17 +384,25 @@ class AdminPageState extends State<AdminPage> {
                       TextButton(
                           onPressed: () async {
                             setState(() {
-                              futureBody.then((value) => --value["settings"]["count_langs"]);
+                              futureBody.then((value) =>
+                                  --value["settings"]["count_langs"]);
                               for (var element in forms) {
-                                element.adminField.title.remove(languagelist.last.toString());
+                                element.adminField.title
+                                    .remove(languagelist.last.toString());
                               }
                               languagelist.removeLast();
                               var tmpFront = frontForm;
                               frontForm = AdminForm.front();
-                              frontForm.adminField.title = tmpFront.adminField.title;
-                              frontForm.adminField.description = tmpFront.adminField.description;
-                              frontForm.adminField.controllerTitle.text = tmpFront.adminField.title[tmpFront.adminField.currentLang];
-                              frontForm.adminField.controllerDesc.text = tmpFront.adminField.description[tmpFront.adminField.currentLang];
+                              frontForm.adminField.title =
+                                  tmpFront.adminField.title;
+                              frontForm.adminField.description =
+                                  tmpFront.adminField.description;
+                              frontForm.adminField.controllerTitle.text =
+                                  tmpFront.adminField
+                                      .title[tmpFront.adminField.currentLang];
+                              frontForm.adminField.controllerDesc.text =
+                                  tmpFront.adminField.description[
+                                      tmpFront.adminField.currentLang];
                             });
                           },
                           child: const Text(
@@ -784,6 +800,7 @@ class AdminPageState extends State<AdminPage> {
         String? brandIcon;
         String? apiValue;
         bool? isRequired;
+        String? brandUrl;
         type = body["fields"][i]["type"];
         title = Map.from(body["fields"][i]["title"]);
         description = Map.from(body["fields"][i]["description"]);
@@ -792,9 +809,10 @@ class AdminPageState extends State<AdminPage> {
         apiValue = body["fields"][i]["api_value"];
         isRequired = body["fields"][i]["required_field"];
         apiName ??= "";
+        brandUrl = body["fields"][i]["brand_url"];
 
         formsFromServer.add(AdminForm.fromJson(type, i, title, description,
-            apiName, brandIcon, apiValue, isRequired));
+            apiName, brandIcon, apiValue, isRequired, brandUrl));
       }
       return formsFromServer;
     } else {

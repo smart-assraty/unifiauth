@@ -21,7 +21,8 @@ class AdminForm extends StatefulWidget {
       String apiName,
       String? brandIcon,
       String? apiValue,
-      bool? isRequired) {
+      bool? isRequired,
+      String? brandUrl) {
     if (type == "email") {
       return AdminForm()
         ..setChild(Email.fromJson(id, title, apiName, isRequired!));
@@ -32,7 +33,8 @@ class AdminForm extends StatefulWidget {
       return AdminForm()..setChild(CheckBox.fromJson(id, title, apiName));
     } else if (type == "brand") {
       return AdminForm()
-        ..setChild(Brand.fromJson(id, title, apiName, brandIcon, apiValue!));
+        ..setChild(
+            Brand.fromJson(id, title, apiName, brandIcon, apiValue!, brandUrl));
     } else if (type == "front") {
       return AdminForm()..setChild(Front.fromJson(id, title, description));
     } else {
