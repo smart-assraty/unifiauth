@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/services.dart';
 
+import 'inputFormatters.dart';
 import 'main.dart';
+
+
 
 // ignore: must_be_immutable
 abstract class AuthField extends StatefulWidget {
@@ -12,9 +16,14 @@ abstract class AuthField extends StatefulWidget {
   final bool isRequired;
   final String? brandUrl;
 
+  
+
   dynamic data;
   Map<String, dynamic> commit() {
-    if (type == "brand" && data != Null) selectedBrandUrl = brandUrl;
+    if (type == "brand" && data != null) {
+      selectedBrandUrl = brandUrl;
+    }
+    
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
 
@@ -67,6 +76,7 @@ abstract class AuthField extends StatefulWidget {
         isRequired: isRequired!,
         brandUrl: brandUrlForm,
       );
+      
     } else if (type == "front") {
       return Front(
         title: title,
@@ -241,26 +251,28 @@ class Number extends AuthField {
 }
 
 class NumberState extends State<Number> {
-  RegExp regExp =
-      RegExp("^[\\+]?[(]?[0-9]{3}[)]?[-\\s\\.]?[0-9]{3}[-\\s\\.]?[0-9]{4,6}\$");
+  
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       style: textStyleLittle,
+      inputFormatters: [
+        FieldsFormatter(mask: 'xx xxx xxx xx xxxx', separator: ' '),
+        FilteringTextInputFormatter.allow(RegExp("[0-9 +]")),],
       validator: (value) {
         if (widget.isRequired && value == null) {
           return "Please enter your number";
         }
-        if (value != null && !value.contains(regExp)) {
-          return "Example: 8 777 777 7777";
-        }
+
         return null;
       },
       decoration: InputDecoration(
         label: Text(
           widget.title,
           style: textStyleLittle,
-        ),
+        ), hintText: "+7 777 777 77 77"
+        
       ),
       textInputAction: TextInputAction.next,
       onEditingComplete: () => FocusScope.of(context).nextFocus(),
@@ -330,6 +342,8 @@ class CheckBoxState extends State<CheckBox> {
   }
 }
 
+
+
 //ignore: must_be_immutable
 class Brand extends AuthField {
   String apiValue;
@@ -342,8 +356,15 @@ class Brand extends AuthField {
       required this.brand,
       required this.apiValue,
       required super.isRequired,
-      super.brandUrl})
+      super.brandUrl,
+      })
       : super(type: "brand");
+
+
+  void setValue(bool b){
+    isPicked = b;
+    (b) ? data = apiValue : data = null;
+  }
 
   @override
   State<Brand> createState() => BrandState();
@@ -352,6 +373,7 @@ class Brand extends AuthField {
 class BrandState extends State<Brand> {
   @override
   Widget build(BuildContext context) {
+    
     return Container(
         height: 90,
         width: 90,
@@ -372,9 +394,11 @@ class BrandState extends State<Brand> {
           onPressed: () async {
             setState(() {
               FocusScope.of(context).requestFocus(FocusNode());
+              
               (widget.isPicked)
                   ? widget.isPicked = false
                   : widget.isPicked = true;
+                
               (widget.isPicked)
                   ? widget.data = widget.apiValue
                   : widget.data = null;

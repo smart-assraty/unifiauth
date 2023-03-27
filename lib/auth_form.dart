@@ -70,7 +70,8 @@ class AuthFieldsState extends State<AuthForm> {
     super.initState();
     forms = generateForms(widget.data);
     for (var element in forms) {
-      if (element.type == "brand") {
+      if (element is Brand) {
+        
         brands.add(element);
       } else if (element.type == "checkbox") {
         checkboxes.add(element);
