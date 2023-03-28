@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:html';
 
 import 'server_connector.dart' show AdminHelper;
-import 'main.dart' show buttonStyle, buttonText;
+import 'main.dart' show buttonStyle, buttonText, server;
 import 'admin_form.dart';
 
 class AdminPage extends StatefulWidget {
@@ -786,10 +786,14 @@ class AdminPageState extends State<AdminPage> {
                 child: Text(getLangs[index]),
               ));
       for (int i = 0; i < body["settings"]["count_langs"]; i++) {
-        if (!languagelist.contains(languages[i].value!)) {
-          languagelist.add(languages.elementAt(i).value!);
+        if (!languagelist.contains(body["settings"]["langs"][i])) {
+          languagelist.add(body["settings"]["langs"][i]);
         }
       }
+      debugPrint(languagelist.toString());
+      languages.forEach((element) {
+        debugPrint(element.toString());
+      });
       List<AdminForm> formsFromServer = [];
       sendTo.text = body["settings"]["api_url"];
       for (int i = 0; i < body["settings"]["count_fields"]; ++i) {
@@ -816,8 +820,8 @@ class AdminPageState extends State<AdminPage> {
       }
       return formsFromServer;
     } else {
-      bgImage = "http:185.125.88.30/img/imageBG.jpg";
-      logoImage = "http:185.125.88.30/img/imageLogo.jpg";
+      bgImage = "http:$server/img/imageBG.jpg";
+      logoImage = "http:$server/img/imageLogo.jpg";
       languages = List.generate(
           getLangs.length,
           (index) => DropdownMenuItem<String>(

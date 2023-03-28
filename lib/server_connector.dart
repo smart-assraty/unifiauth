@@ -108,7 +108,7 @@ class AdminHelper {
         "Authorization":
             "${json.decode(token)['token_type']} ${json.decode(token)['access_token']}"
       });
-      // debugPrint(utf8.decode(response.body.codeUnits));
+
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       debugPrint("$e");
