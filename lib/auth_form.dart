@@ -36,7 +36,7 @@ class AuthFieldsState extends State<AuthForm> {
   List<AuthField> forms = [];
   List<TextEditingController> controllers = [];
   List<AuthField> fields = [];
-  List<AuthField> brands = [];
+  List<Brand> brands = [];
   List<AuthField> checkboxes = [];
 
   String frontTitle = "";
@@ -71,7 +71,6 @@ class AuthFieldsState extends State<AuthForm> {
     forms = generateForms(widget.data);
     for (var element in forms) {
       if (element is Brand) {
-        
         brands.add(element);
       } else if (element.type == "checkbox") {
         checkboxes.add(element);
@@ -88,6 +87,43 @@ class AuthFieldsState extends State<AuthForm> {
       xs: (context) => webMobile(widget.logo),
       md: (context) => webDesktop(widget.logo),
     ));
+  }
+
+  void _changeBrandsState(int index) {
+    debugPrint(index.toString());
+    for (int i = 0; i < brands.length; i++) {
+      var b = Brand(
+          apiKey: brands[i].apiKey,
+          title: brands[i].title,
+          brand: brands[i].brand,
+          apiValue: brands[i].apiValue,
+          isRequired: brands[i].isRequired,
+          brandUrl: brands[i].brandUrl,
+          isPicked: false);
+      brands.removeAt(i);
+      brands.insert(i, b);
+    }
+
+    var b = Brand(
+        apiKey: brands[index].apiKey,
+        title: brands[index].title,
+        brand: brands[index].brand,
+        apiValue: brands[index].apiValue,
+        isRequired: brands[index].isRequired,
+        brandUrl: brands[index].brandUrl,
+        isPicked: true);
+    b.data = brands[index].apiValue;
+    brands.removeAt(index);
+    brands.insert(index, b);
+
+    for (int i = 0; i < forms.length; i++) {
+      if (forms[i] is Brand && (forms[i] as Brand).apiValue == b.apiValue) {
+        (forms[i] as Brand).isPicked = true;
+        (forms[i] as Brand).data = b.apiValue;
+      }
+    }
+
+    setState(() {});
   }
 
   ScrollController scrollController = ScrollController();
@@ -134,11 +170,15 @@ class AuthFieldsState extends State<AuthForm> {
                         (brands.isNotEmpty)
                             ? Column(
                                 children: [
-                                  Text(brands[0].title, style: textStyleBig),
+                                  Padding(
+                                    child: Text(brands[0].title,
+                                        style: textStyleBig),
+                                    padding:
+                                        EdgeInsets.only(top: 20, bottom: 20),
+                                  ),
                                   SizedBox(
                                     height: 90,
-                                    child: (brands.length >
-                                            3) // Доп логика, грязь но пох
+                                    child: (brands.length > 3)
                                         ? Scrollbar(
                                             controller: scrollController,
                                             trackVisibility: true,
@@ -152,7 +192,12 @@ class AuthFieldsState extends State<AuthForm> {
                                                 return Padding(
                                                   padding:
                                                       const EdgeInsets.all(1),
-                                                  child: brands[index],
+                                                  child: TextButton(
+                                                    child: brands[index],
+                                                    onPressed: () {
+                                                      _changeBrandsState(index);
+                                                    },
+                                                  ),
                                                 );
                                               },
                                             ))
@@ -161,7 +206,30 @@ class AuthFieldsState extends State<AuthForm> {
                                             child: Row(
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
-                                            children: brands,
+                                            children: [
+                                              TextButton(
+                                                child: brands[0],
+                                                onPressed: () {
+                                                  _changeBrandsState(0);
+                                                },
+                                              ),
+                                              (brands.length > 1)
+                                                  ? TextButton(
+                                                      child: brands[1],
+                                                      onPressed: () {
+                                                        _changeBrandsState(1);
+                                                      },
+                                                    )
+                                                  : const SizedBox(),
+                                              (brands.length > 2)
+                                                  ? TextButton(
+                                                      child: brands[2],
+                                                      onPressed: () {
+                                                        _changeBrandsState(2);
+                                                      },
+                                                    )
+                                                  : const SizedBox(),
+                                            ],
                                           )),
                                   )
                                 ],
@@ -177,7 +245,7 @@ class AuthFieldsState extends State<AuthForm> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 20, top: 30),
                   child: Center(
                     child: ElevatedButton(
                       style: buttonStyle,
@@ -230,7 +298,7 @@ class AuthFieldsState extends State<AuthForm> {
               width: 300,
             )),
         Container(
-            width: 400, // Убрал Height дало гибкости в размерах
+            width: 400,
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5), color: Colors.white),
             child: Container(
@@ -265,14 +333,14 @@ class AuthFieldsState extends State<AuthForm> {
                               ? Column(
                                   children: [
                                     Padding(
-                                      padding: const EdgeInsets.all(20),
+                                      padding: const EdgeInsets.only(
+                                          top: 40, bottom: 25),
                                       child: Text(brands[0].title,
                                           style: textStyleBig),
                                     ),
                                     SizedBox(
                                       height: 90,
-                                      child: (brands.length >
-                                              3) // Доп логика, грязь но пох
+                                      child: (brands.length > 3)
                                           ? Scrollbar(
                                               controller: scrollController,
                                               trackVisibility: true,
@@ -285,19 +353,49 @@ class AuthFieldsState extends State<AuthForm> {
                                                     Axis.horizontal,
                                                 itemBuilder: (context, index) {
                                                   return Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(1),
-                                                    child: brands[index],
-                                                  );
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              1),
+                                                      child: TextButton(
+                                                        child: brands[index],
+                                                        onPressed: () {
+                                                          _changeBrandsState(
+                                                              index);
+                                                        },
+                                                      ));
                                                 },
                                               ))
                                           : Center(
-                                              // И вот так
                                               child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: brands,
-                                            )),
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                  TextButton(
+                                                    child: brands[0],
+                                                    onPressed: () {
+                                                      _changeBrandsState(0);
+                                                    },
+                                                  ),
+                                                  (brands.length > 1)
+                                                      ? TextButton(
+                                                          child: brands[1],
+                                                          onPressed: () {
+                                                            _changeBrandsState(
+                                                                1);
+                                                          },
+                                                        )
+                                                      : const SizedBox(),
+                                                  (brands.length > 2)
+                                                      ? TextButton(
+                                                          child: brands[2],
+                                                          onPressed: () {
+                                                            _changeBrandsState(
+                                                                2);
+                                                          },
+                                                        )
+                                                      : const SizedBox(),
+                                                ])),
                                     )
                                   ],
                                 )

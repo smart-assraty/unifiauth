@@ -5,8 +5,6 @@ import 'package:flutter/services.dart';
 import 'inputFormatters.dart';
 import 'main.dart';
 
-
-
 // ignore: must_be_immutable
 abstract class AuthField extends StatefulWidget {
   final String apiKey;
@@ -16,14 +14,8 @@ abstract class AuthField extends StatefulWidget {
   final bool isRequired;
   final String? brandUrl;
 
-  
-
   dynamic data;
   Map<String, dynamic> commit() {
-    if (type == "brand" && data != null) {
-      selectedBrandUrl = brandUrl;
-    }
-    
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
 
@@ -75,8 +67,8 @@ abstract class AuthField extends StatefulWidget {
         apiValue: apiValue!,
         isRequired: isRequired!,
         brandUrl: brandUrlForm,
+        isPicked: false,
       );
-      
     } else if (type == "front") {
       return Front(
         title: title,
@@ -251,15 +243,14 @@ class Number extends AuthField {
 }
 
 class NumberState extends State<Number> {
-  
-
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       style: textStyleLittle,
       inputFormatters: [
         FieldsFormatter(mask: 'xx xxx xxx xx xxxx', separator: ' '),
-        FilteringTextInputFormatter.allow(RegExp("[0-9 +]")),],
+        FilteringTextInputFormatter.allow(RegExp("[0-9 +]")),
+      ],
       validator: (value) {
         if (widget.isRequired && value == null) {
           return "Please enter your number";
@@ -268,16 +259,15 @@ class NumberState extends State<Number> {
         return null;
       },
       decoration: InputDecoration(
-        label: Text(
-          widget.title,
-          style: textStyleLittle,
-        ), hintText: "+7 777 777 77 77"
-        
-      ),
+          label: Text(
+            widget.title,
+            style: textStyleLittle,
+          ),
+          hintText: "+7 777 777 77 77"),
       textInputAction: TextInputAction.next,
       onEditingComplete: () => FocusScope.of(context).nextFocus(),
       controller: widget.controller,
-      keyboardType: TextInputType.number,
+      keyboardType: TextInputType.phone,
     );
   }
 }
@@ -342,28 +332,36 @@ class CheckBoxState extends State<CheckBox> {
   }
 }
 
-
-
 //ignore: must_be_immutable
 class Brand extends AuthField {
   String apiValue;
   String brand;
-  bool isPicked = false;
-  Brand(
-      {super.key,
-      required super.apiKey,
-      required super.title,
-      required this.brand,
-      required this.apiValue,
-      required super.isRequired,
-      super.brandUrl,
-      })
-      : super(type: "brand");
+  bool isPicked;
 
+  Brand({
+    super.key,
+    required super.apiKey,
+    required super.title,
+    required this.brand,
+    required this.apiValue,
+    required super.isRequired,
+    super.brandUrl,
+    required this.isPicked,
+  }) : super(type: "brand");
 
-  void setValue(bool b){
-    isPicked = b;
-    (b) ? data = apiValue : data = null;
+  @override
+  Map<String, dynamic> commit() {
+    if (isPicked) {
+      selectedBrandUrl = brandUrl;
+    }
+    debugPrint("! $brandUrl $isPicked ${super.data}");
+    debugPrint(selectedBrandUrl);
+    return {
+      "type": type,
+      "title": title,
+      "api_name": apiKey,
+      "value": isPicked ? apiValue : null
+    };
   }
 
   @override
@@ -373,37 +371,21 @@ class Brand extends AuthField {
 class BrandState extends State<Brand> {
   @override
   Widget build(BuildContext context) {
-    
     return Container(
-        height: 90,
-        width: 90,
-        decoration: (widget.isPicked)
-            ? const BoxDecoration(
-                border: Border(
-                bottom: BorderSide(color: Colors.amber, width: 2),
-                top: BorderSide(color: Colors.amber, width: 2),
-                right: BorderSide(color: Colors.amber, width: 2),
-                left: BorderSide(color: Colors.amber, width: 2),
-              ))
-            : null,
-        child: IconButton(
-          iconSize: 90,
-          icon: Image(
-            image: NetworkImage("$server/img/${widget.brand}"),
-          ),
-          onPressed: () async {
-            setState(() {
-              FocusScope.of(context).requestFocus(FocusNode());
-              
-              (widget.isPicked)
-                  ? widget.isPicked = false
-                  : widget.isPicked = true;
-                
-              (widget.isPicked)
-                  ? widget.data = widget.apiValue
-                  : widget.data = null;
-            });
-          },
-        ));
+      height: 90,
+      width: 90,
+      decoration: (widget.isPicked)
+          ? const BoxDecoration(
+              border: Border(
+              bottom: BorderSide(color: Colors.amber, width: 2),
+              top: BorderSide(color: Colors.amber, width: 2),
+              right: BorderSide(color: Colors.amber, width: 2),
+              left: BorderSide(color: Colors.amber, width: 2),
+            ))
+          : null,
+      child: Image(
+        image: NetworkImage("$server/img/${widget.brand}"),
+      ),
+    );
   }
 }

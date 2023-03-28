@@ -820,8 +820,8 @@ class AdminPageState extends State<AdminPage> {
       }
       return formsFromServer;
     } else {
-      bgImage = "http:$server/img/imageBG.jpg";
-      logoImage = "http:$server/img/imageLogo.jpg";
+      bgImage = "$server/img/imageBG.jpg";
+      logoImage = "$server/img/imageLogo.jpg";
       languages = List.generate(
           getLangs.length,
           (index) => DropdownMenuItem<String>(
