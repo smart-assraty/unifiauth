@@ -238,12 +238,11 @@ class TextFieldState extends State<Textfield> {
                 });
               },
             ),
-            const Text("Required"),
+            const Text("Required  "),
             Padding(
               padding: const EdgeInsets.only(left: 10, bottom: 10),
               child: SizedBox(
                 width: 250,
-                height: 40,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Key"),
                   controller: widget.controllerApi,
@@ -279,6 +278,7 @@ class TextFieldState extends State<Textfield> {
                           color: (widget.currentLang == languagelist[index])
                               ? widget.onSelected
                               : Colors.black),
+                              
                     ));
               }),
         ),
@@ -363,12 +363,11 @@ class EmailState extends State<Email> {
                 });
               },
             ),
-            const Text("Required"),
+            const Text("Required  "),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: SizedBox(
                 width: 250,
-                height: 40,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Key"),
                   controller: widget.controllerApi,
@@ -480,12 +479,11 @@ class NumberState extends State<Number> {
                 });
               },
             ),
-            const Text("Required"),
+            const Text("Required  "),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: SizedBox(
                 width: 250,
-                height: 40,
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Key"),
                   controller: widget.controllerApi,
@@ -587,12 +585,12 @@ class CheckBoxState extends State<CheckBox> {
                 });
               },
             ),
-            const Text("Required"),
+            const Text("Required  "),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: SizedBox(
                 width: 250,
-                height: 40,
+                
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Key"),
                   controller: widget.controllerApi,
@@ -707,12 +705,12 @@ class BrandState extends State<Brand> {
                 });
               },
             ),
-            const Text("Required"),
+            const Text("Required  "),
             Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: SizedBox(
                 width: 250,
-                height: 40,
+                
                 child: TextFormField(
                   decoration: const InputDecoration(labelText: "Key"),
                   controller: widget.controllerApi,
@@ -786,7 +784,6 @@ class BrandState extends State<Brand> {
           ],
         ),
         SizedBox(
-          width: 100,
           child: Focus(
             child: TextFormField(
               decoration: const InputDecoration(labelText: "URL"),
