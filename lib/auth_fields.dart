@@ -248,7 +248,7 @@ class NumberState extends State<Number> {
     return TextFormField(
       style: textStyleLittle,
       inputFormatters: [
-        FieldsFormatter(mask: 'xx xxx xxx xx xxxx', separator: ' '),
+        FieldsFormatter(separator: ' '),
         FilteringTextInputFormatter.allow(RegExp("[0-9 +]")),
       ],
       validator: (value) {
@@ -376,15 +376,47 @@ class BrandState extends State<Brand> {
       width: 90,
       decoration: (widget.isPicked)
           ? const BoxDecoration(
-              border: Border(
-              bottom: BorderSide(color: Colors.amber, width: 2),
-              top: BorderSide(color: Colors.amber, width: 2),
-              right: BorderSide(color: Colors.amber, width: 2),
-              left: BorderSide(color: Colors.amber, width: 2),
-            ))
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.amber,
+                  spreadRadius: 1,
+                  blurRadius: 0,
+                  offset: Offset(1, 0), // changes position of shadow
+                ),
+                BoxShadow(
+                  color: Colors.amber,
+                  spreadRadius: 1,
+                  blurRadius: 0,
+                  offset: Offset(0, 1), // changes position of shadow
+                ),
+                BoxShadow(
+                  color: Colors.amber,
+                  spreadRadius: 1,
+                  blurRadius: 0,
+                  offset: Offset(-1, 0), // changes position of shadow
+                ),
+                BoxShadow(
+                  color: Colors.amber,
+                  spreadRadius: 1,
+                  blurRadius: 0,
+                  offset: Offset(0, -1), // changes position of shadow
+                ),
+              ],
+              // border: Border(
+              // bottom: BorderSide(color: Colors.amber, width: 2),
+              // top: BorderSide(color: Colors.amber, width: 2),
+              // right: BorderSide(color: Colors.amber, width: 2),
+              // left: BorderSide(color: Colors.amber, width: 2),
+              //)
+            )
           : null,
-      child: Image(
-        image: NetworkImage("$server/img/${widget.brand}"),
+      child: SizedBox(
+        width: 90,
+        height: 90,
+        child: Image(
+          image: NetworkImage("$server/img/${widget.brand}"),
+        ),
       ),
     );
   }

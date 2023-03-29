@@ -13,16 +13,15 @@ class AuthHelper {
   Future<dynamic> getForms(String language) async {
     try {
       var response = await get(Uri.parse("$uvicorn/GetLoginForm/$language"));
-      // debugPrint(utf8.decode(response.body.codeUnits));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
       return "$e";
     }
   }
 
-  Future<int> connecting() async {
+  static Future<int> connecting() async {
     var response = await get(
-      Uri.parse("$server/admin/connecting.php/?${Uri.base.query}"),
+      Uri.parse("$server/admin/connecting.php/?$baseQuery"),
       headers: {
         "Charset": "utf-8",
       },
@@ -39,6 +38,8 @@ class AuthHelper {
               return true;
             }
           }
+        } else {
+          return true;
         }
       }
     } else {
@@ -48,6 +49,7 @@ class AuthHelper {
   }
 
   Future<int> postData(String lang, List<AuthField> forms) async {
+    baseQuery = Uri.base.query;
     List<Map<String, dynamic>> dataToApi = [];
     for (int i = 0; i < forms.length; ++i) {
       dataToApi.add(forms.elementAt(i).commit());
@@ -61,6 +63,7 @@ class AuthHelper {
       body: json.encode(mapToServer),
     );
     dataToApi.clear();
+
     return response.statusCode;
   }
 }

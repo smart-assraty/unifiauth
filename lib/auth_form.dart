@@ -112,7 +112,7 @@ class AuthFieldsState extends State<AuthForm> {
         isRequired: brands[index].isRequired,
         brandUrl: brands[index].brandUrl,
         isPicked: true);
-    b.data = brands[index].apiValue;
+    b.data = b.apiValue;
     brands.removeAt(index);
     brands.insert(index, b);
 
@@ -120,6 +120,10 @@ class AuthFieldsState extends State<AuthForm> {
       if (forms[i] is Brand && (forms[i] as Brand).apiValue == b.apiValue) {
         (forms[i] as Brand).isPicked = true;
         (forms[i] as Brand).data = b.apiValue;
+      } else if (forms[i] is Brand &&
+          (forms[i] as Brand).apiValue != b.apiValue) {
+        (forms[i] as Brand).isPicked = false;
+        (forms[i] as Brand).data = null;
       }
     }
 
@@ -171,10 +175,10 @@ class AuthFieldsState extends State<AuthForm> {
                             ? Column(
                                 children: [
                                   Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 20, bottom: 20),
                                     child: Text(brands[0].title,
                                         style: textStyleBig),
-                                    padding:
-                                        EdgeInsets.only(top: 20, bottom: 20),
                                   ),
                                   SizedBox(
                                     height: 90,
@@ -207,27 +211,39 @@ class AuthFieldsState extends State<AuthForm> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceEvenly,
                                             children: [
-                                              TextButton(
-                                                child: brands[0],
-                                                onPressed: () {
-                                                  _changeBrandsState(0);
-                                                },
-                                              ),
+                                              Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 3),
+                                                  child: TextButton(
+                                                    child: brands[0],
+                                                    onPressed: () {
+                                                      _changeBrandsState(0);
+                                                    },
+                                                  )),
                                               (brands.length > 1)
-                                                  ? TextButton(
-                                                      child: brands[1],
-                                                      onPressed: () {
-                                                        _changeBrandsState(1);
-                                                      },
-                                                    )
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 3),
+                                                      child: TextButton(
+                                                        child: brands[1],
+                                                        onPressed: () {
+                                                          _changeBrandsState(1);
+                                                        },
+                                                      ))
                                                   : const SizedBox(),
                                               (brands.length > 2)
-                                                  ? TextButton(
-                                                      child: brands[2],
-                                                      onPressed: () {
-                                                        _changeBrandsState(2);
-                                                      },
-                                                    )
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 3),
+                                                      child: TextButton(
+                                                        child: brands[2],
+                                                        onPressed: () {
+                                                          _changeBrandsState(2);
+                                                        },
+                                                      ))
                                                   : const SizedBox(),
                                             ],
                                           )),
@@ -254,7 +270,6 @@ class AuthFieldsState extends State<AuthForm> {
                             widget.authHelper.checkBrandRequired(brands);
                         if (isChecked) {
                           if (formkey.currentState!.validate()) {
-                            widget.authHelper.connecting();
                             var response = await widget.authHelper
                                 .postData(widget.currentLang, forms);
                             if (response == 200) {
@@ -418,10 +433,10 @@ class AuthFieldsState extends State<AuthForm> {
                               widget.authHelper.checkBrandRequired(brands);
                           if (isChecked) {
                             if (formkey.currentState!.validate()) {
-                              widget.authHelper.connecting();
                               var response = await widget.authHelper
                                   .postData(widget.currentLang, forms);
                               if (response == 200) {
+                                AuthHelper.connecting();
                                 if (!mounted) return;
                                 Routemaster.of(context).push("/logged");
                               }

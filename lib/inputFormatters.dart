@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FieldsFormatter extends TextInputFormatter {
-  final String mask;
+  String mask = "xx xxx xxx xx xxxx";
   final String separator;
 
   FieldsFormatter({
-    required this.mask,
     required this.separator,
   }) {
     assert(mask != null);
@@ -16,6 +15,12 @@ class FieldsFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
+    if (newValue.text[0] == '8') {
+      mask = "x xxx xxx xx xx xx";
+    } else {
+      mask = "xx xxx xxx xx xx xx";
+    }
+
     if (newValue.text.length > 0) {
       if (newValue.text.length > oldValue.text.length) {
         if (newValue.text.length > mask.length) return oldValue;
