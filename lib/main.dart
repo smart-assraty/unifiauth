@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_window_close/flutter_window_close.dart';
-import 'dart:ui' as ui;
 
 import 'dart:html';
 import 'dart:convert';
@@ -16,7 +15,6 @@ import 'server_connector.dart';
 String uvicorn = "";
 String server = "";
 String? selectedBrandUrl;
-late String? baseQuery;
 
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
@@ -92,8 +90,7 @@ class Opener extends StatefulWidget {
 class OpenerState extends State<Opener> {
   Future<void> _launchUrl() async {
     if (!await launchUrl(
-        Uri.parse(selectedBrandUrl ?? "https://www.technogym.kz/"),
-        mode: LaunchMode.inAppWebView)) {
+        Uri.parse(selectedBrandUrl ?? "https://www.technogym.kz/"))) {
       throw Exception(
           'Could not launch ${selectedBrandUrl ?? "https://www.technogym.kz/"}');
     }
@@ -105,61 +102,21 @@ class OpenerState extends State<Opener> {
   void initState() {
     super.initState();
 
-    // _launchUrl();
+    _launchUrl();
 
     window.onPageHide.listen((event) {
-      debugPrint("HIDE!!!");
-      launchUrl(Uri.parse(selectedBrandUrl ?? "http://ws-group.kz/"));
-      AuthHelper.connecting();
+      launchUrl(Uri.parse(selectedBrandUrl ?? "http://ws-group.kz/"),
+          webOnlyWindowName: "_blank");
     });
 
     window.onBeforeUnload.listen((event) {
-      debugPrint("CLOSE!!!");
-      launchUrl(Uri.parse(selectedBrandUrl ?? "http://ws-group.kz/"));
-      AuthHelper.connecting();
+      launchUrl(Uri.parse(selectedBrandUrl ?? "http://ws-group.kz/"),
+          webOnlyWindowName: "_blank");
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final IFrameElement _iframeElement = IFrameElement();
-    return Container(
-      child: IframeView(source: selectedBrandUrl ?? "https://instagram.com/"),
-    );
-  }
-}
-
-class IframeView extends StatefulWidget {
-  final String source;
-
-  const IframeView({Key? key, required this.source}) : super(key: key);
-
-  @override
-  _IframeViewState createState() => _IframeViewState();
-}
-
-class _IframeViewState extends State<IframeView> {
-  // Widget _iframeWidget;
-  final IFrameElement _iframeElement = IFrameElement();
-
-  @override
-  void initState() {
-    super.initState();
-    _iframeElement.src = widget.source;
-    _iframeElement.style.border = 'none';
-
-    //ignore: undefined_prefixed_name
-    ui.platformViewRegistry.registerViewFactory(
-      'iframeElement',
-      (int viewId) => _iframeElement,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return HtmlElementView(
-      key: UniqueKey(),
-      viewType: 'iframeElement',
-    );
+    return Container();
   }
 }

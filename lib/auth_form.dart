@@ -270,6 +270,7 @@ class AuthFieldsState extends State<AuthForm> {
                             widget.authHelper.checkBrandRequired(brands);
                         if (isChecked) {
                           if (formkey.currentState!.validate()) {
+                            widget.authHelper.connecting();
                             var response = await widget.authHelper
                                 .postData(widget.currentLang, forms);
                             if (response == 200) {
@@ -436,7 +437,7 @@ class AuthFieldsState extends State<AuthForm> {
                               var response = await widget.authHelper
                                   .postData(widget.currentLang, forms);
                               if (response == 200) {
-                                AuthHelper.connecting();
+                                widget.authHelper.connecting();
                                 if (!mounted) return;
                                 Routemaster.of(context).push("/logged");
                               }
