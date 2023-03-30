@@ -61,7 +61,8 @@ final routes = RouteMap(routes: {
                     image: NetworkImage("$server/img/imageBG.jpg"),
                     fit: BoxFit.fill)),
             child: FutureBuilder(
-              future: canLaunchUrl(Uri.parse("https://www.technogym.kz/")),
+              future: canLaunchUrl(
+                  Uri.parse(selectedBrandUrl ?? "https://www.technogym.kz/")),
               builder: (context, snapshot) {
                 if (snapshot.hasData &&
                     snapshot.connectionState == ConnectionState.done) {
@@ -88,31 +89,10 @@ class Opener extends StatefulWidget {
 }
 
 class OpenerState extends State<Opener> {
-  Future<void> _launchUrl() async {
-    if (!await launchUrl(
-        Uri.parse(selectedBrandUrl ?? "https://www.technogym.kz/"))) {
-      throw Exception(
-          'Could not launch ${selectedBrandUrl ?? "https://www.technogym.kz/"}');
-    }
-
-    window.close();
-  }
-
   @override
   void initState() {
     super.initState();
-
-    _launchUrl();
-
-    window.onPageHide.listen((event) {
-      launchUrl(Uri.parse(selectedBrandUrl ?? "http://ws-group.kz/"),
-          webOnlyWindowName: "_blank");
-    });
-
-    window.onBeforeUnload.listen((event) {
-      launchUrl(Uri.parse(selectedBrandUrl ?? "http://ws-group.kz/"),
-          webOnlyWindowName: "_blank");
-    });
+    window.open(selectedBrandUrl ?? "https://www.technogym.kz/", "_self");
   }
 
   @override
