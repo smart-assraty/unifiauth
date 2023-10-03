@@ -2,9 +2,10 @@ import 'package:file_picker/file_picker.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:http/http.dart';
 import 'package:flutter/material.dart';
-import 'package:unifiapp/admin_form.dart';
-import 'package:unifiapp/auth_fields.dart';
+import './admin_form.dart';
+import './auth_fields.dart';
 import 'dart:convert';
+import 'dart:math';
 
 import 'main.dart';
 
@@ -15,13 +16,14 @@ class AuthHelper {
       var response = await get(Uri.parse("$uvicorn/GetLoginForm/$language"));
       return json.decode(utf8.decode(response.body.codeUnits));
     } catch (e) {
-      return "$e";
+      debugPrint("$e");
+      return null;
     }
   }
 
-  static Future<int> connecting() async {
+  Future<int> connecting() async {
     var response = await get(
-      Uri.parse("$server/admin/connecting.php/?$baseQuery"),
+      Uri.parse("$server/admin/connecting.php/?${Uri.base.query}"),
       headers: {
         "Charset": "utf-8",
       },
@@ -49,7 +51,6 @@ class AuthHelper {
   }
 
   Future<int> postData(String lang, List<AuthField> forms) async {
-    baseQuery = Uri.base.query;
     List<Map<String, dynamic>> dataToApi = [];
     for (int i = 0; i < forms.length; ++i) {
       dataToApi.add(forms.elementAt(i).commit());
@@ -197,7 +198,7 @@ class AdminHelper {
           filename: image.files.first.name);
       request.fields.addAll({"img_type": "${image.files.first.extension}"});
       if (number != null) {
-        request.fields.addAll({"number": "$number"});
+        request.fields.addAll({"number": "${number + Random().nextInt(1000)}"});
       }
       request.files.add(file);
 

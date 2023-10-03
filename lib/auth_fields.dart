@@ -197,15 +197,17 @@ class EmailState extends State<Email> {
   Widget build(BuildContext context) {
     return TextFormField(
       style: textStyleLittle,
-      validator: (value) {
-        if (widget.isRequired && value == null) {
-          return "Please enter your email";
-        }
-        if (value != null && !EmailValidator.validate(value)) {
-          return "Example: example@mail.com";
-        }
-        return null;
-      },
+      validator: (widget.isRequired)
+          ? (value) {
+              if (widget.isRequired && value == null) {
+                return "Please enter your email";
+              }
+              if (value != null && !EmailValidator.validate(value)) {
+                return "Example: example@mail.com";
+              }
+              return null;
+            }
+          : null,
       decoration: InputDecoration(
         label: Text(
           widget.title,
@@ -251,13 +253,17 @@ class NumberState extends State<Number> {
         FieldsFormatter(separator: ' '),
         FilteringTextInputFormatter.allow(RegExp("[0-9 +]")),
       ],
-      validator: (value) {
-        if (widget.isRequired && value == null) {
-          return "Please enter your number";
-        }
+      validator: (widget.isRequired)
+          ? (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter your number";
+              } else if (value.length < 9) {
+                return "Too short phone number";
+              }
 
-        return null;
-      },
+              return null;
+            }
+          : null,
       decoration: InputDecoration(
           label: Text(
             widget.title,

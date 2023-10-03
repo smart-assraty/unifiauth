@@ -48,6 +48,12 @@ class AuthPageState extends State<AuthPage> {
                     ),
                   ],
                 ))));
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            return const Center(
+                child: Text(
+              "Connection Error! Please try again later! ",
+              style: TextStyle(fontSize: 25),
+            ));
           } else {
             return const Center(child: CircularProgressIndicator());
           }

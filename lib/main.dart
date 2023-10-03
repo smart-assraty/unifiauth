@@ -3,14 +3,12 @@ import 'package:url_strategy/url_strategy.dart' show setPathUrlStrategy;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:routemaster/routemaster.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_window_close/flutter_window_close.dart';
 
 import 'dart:html';
 import 'dart:convert';
 
 import 'admin.dart';
 import 'auth.dart';
-import 'server_connector.dart';
 
 String uvicorn = "";
 String server = "";
@@ -43,7 +41,7 @@ void main() async {
 
   setPathUrlStrategy();
   runApp(MaterialApp.router(
-    useInheritedMediaQuery: true,
+    // useInheritedMediaQuery: true,
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
     routeInformationParser: const RoutemasterParser(),
     theme: ThemeData(fontFamily: "Arial"),

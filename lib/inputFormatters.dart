@@ -7,10 +7,7 @@ class FieldsFormatter extends TextInputFormatter {
 
   FieldsFormatter({
     required this.separator,
-  }) {
-    assert(mask != null);
-    assert(separator != null);
-  }
+  });
 
   @override
   TextEditingValue formatEditUpdate(

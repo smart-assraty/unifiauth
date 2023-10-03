@@ -50,13 +50,13 @@ class AdminPageState extends State<AdminPage> {
             token = document.cookie;
             futureBody = adminHelper.getForms(token!);
             futureLangs = adminHelper.getLangs();
+            generator = generateForms(futureBody, futureLangs);
           } catch (e) {
             debugPrint("on InitState: $e");
           }
           stage = 1;
         }
       }
-      generator = generateForms(futureBody, futureLangs);
     } catch (e) {
       debugPrint("on Generator fail: $e");
       stage = 0;
@@ -132,97 +132,102 @@ class AdminPageState extends State<AdminPage> {
     TextEditingController login = TextEditingController();
     TextEditingController password = TextEditingController();
     return Container(
-        decoration: const BoxDecoration(
-            image: DecorationImage(
-                image: AssetImage("assets/bg.jpeg"), fit: BoxFit.fill)),
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 400),
+      decoration: const BoxDecoration(
+          image: DecorationImage(
+              image: AssetImage("assets/bg.jpeg"), fit: BoxFit.fill)),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 400),
+          child: Column(
+            children: const [
+              Text(
+                "TechnoGym",
+                style: TextStyle(fontSize: 48),
+              ),
+              Text(
+                "The Wellness Company",
+                style: TextStyle(fontSize: 24, color: Colors.white),
+              ),
+              Text(
+                "v1.0",
+                style: TextStyle(fontSize: 12, color: Colors.black26),
+              )
+            ],
+          ),
+        ),
+        Container(
+          height: 500,
+          width: 350,
+          decoration: const BoxDecoration(color: Colors.white),
+          child: Padding(
+            padding: const EdgeInsets.all(30),
             child: Column(
-              children: const [
-                Text(
-                  "TechnoGym",
-                  style: TextStyle(fontSize: 48),
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Text(
+                  "Login to free-WiFi Admin",
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
-                Text(
-                  "The Wellness Company",
-                  style: TextStyle(fontSize: 24, color: Colors.white),
-                )
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: const InputDecoration(labelText: "Login"),
+                        controller: login,
+                      ),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Password",
+                        ),
+                        obscureText: true,
+                        controller: password,
+                      ),
+                    ],
+                  ),
+                ),
+                ElevatedButton(
+                  style: buttonStyle,
+                  onPressed: () async {
+                    try {
+                      var send =
+                          (await adminHelper.login(login.text, password.text))!;
+                      token = await send.stream.bytesToString();
+                      if (send.statusCode == 200) {
+                        try {
+                          //document.cookie = token;
+                          futureBody = adminHelper.getForms(token!);
+                          futureLangs = adminHelper.getLangs();
+                          generator = generateForms(futureBody, futureLangs);
+                        } catch (e) {
+                          debugPrint("on adminLogin: $e");
+                        }
+                        setState(() {
+                          stage = 1;
+                        });
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Invalid username or password"),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      debugPrint("$e");
+                    }
+                  },
+                  child: const Text(
+                    "Submit",
+                    style: buttonText,
+                  ),
+                ),
               ],
             ),
           ),
-          Container(
-              height: 500,
-              width: 350,
-              decoration: const BoxDecoration(color: Colors.white),
-              child: Padding(
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Text(
-                      "Login to free-WiFi Admin",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                    Form(
-                      key: formKey,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            decoration:
-                                const InputDecoration(labelText: "Login"),
-                            controller: login,
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: "Password",
-                            ),
-                            obscureText: true,
-                            controller: password,
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton(
-                        style: buttonStyle,
-                        onPressed: () async {
-                          try {
-                            var send = (await adminHelper.login(
-                                login.text, password.text))!;
-                            token = await send.stream.bytesToString();
-                            if (send.statusCode == 200) {
-                              try {
-                                //document.cookie = token;
-                                futureBody = adminHelper.getForms(token!);
-                                futureLangs = adminHelper.getLangs();
-                                generator =
-                                    generateForms(futureBody, futureLangs);
-                              } catch (e) {
-                                debugPrint("on adminLogin: $e");
-                              }
-                              setState(() {
-                                stage = 1;
-                              });
-                            } else {
-                              // ignore: use_build_context_synchronously
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          "Invalid username or password")));
-                            }
-                          } catch (e) {
-                            debugPrint("$e");
-                          }
-                        },
-                        child: const Text(
-                          "Submit",
-                          style: buttonText,
-                        )),
-                  ],
-                ),
-              )),
-        ]));
+        ),
+      ]),
+    );
   }
 
   Widget contentHeader() {
@@ -237,12 +242,13 @@ class AdminPageState extends State<AdminPage> {
               child: Align(
                 alignment: Alignment.centerRight,
                 child: Padding(
-                    padding: EdgeInsets.only(bottom: 20.0),
-                    child: Text(
-                      "Настройка формы ",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18), //
-                    )),
+                  padding: EdgeInsets.only(bottom: 20.0),
+                  child: Text(
+                    "Настройка формы v0.1",
+                    style:
+                        TextStyle(fontWeight: FontWeight.bold, fontSize: 18), //
+                  ),
+                ),
               ),
             ),
             Row(

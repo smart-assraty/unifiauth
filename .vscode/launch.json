@@ -5,20 +5,19 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "unifiapp",
+            "name": "test",
             "request": "launch",
             "type": "dart",
-            "program": "lib/main.dart",
-            "args": ["-d", "chrome"] 
+            "deviceId": "Chrome"
         },
         {
-            "name": "unifiapp (profile mode)",
+            "name": "test (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "unifiapp (release mode)",
+            "name": "test (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
