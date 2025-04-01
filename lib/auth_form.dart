@@ -41,6 +41,7 @@ class AuthFieldsState extends State<AuthForm> {
 
   String frontTitle = "";
   String frontDescription = "";
+  bool isLoading = false;
 
   List<AuthField> generateForms(dynamic body) {
     controllers =
@@ -87,6 +88,48 @@ class AuthFieldsState extends State<AuthForm> {
       xs: (context) => webMobile(widget.logo),
       md: (context) => webDesktop(widget.logo),
     ));
+  }
+
+  Future<void> _onClickBunntonContinue() async {
+    try {
+      bool isChecked = widget.authHelper.checkBrandRequired(brands);
+      if (isChecked) {
+        if (formkey.currentState!.validate()) {
+          setState(() {
+            isLoading = true;
+          });
+          var phpResponse = await widget.authHelper.connecting();
+          if (phpResponse >= 400 && mounted) {
+            setState(() {
+              isLoading = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  "Get Access error! Please, try againg! Status code: $phpResponse",
+                  style: textStyleLittle,
+                ),
+              ),
+            );
+          }
+          widget.authHelper.postData(widget.currentLang, forms);
+          if (mounted) Routemaster.of(context).push("/logged");
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "You have to choose a brand",
+              style: textStyleLittle,
+            ),
+          ),
+        );
+      }
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   void _changeBrandsState(int index) {
@@ -225,7 +268,7 @@ class AuthFieldsState extends State<AuthForm> {
                                                     ? Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                    .only(
+                                                                .only(
                                                                 bottom: 3),
                                                         child: TextButton(
                                                           child: brands[1],
@@ -240,7 +283,7 @@ class AuthFieldsState extends State<AuthForm> {
                                                     ? Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                    .only(
+                                                                .only(
                                                                 bottom: 3),
                                                         child: TextButton(
                                                           child: brands[2],
@@ -272,32 +315,14 @@ class AuthFieldsState extends State<AuthForm> {
                   child: Center(
                     child: ElevatedButton(
                       style: buttonStyle,
-                      onPressed: () async {
-                        bool isChecked =
-                            widget.authHelper.checkBrandRequired(brands);
-                        if (isChecked) {
-                          if (formkey.currentState!.validate()) {
-                            var phpResponse =
-                                await widget.authHelper.connecting();
-                            var response = await widget.authHelper
-                                .postData(widget.currentLang, forms);
-                            if (response == 200) {
-                              if (!mounted) return;
-                              Routemaster.of(context).push("/logged");
-                            }
-                          }
-                        } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                                  content: Text(
-                            "You have to choose a brand",
-                            style: textStyleLittle,
-                          )));
-                        }
-                      },
-                      child: Text(widget.submit,
-                          style: const TextStyle(
-                              color: Colors.black, fontFamily: "Arial")),
+                      onPressed: isLoading ? null : _onClickBunntonContinue,
+                      child: isLoading
+                          ? const CircularProgressIndicator()
+                          : Text(
+                              widget.submit,
+                              style: const TextStyle(
+                                  color: Colors.black, fontFamily: "Arial"),
+                            ),
                     ),
                   ),
                 ),
@@ -437,34 +462,13 @@ class AuthFieldsState extends State<AuthForm> {
                       padding: const EdgeInsets.all(20),
                       child: ElevatedButton(
                         style: buttonStyle,
-                        onPressed: () async {
-                          bool isChecked =
-                              widget.authHelper.checkBrandRequired(brands);
-                          if (isChecked) {
-                            if (formkey.currentState!.validate()) {
-                              widget.authHelper.connecting();
-                              var response = await widget.authHelper
-                                  .postData(widget.currentLang, forms);
-                              if (response == 200) {
-                                if (!mounted) return;
-                                Routemaster.of(context).push("/logged");
-                              }
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "You have to choose a brand",
-                                  style: textStyleLittle,
-                                ),
+                        onPressed: isLoading ? null : _onClickBunntonContinue,
+                        child: isLoading
+                            ? const CircularProgressIndicator()
+                            : Text(
+                                widget.submit,
+                                style: const TextStyle(color: Colors.black),
                               ),
-                            );
-                          }
-                        },
-                        child: Text(
-                          widget.submit,
-                          style: const TextStyle(color: Colors.black),
-                        ),
                       ),
                     ),
                   ),

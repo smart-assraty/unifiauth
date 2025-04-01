@@ -302,7 +302,7 @@ class CheckBoxState extends State<CheckBox> {
           (state.hasError)
               ? Text(
                   state.errorText ?? "",
-                  style: TextStyle(color: Theme.of(context).errorColor),
+                  style: TextStyle(color: Theme.of(context).primaryColor),
                 )
               : const SizedBox(),
           Row(
