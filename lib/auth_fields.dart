@@ -13,8 +13,8 @@ abstract class AuthField extends StatefulWidget {
   final String? description;
   final bool isRequired;
   final String? brandUrl;
-
   dynamic data;
+
   Map<String, dynamic> commit() {
     return {"type": type, "title": title, "api_name": apiKey, "value": data};
   }
@@ -308,23 +308,25 @@ class CheckBoxState extends State<CheckBox> {
           Row(
             children: [
               Checkbox(
-                  value: accept,
-                  onChanged: (value) => setState(() {
-                        FocusScope.of(context).requestFocus(FocusNode());
-                        accept = value!;
-                        widget.data = (accept) ? widget.title : null;
-                        state.didChange(value);
-                      })),
+                value: accept,
+                onChanged: (value) => setState(() {
+                  FocusScope.of(context).requestFocus(FocusNode());
+                  accept = value!;
+                  widget.data = (accept) ? widget.title : null;
+                  state.didChange(value);
+                }),
+              ),
               SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.0265,
-                  width: widget.title.length * 10,
-                  child: FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Text(
-                      widget.title,
-                      style: textStyleLittle,
-                    ),
-                  ))
+                height: MediaQuery.of(context).size.height * 0.0265,
+                width: widget.title.length * 10,
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Text(
+                    widget.title,
+                    style: textStyleLittle,
+                  ),
+                ),
+              )
             ],
           ),
         ],
