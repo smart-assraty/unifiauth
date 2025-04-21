@@ -44,7 +44,10 @@ void main() async {
     // useInheritedMediaQuery: true,
     routerDelegate: RoutemasterDelegate(routesBuilder: (_) => routes),
     routeInformationParser: const RoutemasterParser(),
-    theme: ThemeData(fontFamily: "Arial", useMaterial3: false),
+    theme: ThemeData(
+        fontFamily: "Roboto",
+        fontFamilyFallback: const ['Roboto'],
+        useMaterial3: false),
   ));
 }
 
