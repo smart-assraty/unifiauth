@@ -27,33 +27,37 @@ class AuthPageState extends State<AuthPage> {
               snapshot.connectionState == ConnectionState.done) {
             dynamic body = snapshot.data!;
             return Container(
-                width: MediaQuery.of(context).size.width,
-                height: double.maxFinite,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: NetworkImage("$server/img/${body['bg_image']}"),
-                        fit: BoxFit.fill)),
-                child: Center(
-                    child: SingleChildScrollView(
-                        child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AuthForm(
-                      languagelist: languagelist,
-                      currentLang: language.toString(),
-                      submit: body["submit_lang"],
-                      logo: body["logo_image"],
-                      data: body["fields"],
-                      fieldsCount: body["count_fields"],
-                    ),
-                  ],
-                ))));
+              width: MediaQuery.of(context).size.width,
+              height: double.maxFinite,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage("$server/img/${body['bg_image']}"),
+                      fit: BoxFit.fill)),
+              child: Center(
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AuthForm(
+                        languagelist: languagelist,
+                        currentLang: language.toString(),
+                        submit: body["submit_lang"],
+                        logo: body["logo_image"],
+                        data: body["fields"],
+                        fieldsCount: body["count_fields"],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
           } else if (snapshot.connectionState == ConnectionState.done) {
             return const Center(
-                child: Text(
-              "Connection Error! Please try again later! ",
-              style: TextStyle(fontSize: 25),
-            ));
+              child: Text(
+                "Connection Error! Please try again later! ",
+                style: TextStyle(fontSize: 25),
+              ),
+            );
           } else {
             return const Center(child: CircularProgressIndicator());
           }

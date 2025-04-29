@@ -16,8 +16,7 @@ String? selectedBrandUrl;
 
 ButtonStyle buttonStyle = ButtonStyle(
     fixedSize: MaterialStateProperty.all<Size>(const Size(150, 20)),
-    backgroundColor: MaterialStateProperty.all<Color>(
-        const Color.fromARGB(255, 251, 225, 30)));
+    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFFFBE11E)));
 const TextStyle buttonText = TextStyle(color: Colors.black);
 const TextStyle textStyleBig = TextStyle(
   fontSize: 24,

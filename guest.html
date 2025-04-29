@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wellness Hub - Guest Wifi</title>
+    <style>
+        :root {
+            --primary-color: #FBE11E;
+            --primary-hover: #f5d90f;
+            --error-color: #e74c3c;
+            --text-color: #333;
+            --text-light: #666;
+            --border-color: #ddd;
+            --bg-color: #f9f9f9;
+            --radius: 8px;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: url('/img/imageBG.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                flex-direction: row;
+                align-items: flex-start;
+            }
+        }
+
+        .logo-container {
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        @media (min-width: 992px) {
+            .logo-container {
+                width: 250px;
+                padding-top: 20px;
+                text-align: left;
+            }
+        }
+
+        .logo {
+            max-width: 100%;
+            height: auto;
+            max-height: 80px;
+        }
+
+        .auth-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .header {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .description {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(251, 225, 30, 0.2);
+        }
+
+        .form-control.invalid {
+            border-color: var(--error-color);
+        }
+
+        .hint {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-control:focus + .hint {
+            display: block;
+        }
+
+        .brands-section {
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .brands-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        .brands-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .brands-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            width: 100%;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .brands-slider {
+            display: flex;
+            gap: 20px;
+            transition: transform 0.3s ease;
+            width: 100%;
+        }
+
+       .brand-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+            padding-top: 5px;
+/*            padding: 10px;*/
+            border-radius: var(--radius);
+            border: 2px solid transparent;
+            min-width: 0; /* Важно для предотвращения выхода за границы */
+        }
+
+        .brand-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .brand-card.selected {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(251, 225, 30, 0.3);
+            background-color: rgba(251, 225, 30, 0.05);
+        }
+
+       .brand-image {
+            width: 100%;
+            height: auto;
+            max-height: 120px;
+            aspect-ratio: 1/1; /* Сохраняем квадратную форму */
+            object-fit: contain;
+            border-radius: var(--radius);
+            background: white;
+            padding: 10px;
+        }
+
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            z-index: 2;
+            opacity: 0.8;
+            transition: var(--transition);
+        }
+
+        .slider-nav:hover {
+            opacity: 1;
+        }
+
+        .slider-nav.prev {
+            left: -20px;
+        }
+
+        .slider-nav.next {
+            right: -20px;
+        }
+
+        .slider-nav.hidden {
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 20px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 10px 15px;
+            border-radius: var(--radius);
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .required-field::after {
+            content: ' *';
+            color: var(--error-color);
+        }
+
+        .field-error {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .brands-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 10px;
+            }
+            
+            .brand-image {
+                max-height: 100px;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .brands-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 8px;
+            }
+            
+            .brand-image {
+                max-height: 80px;
+                padding: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-container">
+            <img class="logo" src="" alt="Wellness Hub Logo">
+        </div>
+        
+        <div class="auth-card">
+            <div class="header">
+                <h1 class="title"></h1>
+                <p class="description"></p>
+            </div>
+            
+            <form id="authForm">
+                <!-- Dynamic fields will be inserted here -->
+            </form>
+            
+            <div class="brands-section">
+                <h3 class="brands-title"></h3>
+                <div class="brands-container">
+                    <div class="slider-nav prev hidden">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </div>
+                    <div class="brands-slider" id="brandsSlider">
+                        <!-- Brand cards will be inserted here -->
+                    </div>
+                    <div class="slider-nav next hidden">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" id="submitBtn" class="btn" disabled>Подключиться</button>
+            
+            <div id="loading" class="loading">
+                <p>Loading...</p>
+            </div> 
+           
+            <div id="errorMessage" class="error-message"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration
+            const config = {
+                apiUrl: 'http://192.168.80.10:8000',
+                serverUrl: 'http://192.168.80.10',
+                language: navigator.language,
+                brandsPerView: 3
+            };
+            
+            let brandLink = '';
+
+            // DOM Elements
+            const elements = {
+                logo: document.querySelector('.logo'),
+                title: document.querySelector('.title'),
+                description: document.querySelector('.description'),
+                authForm: document.getElementById('authForm'),
+                brandsTitle: document.querySelector('.brands-title'),
+                brandsSlider: document.getElementById('brandsSlider'),
+                submitBtn: document.getElementById('submitBtn'),
+                loading: document.getElementById('loading'),
+                errorMessage: document.getElementById('errorMessage'),
+                prevBtn: document.querySelector('.slider-nav.prev'),
+                nextBtn: document.querySelector('.slider-nav.next')
+            };
+            
+            // State
+            let formData = {
+                fields: [],
+                selectedBrand: null,
+                currentSlide: 0,
+                totalSlides: 0
+            };
+            
+            // Initialize
+            init();
+            
+            function init() {
+                setupEventListeners();
+                loadFormData();
+                updateSliderControls();
+            }
+            
+            function setupEventListeners() {
+                elements.submitBtn.addEventListener('click', handleSubmit);
+                elements.prevBtn.addEventListener('click', () => slide(-1));
+                elements.nextBtn.addEventListener('click', () => slide(1));
+                
+                // Handle window resize to adjust brands per view
+                window.addEventListener('resize', () => {
+                    updateBrandsPerView();
+                    updateSliderControls();
+                });
+            }
+            
+            async function loadFormData() {
+                try {
+                    showLoading();
+                    
+                    const response = await fetch(`${config.apiUrl}/GetLoginForm/${config.language}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    const data = await response.json();
+
+                    if (!data || !data.fields) {
+                        throw new Error('Invalid data format');
+                    }
+                    
+                    renderForm(data);
+                    
+                } catch (error) {
+                    showError('Loading form error!');
+                    console.error('Error loading form data:', error);
+                } finally {
+                    hideLoading();
+                }
+            }
+            
+            function renderForm(data) {
+                // Store form data for later use
+                formData = {
+                    ...data,
+                    fields: [...data.fields],
+                    currentSlide: 0,
+                    totalSlides: 0,
+                    useSlider: false
+                };
+                
+                // Set logo and header
+                elements.logo.src = `${config.serverUrl}/img/${data.logo_image}`;
+                
+                // Find and render front fields (title and description)
+                const frontField = data.fields.find(field => field.type === 'front');
+                if (frontField) {
+                    elements.title.textContent = frontField.title;
+                    elements.description.textContent = frontField.description;
+                }
+
+                elements.submitBtn.textContent = data.submit_lang;
+                
+                // Clear form
+                elements.authForm.innerHTML = '';
+                
+                // Count brand fields
+                const brandFields = data.fields.filter(field => field.type === 'brand');
+                formData.useSlider = brandFields.length > 3;
+                
+                // Инициализируем контейнер для брендов ДО их рендеринга
+                updateSliderVisibility();
+                
+                // Render input fields
+                data.fields.forEach(field => {
+                    if (field.type === 'front') return;
+                    
+                    if (field.type === 'brand') {
+                        elements.brandsTitle.textContent = field.title;
+                        // renderBrandField(field);
+                    } else {
+                        renderInputField(field);
+                    }
+                });
+                
+                // Update slider controls if slider is used
+                if (formData.useSlider) {
+                    updateBrandsPerView();
+                    updateSliderControls();
+                }
+                
+                // Enable submit button
+                elements.submitBtn.disabled = false;
+            }
+
+            function updateSliderVisibility() {
+                const brandContainer = document.querySelector('.brands-container');
+                const brandFields = formData.fields.filter(field => field.type === 'brand');
+                
+                if (brandFields.length > 3) {
+                    // Используем слайдер
+                    brandContainer.innerHTML = `
+                        <div class="slider-nav prev hidden">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="brands-slider" id="brandsSlider"></div>
+                        <div class="slider-nav next hidden">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </div>
+                    `;
+                    
+                    // Перерендерим бренды в слайдере
+                    elements.brandsSlider = document.getElementById('brandsSlider');
+                    elements.prevBtn = document.querySelector('.slider-nav.prev');
+                    elements.nextBtn = document.querySelector('.slider-nav.next');
+                    
+                    formData.fields.forEach(field => {
+                        if (field.type === 'brand') {
+                            renderBrandField(field);
+                        }
+                    });
+                    
+                    // Обновим навигацию слайдера
+                    updateBrandsPerView();
+                    updateSliderControls();
+                    
+                    // Добавим обработчики событий
+                    elements.prevBtn.addEventListener('click', () => slide(-1));
+                    elements.nextBtn.addEventListener('click', () => slide(1));
+                } else {
+                    // Используем обычную сетку
+                    brandContainer.innerHTML = '<div class="brands-grid" id="brandsGrid"></div>';
+                    const brandsGrid = document.getElementById('brandsGrid');
+                    
+                    formData.fields.forEach(field => {
+                        if (field.type === 'brand') {
+                            const brandCard = document.createElement('div');
+                            brandCard.className = 'brand-card';
+                            brandCard.dataset.apiName = field.api_name;
+                            brandCard.dataset.apiValue = field.api_value;
+                            
+                            brandCard.addEventListener('click', () => selectBrand(field.api_name));
+                            
+                            const brandImage = document.createElement('img');
+                            brandImage.className = 'brand-image';
+                            brandImage.src = `${config.serverUrl}/img/${field.brand_icon}`;
+                            brandImage.alt = field.title;
+                            
+                            brandCard.appendChild(brandImage);
+                            brandsGrid.appendChild(brandCard);
+                        }
+                    });
+                }
+            }
+            
+            function renderInputField(field) {
+                const fieldGroup = document.createElement('div');
+                fieldGroup.className = 'form-group';
+                
+                const label = document.createElement('label');
+                label.className = 'form-label';
+                label.textContent = field.title;
+                if (field.required_field) {
+                    label.classList.add('required-field');
+                }
+                
+                const input = document.createElement('input');
+                input.className = 'form-control';
+                input.type = field.type === 'number' ? 'tel' : field.type;
+                input.id = field.api_name;
+                input.name = field.api_name;
+                input.placeholder = field.description || '';
+                
+                if (field.required_field) {
+                    input.required = true;
+                }
+                
+                // Add input validation
+                input.addEventListener('blur', validateField);
+                
+                // Field specific settings
+                if (field.type === 'email') {
+                    input.autocomplete = 'email';
+                    input.pattern = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$";
+                    
+                    const hint = document.createElement('div');
+                    hint.className = 'hint';
+                    hint.textContent = 'example@mail.com';
+                    fieldGroup.appendChild(hint);
+                } else if (field.type === 'number') {
+                    input.inputMode = 'tel';
+                    
+                    const hint = document.createElement('div');
+                    hint.className = 'hint';
+                    hint.textContent = '7777777777';
+                    fieldGroup.appendChild(hint);
+                }
+                
+                // Add error message element
+                const error = document.createElement('div');
+                error.className = 'field-error';
+                error.textContent = 'Required field';
+                
+                fieldGroup.appendChild(label);
+                fieldGroup.appendChild(input);
+                fieldGroup.appendChild(error);
+                elements.authForm.appendChild(fieldGroup);
+            }
+            
+            // Обновлённая функция renderBrandField
+            function renderBrandField(field) {
+                const brandCard = document.createElement('div');
+                brandCard.className = 'brand-card';
+                brandCard.dataset.apiName = field.api_name;
+                brandCard.dataset.apiValue = field.api_value;
+                
+                brandCard.addEventListener('click', () => selectBrand(field.api_name));
+                
+                const brandImage = document.createElement('img');
+                brandImage.className = 'brand-image';
+                brandImage.src = `${config.serverUrl}/img/${field.brand_icon}`;
+                brandImage.alt = field.title;
+                
+                brandCard.appendChild(brandImage);
+                
+                // Определяем контейнер для брендов
+                let brandsContainer;
+                if (formData.useSlider) {
+                    brandsContainer = document.getElementById('brandsSlider');
+                } else {
+                    brandsContainer = document.getElementById('brandsGrid');
+                }
+                
+                // Проверяем, что контейнер существует
+                if (brandsContainer) {
+                    brandsContainer.appendChild(brandCard);
+                } else {
+                    console.error('Brands container not found');
+                }
+            }
+                        
+            function selectBrand(apiName) {
+                const selectedCard = document.querySelector(`.brand-card[data-api-name="${apiName}"]`);
+                
+                // Если кликаем на уже выбранный бренд
+                if (formData.selectedBrand === apiName && selectedCard.classList.contains('selected')) {
+                    // Отменяем выбор
+                    selectedCard.classList.remove('selected');
+                    formData.selectedBrand = null;
+                } else {
+                    // Иначе выбираем новый бренд
+                    // Сначала снимаем выделение со всех
+                    document.querySelectorAll('.brand-card').forEach(card => {
+                        card.classList.remove('selected');
+                    });
+                    
+                    // Затем выделяем выбранный
+                    selectedCard.classList.add('selected');
+                    formData.selectedBrand = apiName;
+                }
+            }
+
+
+            
+            function updateBrandsPerView() {
+                // Adjust brands per view based on screen size
+                if (window.innerWidth < 480) {
+                    config.brandsPerView = 1;
+                } else if (window.innerWidth < 768) {
+                    config.brandsPerView = 2;
+                } else {
+                    config.brandsPerView = 3;
+                }
+                
+                // Update slider state
+                const brandCount = document.querySelectorAll('.brand-card').length;
+                formData.totalSlides = Math.ceil(brandCount / config.brandsPerView) - 1;
+            }
+            
+            function slide(direction) {
+                const newSlide = formData.currentSlide + direction;
+                
+                if (newSlide >= 0 && newSlide <= formData.totalSlides) {
+                    formData.currentSlide = newSlide;
+                    const slideWidth = 100 / config.brandsPerView;
+                    const translateX = -formData.currentSlide * 100;
+                    elements.brandsSlider.style.transform = `translateX(${translateX}%)`;
+                    updateSliderControls();
+                }
+            }
+            
+            function updateSliderControls() {
+                elements.prevBtn.classList.toggle('hidden', formData.currentSlide === 0);
+                elements.nextBtn.classList.toggle('hidden', formData.currentSlide >= formData.totalSlides);
+            }
+            
+            function validateField(e) {
+                const input = e.target;
+                const errorElement = input.parentElement.querySelector('.field-error');
+                const isValid = input.checkValidity();
+                
+                if (input.required && !input.value.trim()) {
+                    input.classList.add('invalid');
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                
+                if (input.type === 'email' && input.value && !input.validity.valid) {
+                    errorElement.textContent = 'Incorrect email';
+                    input.classList.add('invalid');
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                
+                if (input.type === 'tel' && input.value && !input.validity.valid) {
+                    errorElement.textContent = 'Incorrect phone number';
+                    input.classList.add('invalid');
+                    errorElement.style.display = 'block';
+                    return false;
+                }
+                
+                input.classList.remove('invalid');
+                errorElement.style.display = 'none';
+                return true;
+            }
+            
+            function validateForm() {
+                let isValid = true;
+                const requiredInputs = elements.authForm.querySelectorAll('input[required]');
+                
+                requiredInputs.forEach(input => {
+                    const errorElement = input.parentElement.querySelector('.field-error');
+                    
+                    if (!input.value.trim()) {
+                        input.classList.add('invalid');
+                        errorElement.style.display = 'block';
+                        isValid = false;
+                    } else if (!validateField({ target: input })) {
+                        isValid = false;
+                    }
+                });
+                
+                return isValid;
+            }
+            
+            function collectFormValues() {
+                const values = {};
+                const formInputs = elements.authForm.querySelectorAll('input');
+                
+                // Collect regular fields
+                formInputs.forEach(input => {
+                    if (input.value.trim()) {
+                        values[input.name] = input.value;
+                    }
+                });
+                
+                // Add selected brand
+                if (formData.selectedBrand) {
+                    values[formData.selectedBrand] = 'on';
+                }
+                
+                return {
+                    lang: config.language,
+                    fields: Object.entries(values).map(([name, value]) => [name, value])
+                };
+            }
+
+            // Функция для преобразования данных формы в нужный формат
+            function prepareFormData(formValues) {
+                const guestFields = [];
+                
+                // Обрабатываем обычные поля формы
+                const formInputs = elements.authForm.querySelectorAll('input');
+                formInputs.forEach(input => {
+                    if (input.value.trim()) {
+                        const field = formData.fields.find(f => f.api_name === input.name);
+                        if (field) {
+                            guestFields.push({
+                                type: field.type,
+                                title: field.title,
+                                api_name: field.api_name,
+                                required_field: field.required_field || false,
+                                value: input.value.trim()
+                            });
+                        }
+                    }
+                });
+                
+                // Обрабатываем выбранный бренд
+                if (formData.selectedBrand) {
+                    const brandField = formData.fields.find(f => f.api_name === formData.selectedBrand);
+                    if (brandField) {
+                        guestFields.push({
+                            type: brandField.type,
+                            title: brandField.title,
+                            api_name: brandField.api_name,
+                            required_field: brandField.required_field || false,
+                            value: brandField.api_value || 'on'
+                        });
+                    }
+                }
+                
+                return {
+                    lang: config.language,
+                    fields: guestFields
+                };
+            }
+
+            // Обновлённая функция submitMainForm
+            async function submitMainForm(formValues) {
+                // Подготавливаем данные в соответствии со схемой FastAPI
+                const requestData = prepareFormData(formValues);
+                
+                const response = await fetch(`${config.apiUrl}/GuestAuth/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                return {
+                    response,
+                    selectedBrandUrl: getSelectedBrandUrl()
+                };
+            }
+
+            // Функция для получения URL выбранного бренда
+            function getSelectedBrandUrl() {
+                if (!formData.selectedBrand) return null;
+                
+                const brandField = formData.fields.find(f => 
+                    f.type === 'brand' && f.api_name === formData.selectedBrand
+                );
+                
+                return brandField?.brand_url || null;
+            }
+
+            // Обновлённый обработчик отправки формы
+            async function handleSubmit(e) {
+                e.preventDefault();
+                
+                if (!validateForm()) {
+                    showError('Please fill in all required fields correctly.');
+                    return;
+                }
+                
+                try {
+                    showLoading();
+                    elements.submitBtn.disabled = true;
+                    
+                    // Проверяем соединение перед отправкой
+                    const connectingStatus = await checkConnection();
+                    if (connectingStatus !== 200) {
+                        throw new Error('WiFi Controller connection error!');
+                    }
+                    
+                    // Собираем значения формы
+                    const formValues = collectFormValues();
+                    
+                    // Отправляем основную форму
+                    const { response, selectedBrandUrl } = await submitMainForm(formValues);
+                    
+                    if (response.ok) {
+                        // Перенаправляем на URL бренда или дефолтную страницу
+                        window.location.href = selectedBrandUrl || 'https://www.technogym.kz/';
+                    } else {
+                        // Пытаемся получить детали ошибки от сервера
+                        const errorData = await response.json().catch(() => null);
+                        const errorMsg = errorData?.detail || 'WiFi Controller connection error!';
+                        throw new Error(errorMsg);
+                    }
+                    
+                } catch (error) {
+                    showError(error.message || 'Submit form error!');
+                    console.error('Submit error:', error);
+                } finally {
+                    hideLoading();
+                    elements.submitBtn.disabled = false;
+                }
+            }
+
+
+            // Новая функция для проверки соединения
+            async function checkConnection() {
+                const queryString = window.location.search;
+                const url = `${config.serverUrl}/admin/connecting.php${queryString}`;
+                
+                const response = await fetch(url, {
+                    headers: {
+                        'Charset': 'utf-8'
+                    }
+                });
+                
+                return response.status;
+            }
+
+            function showLoading() {
+                elements.loading.classList.add('show');
+            }
+            
+            function hideLoading() {
+                elements.loading.classList.remove('show');
+            }
+            
+            function showError(message) {
+                elements.errorMessage.textContent = message;
+                elements.errorMessage.classList.add('show');
+                
+                // Hide error after 5 seconds
+                setTimeout(() => {
+                    elements.errorMessage.classList.remove('show');
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
